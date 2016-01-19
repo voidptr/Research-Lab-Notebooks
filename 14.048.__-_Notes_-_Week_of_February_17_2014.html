@@ -1,0 +1,445 @@
+<h1>Week of February 17, 2014</h1>
+
+<h2>Monday, Feb 17, 2014</h2>
+
+<h3>Log:</h3>
+
+<p>Doing some thinking work on how I&rsquo;m going to integrate the HGT resevoir code into the LGT code. I made a new git branch: <a href="initial_hgt_lgt_combination.">initial_hgt_lgt_combination.</a></p>
+
+<h4>Initial HGT Program Flow</h4>
+
+<p>The flow must be as follows:</p>
+
+<ul>
+	<li>
+	<p>Initialize the HGT resevoir</p>
+
+	<ul>
+		<li>
+		<p>Currently, this means activating the ENABLE_HGT config file option.</p>
+		</li>
+	</ul>
+	</li>
+	<li>
+	<p>LGT Mutates, using the HGT reservoir</p>
+
+	<ul>
+		<li>
+		<p>Currently, this means enabling the LGT options (need to look at it). Mutation rates, etc.</p>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<h4>Initially:</h4>
+
+<ul>
+	<li>
+	<p>re-generate configuration file from ./avida itself.</p>
+	</li>
+	<li>
+	<p>figure out how to enable LGT in the config</p>
+	</li>
+	<li>
+	<p>Enable HGT reservoir in config.</p>
+	</li>
+	<li>
+	<p>add code to the LGT mutation code to use the reservoir</p>
+	</li>
+	<li>
+	<p>run some experiments! (rather, do a trace through the code and make sure everything is getting touched appropriately).</p>
+	</li>
+</ul>
+
+<h4>Once that&rsquo;s working:</h4>
+
+<ul>
+	<li>
+	<p>Deprecate all non-reservoir HGT code.</p>
+	</li>
+	<li>
+	<p>Rename all the LGT code to be HGT code.</p>
+	</li>
+	<li>
+	<p>Rename all the LGT options to HGT options.</p>
+	</li>
+	<li>
+	<p>Test the shit out of it.</p>
+	</li>
+</ul>
+
+<h4>Finally, add in the code to do my specific experiments:</h4>
+
+<ul>
+	<li>
+	<p>mutagenic instruction Uptake-HGT-Bonus</p>
+
+	<ul>
+		<li>
+		<p>Increases HGT mutation chance for that organism, while conferring a bonus.</p>
+		</li>
+		<li>
+		<p>Have a conversation with Charles or Dave about whether we want this mutation to be applied on divide (which is just how it is done now), or if we want it to be more of a cosmic-ray-style mutation, which seems more realistic to me.</p>
+		</li>
+		<li>
+		<p>The bonus will be set via a config option, as will the mutagenic chance increase.</p>
+		</li>
+		<li>
+		<p>Look at how Heather did mutagenic instructions&hellip; Check on her papers and her code.</p>
+		</li>
+	</ul>
+	</li>
+	<li>
+	<p>mutagenic instruction Uptake-HGT-noBonus</p>
+
+	<ul>
+		<li>
+		<p>Same as above, but no bonus.</p>
+		</li>
+	</ul>
+	</li>
+	<li>
+	<p>non-mutagenic instruction Uptake-noHGT-Bonus</p>
+
+	<ul>
+		<li>
+		<p>Same as first, but there&rsquo;s no uptick in mutation chance.</p>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<h4>For further experiments:</h4>
+
+<ul>
+	<li>
+	<p>add capability to seed the reservoirs via the &hellip; events file, I think.</p>
+	</li>
+</ul>
+
+<h4>Thoughts</h4>
+
+<p>There is an inconsistency in the current reasoning behind the existing HGT code. Specifically, there&rsquo;s never any uptake. The reservoir is undisturbed until a mutation happens. This is ridiculous on its face. The cell doesn&rsquo;t uptake only when a mutation will happen. :P The key bit, though, is that the reservoir will behave completely differently when I start doing uptake work. Specifically, it will drain at a potentially alarming rate, and be exhausted well before a mutation happens. So, I have to be careful. I&rsquo;m thinking the reservoir will fill with the genomes (complete genomes) of the organisms that died in each cell (or that we&rsquo;ll seed into the reservoirs), and then draw fragments from that reservoir when the time comes to do HGT.</p>
+
+<h4>Log:</h4>
+
+<ul>
+	<li>
+	<p>Regenerated avida.cfg within the &hellip;/Build/Products/Debug directory (Xcode development output).</p>
+	</li>
+	<li>
+	<p>Enabled LGT by setting DIVIDE_LGT_PROB to 0.05</p>
+	</li>
+	<li>
+	<p>Enabled HGT reservoir by setting ENABLE_HGT to 1. I&rsquo;ve left the HGT mutation probability at 0.0 for now.</p>
+	</li>
+	<li>
+	<p>Editing the LGT code to use the HGT reservoir.</p>
+	</li>
+</ul>
+
+<h4>Log 11:47p</h4>
+
+<p>Returned to work around 11. Finished up loosely integrating the HGT reservoir with the LGT code.</p>
+
+<p>This is commit 9e3ca23892 on branch m_hgt_inserted_count. https://github.com/voidptr/avida/commit/9e3ca238922353e38c885fbfa66d004ec0df09cc#diff-f3fb436d5b102e47b8fbbff03a1dbac7R2159</p>
+
+<ul>
+	<li>
+	<p>\(cHardwareBase.cc\) - Added code to <code>PopGenomeFragment</code> from HGT reservoir; added simplified stats tracking.</p>
+	</li>
+	<li>
+	<p>\(cTestCPUInterface.h\) - renamed <code>GetLGTFragment</code> to <code>GetLGTFragmentFromLiving</code>.</p>
+	</li>
+	<li>
+	<p>\(cOrgInterface.h\) - renamed <code>GetLGTFragment</code> to <code>GetLGTFragmentFromLiving</code></p>
+	</li>
+	<li>
+	<p>\(cPopulationInterface.h and .cc\) - renamed <code>GetLGTFragment</code> to <code>GetLGTFragmentFromLiving</code> (this is where the proper implementation is).</p>
+	</li>
+	<li>
+	<p>\(cPopulation.cc\) - removed requirement that <code>HGT_COMPETENCE_P</code> (probability) be more than zero for the reservoirs to be initialized. It&rsquo;s a silly requirement anyway, because HGT is enabled.</p>
+	</li>
+	<li>
+	<p>\(cPopulationCell.h\) - moved <code>InitHGTSupport</code> out of the private area and made it public. This is a kludge, and will probably be put back, since InitHGTSupport is being called from <code>AddGenomeFragments</code>, that is being called now that HGT_COMPETENCE_P is not longer required.</p>
+	</li>
+	<li>
+	<p>\(cStats.h and .cc\) - added <code>m_hgt_inserted_count</code>, and <code>GenomeFragmentInserted_Simplified()</code>, as well as added an output of <code>m_hgt_inserted_count</code> in <code>PrintHGTData</code></p>
+	</li>
+</ul>
+
+<h2>Tuesday, Feb 18, 2014</h2>
+
+<h3>Log 12:30p</h3>
+
+<p>Pushed last night&rsquo;s commit to the HPCC, and set up a set of runs that will test the fitness impact of HGT (as opposed to indels and point mutations alone), while keeping the overall mutation rate the same.</p>
+
+<p>Jobs are currently running on the HPCC.</p>
+
+<pre>
+<code>Job: testing_hgt_implementation/100_Initial_Tests/
+50 runs: control - All mutation rates at default 
+    Point Per Site: 0.0075; 
+    Insertion Per Organism: 0.05;
+    Deletion Per Organism: 0.05.
+50 runs: treatment - Added LGT rate.
+    Point Per Site: 0.0075;
+    Insertion Per Organism: 0.025; 
+    LGT Per Organism: 0.025; 
+    Deletion Per Organism: 0.05;
+</code></pre>
+
+<h4>Planning</h4>
+
+<p>Now that my initial work is complete, next:</p>
+
+<ul>
+	<li>
+	<p>Deprecate all non-reservoir HGT code.</p>
+	</li>
+	<li>
+	<p>Rename all the LGT code to be HGT code.</p>
+	</li>
+	<li>
+	<p>Rename all the LGT options to HGT options.</p>
+	</li>
+	<li>
+	<p>Test the shit out of it.</p>
+	</li>
+</ul>
+
+<h4>Log</h4>
+
+<p>Ok, my initial test runs are complete. Now, I will run my graphing code to pull out the things. :)</p>
+
+<p>First, remember to load the f&rsquo;ing module.</p>
+
+<pre>
+<code><strong><span style="color:#FF0000">caninoko@dev-intel07</span>:<span style="color:#0000FF">~/testing_hgt_implementation/output/100_Initial_Tests/summary</span>$</strong> module load matplotlib
+</code></pre>
+
+<p>Then, run the analysis</p>
+
+<pre>
+<code><strong><span style="color:#FF0000">caninoko@dev-intel07</span>:<span style="color:#0000FF">~/testing_hgt_implementation/output/100_Initial_Tests/summary</span>$</strong> python ~/research_scripts/quickplot.py --error fitnesses.png average.dat.gz 4 &quot;../control_/data/&quot; control average.dat.gz 4 &quot;../treatment_/data/&quot; treatment
+</code></pre>
+
+<p><img alt="" src="./14.048.__-_Notes_-_Week_of_February_17_2014/z8tazb.jpg" style="height:600px; width:800px" /></p>
+
+<p>Well, well, well! I didn&rsquo;t expect THAT to happen! The HGT runs had slightly higher fitness than the control, though they are totally within each other&rsquo;s error bars.</p>
+
+<p>Next step is to make sure that those run a bit longer, and also add a control with un-compensated HGT fitness.</p>
+
+<h4>Log 8p:</h4>
+
+<p>Spent some time setting up and running the runs for the Beacon class, since Jay doesn&rsquo;t have a home directory associated with his account on the hpcc. :/</p>
+
+<h2>Wednesday, Feb 19, 2014</h2>
+
+<h3>Log 10:37a</h3>
+
+<p>Jay&#39;s HPCC runs crashed. Sigh. Resubmitted with longer walltimes and higher memory limits.</p>
+
+<p>In real news, my own runs completed. Yay! Now to produce graphs!</p>
+
+<pre>
+<code><strong><span style="color:#FF0000">caninoko@dev-intel07</span>:<span style="color:#0000FF">~/testing_hgt_implementation/output/100_Initial_Tests/summary</span>$</strong> module load matplotlib
+</code></pre>
+
+<pre>
+<code><strong><span style="color:#FF0000">caninoko@dev-intel07</span>:<span style="color:#0000FF">~/testing_hgt_implementation/output/101_Longer_Controls/summary</span>$</strong> python ~/research_scripts/quickplot.py --ylog -y &quot;Fitness&quot; -x &ldquo;Updates x100&quot; --title &quot;Fitness&quot; --error fitnesses average.dat.gz 4 &quot;../*_control_*/data/&quot; &quot;Control&quot; average.dat.gz 4 &quot;../*_lgtcontrol_*/data/&quot; &quot;Treatment_Not_Controlled_MutRate&quot; average.dat.gz 4 &quot;../*_treatment_*/data/&quot; &quot;Treatment_Controlled_MutRate&quot;
+</code></pre>
+
+<p><img alt="" src="./14.048.__-_Notes_-_Week_of_February_17_2014/aPqzSU.jpg" style="height:600px; width:800px" /></p>
+
+<p>Hard to tell what&rsquo;s going on up there, other than that they all kinda overlap with their error bars. Here&rsquo;s the same, without the --ylog</p>
+
+<p><img alt="" src="./14.048.__-_Notes_-_Week_of_February_17_2014/A3m9bW.jpg" style="height:600px; width:800px" /></p>
+
+<p>So, the order of final fitness is less information results in lowered fitness, while greater information struggles with greater mutation rate, then overcomes it. Meh, so it&rsquo;s all good. Didn&rsquo;t take good notes during the meeting, but Dave said yesterday that with obligate HGTers, he&rsquo;s not surprised that there&rsquo;s faster evolution.</p>
+
+<p>Dave also suggested doing experiments with translocation (or gene duplication) just to see if there was a different effect between it and HGT. So, to see if HGT only helps you by giving you a round-about mechanism for gene-duplication.</p>
+
+<p>The other uncontrolled mechanism is that we don&rsquo;t know how diverse the population is. If the population is not very diverse, the effect should be pretty much exactly that of gene duplication. If it&rsquo;s very diverse, then it *could* be different.</p>
+
+<p>So, next steps</p>
+
+<ul>
+	<li>
+	<p>figure out how to measure diversity. This might already be in one of the data files.</p>
+	</li>
+</ul>
+
+<p>Ok, looking at the data files, nothing that I&rsquo;ve generated so far has that measure. :( And I&rsquo;m having a hard time finding something that will work.</p>
+
+<h2>Thursday, Feb 20, 2014</h2>
+
+<h4>Log 3:12p:</h4>
+
+<p>Trying to figure out how to print out diversity. I&rsquo;m going to try some options and see what comes out. So far, looking at words like genotype, diversity, entropy.</p>
+
+<p><code>Events.cfg</code>:</p>
+
+<pre>
+<code>u 0:100:end PrintData detaildata.dat entropy
+</code></pre>
+
+<p>Results in &quot;\(Data manager unable to find entry &lsquo;entropy&#39;\)&quot;</p>
+
+<h4>Log 12:11a:</h4>
+
+<p>After giving it a fair bit of thought, I think I have a moderate solution to the diversity question.</p>
+
+<p>I did some preliminary runs generating population data, and also recording diversity information using the <code>u 0:100:end PrintPhenotypeData</code> \(events.cfg\) command.</p>
+
+<p>PrintPhenotypeData outputs the following fields of note:</p>
+
+<ul>
+	<li>
+	<p>2: Unique phenotypes (by task done)</p>
+
+	<ul>
+		<li>
+		<p>How many unique combinations of tasks are actually done.</p>
+		</li>
+	</ul>
+	</li>
+	<li>
+	<p>3: Shannon diversity of Phenotypes (by task done)</p>
+
+	<ul>
+		<li>
+		<p>This calculates the Shannon diversity measure (a measure of diversity that takes into account composition) for the population based on the number of phenotypes (2) and their level of representation (frequency in the population).</p>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p>The next thing I did was to dump out population dumps, and then run them through analyze mode, looking at them via the <code>PRINT_DIVERSITY</code> command, which dumps out the following items of note:</p>
+
+<ul>
+	<li>
+	<p>One line per task rewarded (0-8). For each line:</p>
+
+	<ul>
+		<li>
+		<p>2: Number of organisms performing a task</p>
+		</li>
+		<li>
+		<p>3: Number of genotypes performing a task</p>
+
+		<ul>
+			<li>
+			<p>Between 2 and 3, I can calculate the Shannon Diversity fraction for a given task \(((TaskOrgFreq) * (log(TaskOrgFreq)) / log(2))\)</p>
+			</li>
+			<li>
+			<p>I can then add all of them together to get the total Shannon diversity.</p>
+			</li>
+			<li>
+			<p>I need to make sure I&rsquo;m taking the frequency of the right thing.</p>
+
+			<ul>
+				<li>
+				<p>If I take the frequency of genotypes, then I&rsquo;m measuring the diversity of genotypes inside a task.</p>
+				</li>
+				<li>
+				<p>If I take the frequency of organisms doing a task, then I&rsquo;m measuring the diversity of task execution within the whole population</p>
+				</li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+		<li>
+		<p>4: Average distance between genotypes performing this task.</p>
+
+		<ul>
+			<li>
+			<p>Not sure how this is calculated, unless there&rsquo;s an n^2 process</p>
+			</li>
+		</ul>
+		</li>
+		<li>
+		<p>5: Total per-site entropy between genotypes performing task.</p>
+
+		<ul>
+			<li>
+			<p>This one is interesting because it&rsquo;s a measure of the diversity of the genotypes that do this task.</p>
+			</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p>Now, what I&rsquo;d like to do is add some items from <code>PRINT_DIVERSITY</code> to <code>PrintPhenotypeData</code>. Specifically, I want to add total per-site entropy within phenotypes, averaged, or possibly weighted-averaged, by the frequency of each phenotype. What I hope this gives me is an idea of the genetic diversity within a given phenotype. This might be a nice measure of lateral transfer.</p>
+
+<p>So, there are 256 possible phenotypes, when you have 8 possible tasks, of which any task may be on or off. How do you combine 256 possible things?</p>
+
+<p>So, maybe you use shannon information again. You calculate the frequency of a phenotype. You also calculate the diversity of the genomes within that phenotype. One straightfoward way to visualize this is with a bar-chart (for the phenotypic frequency), and then a heat-map for how genetically diverse each phenotype is...</p>
+
+<p>Maybe I don&rsquo;t want to measure it this way, though. What I want is an overall measure that tells me how disparate the organisms are that happen to share phenotypes&hellip; But maybe I don&rsquo;t care about total phenotypes at all? Maybe just the partial-phenotypes of single task is enough to give me a feel for what I want, like within <code>PRINT_DIVERSITY</code>.</p>
+
+<h2>Friday, Feb 21, 2014</h2>
+
+<h3>Log 2:33p</h3>
+
+<p>Chatted with Charles, Josh, Aaron, and Anya about my thoughts for genetic diversity within populations.</p>
+
+<p>I wrote Charles the following email:</p>
+
+<blockquote>
+<p><strong>Subject: Total Population Diversity, based on Genotypic Diversity within a Phenotype</strong><br />
+Is there a measure for this? I can easily generate Shannon diversity measures for genotypes within phenotypes (unique combinations of tasks) [genotypic_diversity], but what would you suggest for combining these measures across a whole population?</p>
+</blockquote>
+
+<blockquote>
+<p>My first thought was to take the individual components of information for each phenotype:<br />
+\(phenotypeA_entropy = phenotypeA_frequency * log(phenotypeA_frequency) / log(2)\)<code>, </code><br />
+and then use them as a factor to normalize the genotypic entropy values within a phenotype:<br />
+\(total_phenotypic_genotypic_diversity = sum( phenotype_entropy_i * genotypic_diversity_i )\)<br />
+But, I&#39;d really rather not make up my own measure if there&#39;s something in the literature that captures what I want. Thoughts?</p>
+</blockquote>
+
+<p>Charles came right by my office, and we discussed it. :D</p>
+
+<p>His thought was to try my approach, and then try weighting as I suggested, or also by population size, and also try not combining, but printing a distribution. Charles seemed pretty excited about these types of analyses. :D</p>
+
+<p>Separately, I chatted with Josh about the issue, and he didn&rsquo;t have any advice off the top of his head, but he suggested I look at what the literature says about population structure. So, googling that, I found a paper that seems to address the issues I&rsquo;m interested in:</p>
+
+<blockquote>
+<p>Nei, Masatoshi. &quot;Analysis of gene diversity in subdivided populations.&quot; <em>Proceedings of the National Academy of Sciences</em> 70.12 (1973): 3321-3323.</p>
+</blockquote>
+
+<p>This paper bases its genetic diversity on Fixation indices or F-statistics. (<a href="http://en.wikipedia.org/wiki/Fixation_index)">http://en.wikipedia.org/wiki/Fixation_index)</a></p>
+
+<p>The important takeaway is that they use weighting to group their diversity information. They define weighting to be 1/s, where s is the number of subpopulations. Which is&hellip; questionable, but not surprising since they aren&rsquo;t using information. I&rsquo;d rather use the diversity measure as my weight factor, or at least the proportion of the population that the subpopulation entails.</p>
+
+<h3>Log 4:18p</h3>
+
+<p>I&rsquo;ve been reading about Levenshtein distances (edit distances), and how the hell I would go about calculating those for populations of genomes (which I would need to do, if I didn&rsquo;t have fixed-length genomes).</p>
+
+<p>Levenshtein is, naively, with dynamic programming, an O(n*m) algorithm. Extrapolate to compare every string to every other string, gives us O((n*m)^2). So, ~n^3. Which is a big old FUCK NO.</p>
+
+<p>But! Edit distance should be locally transitive! If GenotypeA has an edit distance to GenotypeB of 2 (d_AB), and I calculate that GenotypeB has an edit distance to GenotypeC of 2 (d_BC), then the distance (d_AC) between GenotypeA and GenotypeC is bounded between (d_AB - dBC) and d_AB + dBC), because there is an edit path from A-&gt;C, via A-&gt;B, then A-&gt;C). The bounding is because the path from A-&gt;C via B could be via reversions, making them theoretically identical. BUT, this case can be excluded trivially by doing a simple equals comparison of A and C.</p>
+
+<p>SO, this implies that I don&rsquo;t actually need to measure the distance of every genome to every other genome, but some subset therein. I can just do the above to create clusters of genomes that are within edit bounds of each other.</p>
+
+<p>AND, I can use the algorithm from section 4.1:</p>
+
+<blockquote>
+<p>Andoni, Alexandr, and Krzysztof Onak. &quot;Approximating edit distance in near-linear time.&quot; <em>SIAM Journal on Computing</em> 41.6 (2012): 1635-1648.</p>
+</blockquote>
+
+<p>To distinguish between strings with large edit distance and small edit distance. This algorithm is sub-linear, so if distances are large, I can move on until I find a small edit distance in a categorized cluster.</p>
+
+<p>So, a basic algorithm.</p>
+
+<p>G1 -&gt; do sub-linear approximation to roughly categorize distance from G1 to all G</p>
+
+<h2>Saturday, Feb 22, 2014</h2>
+
+<h3>Log 8:19p</h3>
+
+<p>Whipped up a python proof of concept script to do levenshtein distance in various ways. Will implement the approximate levenshtein, as well as the sub-linear time approximation mechanism.</p>
+
+<p>&nbsp;</p>

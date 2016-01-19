@@ -1,0 +1,52 @@
+<h1>Week of May 05, 2014</h1>
+
+<h2>Tuesday, May 06, 2014</h2>
+
+<h3>Mate Discrimination - Stickleback Meeting - 11am</h3>
+
+<ul>
+	<li>
+	<p>attending: Jason (Keagy), Jenny (Boughman) at MSU; Hans (Hofmann) and Molly (Cummings) at other UT. Charles (Ofria) and Jay (Bundy) are not present.</p>
+	</li>
+	<li>
+	<p>two replicates (priest and paxton lakes), two sets of closely related species (benthic vs. limnetic)</p>
+	</li>
+	<li>
+	<p>comparing gene expression</p>
+	</li>
+	<li>
+	<p>description of experimental design</p>
+	</li>
+</ul>
+
+<h3>&nbsp;</h3>
+
+<h3>Log - 2:30p</h3>
+
+<ul>
+	<li>
+	<p>setting up basic experiments.</p>
+
+	<ul>
+		<li>
+		<p>pulled down the latest version of avida with the fixes in place for the sexual selection experiments</p>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<h2>&nbsp;</h2>
+
+<h2>Wednesday, May 8, 2014</h2>
+
+<h3>Log - Midnight (12:04a) (night of the 7th :P)</h3>
+
+<p>Still completely no success with submitting jobs to the HPCC. Nothing ever queues. Could it be that thing that Tim mentioned about all the jobs running under Brian Baer&rsquo;s ID? Fuck them, if they are doing that. I should get in touch.</p>
+
+<p>Anyway, Kendall explained how to post jobs to Edi (our home server) using Batch. So, like so:</p>
+
+<pre>
+<code><strong><span style="color:#40E0D0">rosiec@edi</span>:<span style="color:#0000FF">~</span>$</strong> val=treatment_punish; for i in {100001..100030}; do cp -r config/ output/$val&quot;_&rdquo;$i ; cd output/$val&rdquo;_&quot;$i ; echo ./avida -s $i -set EVENT_FILE events_punish.cfg | batch ; cd .. ; cd .. ; echo ; done
+</code></pre>
+
+<p>And it seems to work! Hooray! We&rsquo;ll see if it overwhemls everything.</p>

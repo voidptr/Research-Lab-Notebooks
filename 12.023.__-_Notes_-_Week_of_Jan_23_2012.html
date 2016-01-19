@@ -1,0 +1,366 @@
+<h1>Week of January 23, 2012</h1>
+
+<h2>Monday 1/23/12</h2>
+
+<h3>2:17 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Delightfully enough, over half of the 060 HPC jobs were walltime killed. Resubmitted with longer wall times. Sigh.</li>
+	<li>Also resubmitted reanalysis jobs (059 try 3). Hopefully it will get queued before forever goes by. :/</li>
+</ul>
+
+<p>PLAN:</p>
+
+<ul>
+	<li>Will try to download/salvage what I can from the dead 060 jobs. It looks like the punishment runs were able to finish before being killed, along with a handful of the control and no punishment jobs. I can pull the data down for those, and go from there.</li>
+</ul>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Playing with perl command line scripting. Just did a nice split coming from an ls. Could easily be used any input.</li>
+</ul>
+
+<pre>
+<strong>[<span style="color:#FF0000">caninoko@gateway</span>]:[62]:[<span style="color:#0000FF">/mnt/scratch/caninoko/060</span>]:$</strong> ls -la *.tar.gz | perl -n -e &#39;chomp; @content = split(/ /); if (int(@content[7]) &lt; 300) { print &quot;rm @content[10];\n&quot;; }&#39;
+
+rm noreward_intertwined_600004.tar.gz;
+rm noreward_intertwined_600006.tar.gz;
+rm noreward_intertwined_600007.tar.gz;
+rm noreward_intertwined_600009.tar.gz;
+rm noreward_intertwined_600010.tar.gz;
+rm noreward_intertwined_600011.tar.gz;
+rm ;
+rm noreward_intertwined_600015.tar.gz;
+rm ;
+rm noreward_intertwined_600017.tar.gz;
+rm noreward_intertwined_600018.tar.gz;
+rm noreward_intertwined_600019.tar.gz;
+rm noreward_intertwined_600021.tar.gz;
+rm noreward_intertwined_600022.tar.gz;
+rm noreward_intertwined_600023.tar.gz;
+rm noreward_intertwined_600024.tar.gz;
+rm noreward_intertwined_600025.tar.gz;
+rm noreward_intertwined_600026.tar.gz;
+rm noreward_intertwined_600027.tar.gz;
+rm noreward_intertwined_600028.tar.gz;
+rm ;
+rm noreward_separated_600001_bak.tar.gz;
+rm ;
+rm noreward_separated_600003.tar.gz;
+rm noreward_separated_600004.tar.gz;
+rm noreward_separated_600005.tar.gz;
+rm noreward_separated_600006.tar.gz;
+rm noreward_separated_600007.tar.gz;
+rm noreward_separated_600008.tar.gz;
+rm noreward_separated_600010.tar.gz;
+rm noreward_separated_600011.tar.gz;
+rm noreward_separated_600012.tar.gz;
+rm noreward_separated_600015.tar.gz;
+rm noreward_separated_600016.tar.gz;
+rm noreward_separated_600017.tar.gz;
+rm ;
+rm ;
+rm ;
+rm noreward_separated_600022.tar.gz;
+rm ;
+rm ;
+rm ;
+rm noreward_separated_600028.tar.gz;</pre>
+
+<ul>
+	<li>Copied over the data in the usual way.</li>
+	<li>Performing analysis as below:</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/060</span>$</strong> rm separated_noreward_modularity.csv; for i in noreward_sep*; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 8 modularity-???.dat* modularity-????.dat* modularity-?????.dat* &gt;&gt; ../../separated_noreward_modularity.csv; cd ../../; done
+
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/060</span>$</strong> rm separated_noreward_modularity_only_both.csv; for i in noreward_sep*; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 8 modularity_*-???.dat* modularity_*-????.dat* modularity_*-?????.dat* &gt;&gt; ../../separated_noreward_modularity_only_both.csv; cd ../../; done</pre>
+
+<ul>
+	<li>Etc.</li>
+	<li>Modified plot_from_csv.py to accept a &ndash;e argument which directs it to do every-other line as dashed, while keeping the same colors, in pairs.</li>
+	<li>Generated the plot (from very little data), showing the differences between the whole population modularity fluctuations vs only those organisms that are doing both tasks.</li>
+</ul>
+
+<p><img src="./12.023.__-_Notes_-_Week_of_Jan_23_2012/image001.png" style="height:308px; width:410px" /></p>
+
+<p><img src="./12.023.__-_Notes_-_Week_of_Jan_23_2012/image003.png" style="height:308px; width:410px" /></p>
+
+<h2>Tuesday 1/24/12</h2>
+
+<h3>12:13 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Job 060 (resubmitted) was close enough to finished that I&rsquo;m just pulling the data and graphing it. Currently zipping.</li>
+	<li>Resubmitted Job 059 because it turns out that a walltime of 12 hours was not long enough. Made it 24 and resubmitted all the jobs.</li>
+</ul>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Copied the control data from 060_b and graphed it against the data from 060.</li>
+</ul>
+
+<pre>
+<strong>[<span style="color:#EE82EE">rosiec@caninoko-2</span>]:[17]:[<span style="color:#0000FF">/Volumes/Atlantis/research/Devolab Research/evolution_of_modularity/raw_data/060</span>]:$</strong> python ../../../scripts/generate_graphs_from_raw_data/plot_from_csv.py -o -e -t &quot;Separated - Population vs Orgs executing both tasks&quot; -x &quot;Updates x50&quot; -y &quot;Modularity&quot; ../60_b/comparitive_modularity__separated__pop_vs_two_task.png ../60_b/separated_control_modularity.csv ../60_b/separated_control_modularity_only_both.csv separated_noreward_modularity.csv separated_noreward_modularity_only_both.csv separated_punish_modularity.csv separated_punish_modularity_only_both.csv
+
+<strong>[<span style="color:#EE82EE">rosiec@caninoko-2</span>]:[17]:[<span style="color:#0000FF">/Volumes/Atlantis/research/Devolab Research/evolution_of_modularity/raw_data/060</span>]:$</strong> python ../../../scripts/generate_graphs_from_raw_data/plot_from_csv.py -o -e -t &quot;Intertwined - Population vs Orgs executing both tasks&quot; -x &quot;Updates x50&quot; -y &quot;Modularity&quot; ../60_b/comparitive_modularity__intertwined__pop_vs_two_task.png ../60_b/intertwined_control_modularity.csv ../60_b/intertwined_control_modularity_only_both.csv intertwined_noreward_modularity.csv intertwined_noreward_modularity_only_both.csv intertwined_punish_modularity.csv intertwined_punish_modularity_only_both.csv</pre>
+
+<p><img src="./12.023.__-_Notes_-_Week_of_Jan_23_2012/image005.png" style="height:308px; width:410px" /></p>
+
+<p><img src="./12.023.__-_Notes_-_Week_of_Jan_23_2012/image007.png" style="height:308px; width:410px" /></p>
+
+<ul>
+	<li>Produced bash script to split up population (detail.spop) into organisms, and then calculating the modularities for each. Will graph out using a scatter plot thing.</li>
+</ul>
+
+<h3>3:33 PM</h3>
+
+<p>TODO:</p>
+
+<ul>
+	<li>Sign up for Terra Grid account. :/</li>
+	<li>Write this crap up</li>
+	<li>Generate organismal scatter graph for each sample time.</li>
+	<li>Apply for EEBB.</li>
+	<li>Prepare robots for USA Science Fair
+	<ul style="list-style-type:circle">
+		<li>Update poster?</li>
+	</ul>
+	</li>
+</ul>
+
+<p>Lab Mtg Notes:</p>
+
+<ul>
+	<li>For paper, consider the effect of switching environments on genetic architecture
+	<ul style="list-style-type:circle">
+		<li>Functional modularity
+		<ul>
+			<li>Little effect on functional modularity. Stuff does not overlap any less if it doesn&rsquo;t need to.</li>
+			<li>Functional non-modularity is strongly selected for, for efficiency, regardless of treatment.</li>
+		</ul>
+		</li>
+		<li>Physical modularity
+		<ul>
+			<li>Punishment has big effect on physical modularity vs control
+			<ul>
+				<li>Scatter effect. Hypothesis: scatter is maintained because it is easier to evolve back to a task when there is more space for an instruction to appear.</li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Find a measure of physical modularity in the modularity analyze mode output.</li>
+	<li>Produce a figure that shows physical/functional modularity effects.
+	<ul style="list-style-type:circle">
+		<li>Foursquare?</li>
+		<li>Two axes, placement of runs, treatments by color? See where they cluster.</li>
+	</ul>
+	</li>
+	<li>Show figures of scatter effect</li>
+	<li>Focus on term &ldquo;entanglement&rdquo; for clarity, rather than using modularity. So, flip the graph on its head.</li>
+	<li>Focus on dashed lines &ndash; ignore whole population</li>
+	<li>Include discussions of scatter (because of higher chance for stuff to evolve back)</li>
+	<li>Include in graph a line showing how many organisms are doing 0 1 or 2 tasks (on top of above graph)</li>
+	<li>Paper guide: First limited Tim Cooper Paper &ndash; 2000 or 2002 &ndash; Alife</li>
+	<li>Alife 13 website for Latex paper</li>
+	<li>Short papers! (&lt; 8 pages)</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Wednesday 1/25/12</h2>
+
+<h3>2:02 AM</h3>
+
+<p>THOUGHTS:</p>
+
+<ul>
+	<li>For blog post article - title
+	<ul style="list-style-type:circle">
+		<li>How changing fitness landscapes can reshape genetic architectures</li>
+		<li>The role of fluctuating fitness landscapes on evolvability</li>
+	</ul>
+	</li>
+	<li>Think about hypotheses
+	<ul style="list-style-type:circle">
+		<li>Does scatter effect potentiate evolution by spreading out the components of tasks such that they can more easily be coopted by new tasks?
+		<ul>
+			<li>Does scatter improve evolvability?</li>
+			<li>Do fluctuating landscapes allow for crossing of fitness valleys to fitness areas with better evolvability?</li>
+			<li>There is a definite evolutionary pressure to compact things as close as possible. If so, why do we see the opposite patterns in natural organismal genomes?</li>
+			<li>Periods of flux create rapid evolutionary adaptation, and periods of calm result in compact and efficient genomes.</li>
+			<li>Either way, the fluctuating fitness landscape allows more easy crossing of fitness valleys.</li>
+			<li><u>Punishment fitness pressures create environments that encourage and maintain the scattering of genomic components, breaking up clumps of functionality</u>
+			<ul>
+				<li><u>This can be done without the attendant comparative fitness drop because everyone suffers in the environment.</u></li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+		<li>Test this by starting with clumped together tasks. Evolve competition against evolved scattered tasks. See which lineages more quickly develop new tasks.</li>
+	</ul>
+	</li>
+	<li>A-Life Paper
+	<ul style="list-style-type:circle">
+		<li>Fluctuating fitness landscapes as bridges over fitness valleys</li>
+		<li>Competing pressures
+		<ul>
+			<li>Compactness and efficiency vs. Evolvability</li>
+		</ul>
+		</li>
+		<li>Define functional modularity, physical modularity, entanglement&hellip; different word? Overlap? Intertwine, Interweave, <strong>Compound</strong>, Conglomerate, Aggregate, Blend, Cluster, Assemblage, <strong>Mixture</strong>, Conglomeration, Glom, Admixture. Compounding, Convergence, <strong>Combine</strong>, Combination, Meld, Intermingle, <strong>Merge</strong>, Couple, Join, Unite.</li>
+	</ul>
+	</li>
+</ul>
+
+<h3>4:56 PM</h3>
+
+<p>STATUS</p>
+
+<ul>
+	<li>Made a bash command to look through the .tar.gz files in a directory, and tar up the directories that aren&rsquo;t already there.</li>
+</ul>
+
+<pre>
+<strong>[<span style="color:#FF0000">caninoko@dev-intel07</span>]:[95]:[<span style="color:#0000FF">/mnt/scratch/caninoko/060__b</span>]:$</strong> for i in *_??????; do if [ ! -e $i.tar.gz ] ; then tar -cvf $i.tar.gz $i ; else : ; fi; done</pre>
+
+<ul>
+	<li>Alternatively, move the detail files out to the populations/ directory before tar-ing up.</li>
+</ul>
+
+<pre>
+<strong>[<span style="color:#FF0000">caninoko@dev-intel07</span>]:[95]:[<span style="color:#0000FF">/mnt/scratch/caninoko/060__b</span>]:$</strong> mkdir populations/; for i in *_??????; do if [ ! -e $i.tar.gz ] ; then mkdir $i/data/populations/; mv $i/data/detail* $i/data/populations/; mv $i/data/populations/ ./populations/$i; tar -cvf $i.tar.gz $i ; else : ; fi; done</pre>
+
+<ul>
+	<li>Found a nice set of bash references for if/then
+	<ul style="list-style-type:circle">
+		<li><a href="http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_07_01.html">http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_07_01.html</a></li>
+		<li><a href="http://tldp.org/LDP/abs/html/special-chars.html">http://tldp.org/LDP/abs/html/special-chars.html</a></li>
+	</ul>
+	</li>
+	<li>Submitted job 059__batch3 with a 32 hour walltime cutoff to catch those 40 jobs that STILL didn&rsquo;t finish. :/</li>
+</ul>
+
+<p>TODO</p>
+
+<ul>
+	<li>Gather together the robots for Darwin day &ndash; Feb 12.</li>
+</ul>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Graphed out the two-task modularity from run 060 (median only, and all runs)</li>
+</ul>
+
+<p><img src="./12.023.__-_Notes_-_Week_of_Jan_23_2012/image009.png" style="height:151px; width:202px" /><img src="./12.023.__-_Notes_-_Week_of_Jan_23_2012/image011.png" style="height:151px; width:202px" /></p>
+
+<ul>
+	<li>If you include the individual runs, you can see that the punishment data is very noisy. In fact, I suspect it&rsquo;s that there simply aren&rsquo;t enough individuals doing both tasks at the peaks of the punishment phase to give a coherent picture of what&rsquo;s going on.</li>
+</ul>
+
+<p>TODO:</p>
+
+<ul>
+	<li><s>Figure out how to display phases as background for the graph.</s></li>
+	<li><s>Figure out how to similarly graph the number of individuals on the opposite axis. Maybe do it as a fraction? That would be way easier.</s></li>
+</ul>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Submitted job 061 which reanalyzes jobs 056, 057, and 060b, calculating the population and two-task modularity of each organism individually. This information can then be graphed as a cloud for each sample point (50x updates) for each run.</li>
+</ul>
+
+<p>SUMMARY &ndash; current items of interest:</p>
+
+<ul>
+	<li>056_Modularity_Over_Time__XOR_EQU_start_sooner
+	<ul style="list-style-type:circle">
+		<li>Data Generation: 1000 update cycle, separated ancestor. Symmetrical phases (500x2)</li>
+		<li>Analyze: Population Modularity</li>
+	</ul>
+	</li>
+	<li>057_Modularity_Over_Time__XOR_EQU_interwined
+	<ul style="list-style-type:circle">
+		<li>Data Generation: 1000 update cycle, intertwined ancestor. Symmetrical phases (500x2)</li>
+		<li>Analyze: Population Modularity</li>
+	</ul>
+	</li>
+	<li>060b_Modularity_Over_Time__XOR_EQU_longer_recovery_only
+	<ul style="list-style-type:circle">
+		<li>Data Generation: 1500 update cycle, both separated and intertwined ancestors. 500u treatment phase, 1000u recovery phase.</li>
+		<li>Analyze: Population Modularity; Two-Task Modularity</li>
+	</ul>
+	</li>
+	<li>059_Reanalyze_056_057
+	<ul style="list-style-type:circle">
+		<li>Data Generation: None</li>
+		<li>Analyze: Two-Task Modularity (of 056 and 057)</li>
+	</ul>
+	</li>
+	<li>061_Reanalize_056_057_060b
+	<ul style="list-style-type:circle">
+		<li>Data Generation: None</li>
+		<li>Analyze: Organism Modularity; Two-Task Organism Modularity (of 056, 057, and 060b)</li>
+	</ul>
+	</li>
+</ul>
+
+<h2>&nbsp;</h2>
+
+<h2>Thursday 1/26/12</h2>
+
+<h3>3:54 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>HPC is down. Further, some of my runs seem to have crashed. All of 061 for 057 crashed immediately, while 056 seemed ok. So, something directory specific (probably during the copy part) is probably going on.</li>
+	<li>Will soon start writing for blog post. Sigh. At least my figures and analyzed data are local.</li>
+</ul>
+
+<p>TODO:</p>
+
+<ul>
+	<li><s>When HPC comes back up, restart runs that were affected</s></li>
+	<li><s>Fix 057 (and maybe 060b) sources in run 061.</s></li>
+</ul>
+
+<h3>9:49 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Made up first draft of Beacon Blog post. Will revise tomorrow and turn it in. On time! :P</li>
+</ul>
+
+<h2>&nbsp;</h2>
+
+<h2>Saturday 1/28/12</h2>
+
+<h3>8:02 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Job 061 seems to be finished. Moving and copying data back.</li>
+</ul>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Dang 061 halfway failed. Fixed, and resubmitted.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
+	<li>Tarring up and copying back data that I can, which is 056 and 057. Sadly, it looks like chunks of 056 didn&rsquo;t finish in 32 hours either. :(</li>
+</ul>
+
+<p>&nbsp;</p>

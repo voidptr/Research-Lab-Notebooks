@@ -1,0 +1,104 @@
+<h1>&shy;Week of July 16, 2012</h1>
+
+<h2>Friday 7/20/12</h2>
+
+<h3>11:51 AM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Putting together my poster for Saturday. !!</li>
+	<li>In order to recreate some figures, here we go.</li>
+</ul>
+
+<pre>
+<span style="color:#EE82EE"><strong>rosiec@13-42-76</strong></span><strong>:<span style="color:#0000FF">/Volumes/rosiec/__research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes</span>$</strong> python ../../../../../scripts/graph_generation/bar_chart_from_csv.py --error --groups 3 --xticks &quot;Static (control),Benign,Hostile&quot; --columns &quot;1,2,3&quot; --legend &quot;Fluctuating Task Only,Backbone Task Only,Both Tasks&quot; --pair --title &quot;Vestigial Site Count by Task
+
+and Treatment Environment&quot; --ylabel &quot;Vestigial Sites&quot; --xlabel &quot;Treatment Environment&quot; --separator &quot;,&quot; degenerate_sites__intertwined___nototal.png c*_degenerate_site_count.csv n*_degenerate_site_count.csv p*_degenerate_site_count.csv
+
+<span style="color:#EE82EE"><strong>rosiec@13-42-76</strong></span><strong>:<span style="color:#0000FF">/Volumes/rosiec/__research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes</span>$</strong> python ../../../../../scripts/graph_generation/bar_chart_from_csv.py --error --groups 3 --xticks &quot;Static (control),Benign,Hostile&quot; --columns &quot;1,2,3&quot; --legend &quot;Fluctuating Task Only,Backbone Task Only,Both Tasks&quot; --pair --title &quot;Functional Site Count by Task
+
+and Treatment Environment&quot; --ylabel &quot;Functional Sites&quot; --xlabel &quot;Treatment Environment&quot; --separator &quot;,&quot; active_sites__intertwined___nototal.png c*_active_site_count.csv n*_active_site_count.csv p*_active_site_count.csv</pre>
+
+<p><img src="./12.198.__-_Notes_-_Week_of_July_16_2012/21veHo.png" style="height:193px; width:258px" /><img src="./12.198.__-_Notes_-_Week_of_July_16_2012/dxXKLa.png" style="height:162px; width:216px" /></p>
+
+<p>&nbsp;</p>
+
+<p><img src="./12.198.__-_Notes_-_Week_of_July_16_2012/VWzNsN.png" style="height:211px; width:504px" /></p>
+
+<p>&nbsp;</p>
+
+<p><img src="./12.198.__-_Notes_-_Week_of_July_16_2012/RXtGxc.png" style="height:212px; width:506px" /></p>
+
+<p>&nbsp;</p>
+
+<h2>Saturday 7/21/12</h2>
+
+<h3>11:33 AM</h3>
+
+<ul>
+	<li>Finishing up my poster</li>
+</ul>
+
+<pre>
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span><strong>:<span style="color:#0000FF">/Volumes/rosiec/__research/devolab_research/evolution_of_modularity/raw_data/082/populations/punish_intertwined_820001</span></strong>$ python ../../../../../scripts/graph_generation/plot_by_site_entropy.py --show --title &quot;Hostile Treatment&quot; by_site_entropy__hostile__for_poster.png by_site_entropy.csv
+
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span><strong>:<span style="color:#0000FF">/Volumes/rosiec/__research/devolab_research/evolution_of_modularity/raw_data/082/populations/noreward_intertwined_820001</span></strong>$ python ../../../../../scripts/graph_generation/plot_by_site_entropy.py --show --title &quot;Benign Treatment&quot; by_site_entropy__benign__for_poster.png by_site_entropy.csv</pre>
+
+<p><img src="./12.198.__-_Notes_-_Week_of_July_16_2012/xWq70G.png" style="height:264px; width:506px" /></p>
+
+<p><img src="./12.198.__-_Notes_-_Week_of_July_16_2012/oDZ8f3.png" style="height:264px; width:506px" /></p>
+
+<p><img src="./12.198.__-_Notes_-_Week_of_July_16_2012/y9fJQX.png" style="height:264px; width:506px" /></p>
+
+<ul>
+	<li>Flame graphs.</li>
+</ul>
+
+<pre>
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span><strong>:<span style="color:#0000FF">/Volumes/rosiec/__research/devolab_research/evolution_of_modularity/raw_data/082/populations/control_intertwined_820001</span></strong>$ python ../../../../../scripts/graph_generation/plot_phylogenetic_depth_abundances_over_time.py --title &quot;Control Treatment&quot; --most_recent_coalescence=&quot;../../INTERTWINED/control_intertwined_820001/data/stats.dat,10&quot; --show phylo_depth_abundance_over_time__coalescence__control__forposter.png phylo_depth_abundances_over_time.csv
+
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span><strong>:<span style="color:#0000FF">/Volumes/rosiec/__research/devolab_research/evolution_of_modularity/raw_data/082/populations/noreward_intertwined_820001</span></strong>$ python ../../../../../scripts/graph_generation/plot_phylogenetic_depth_abundances_over_time.py --title &quot;Benign Treatment&quot; --most_recent_coalescence=&quot;../../INTERTWINED/noreward_intertwined_820001/data/stats.dat,10&quot; --show phylo_depth_abundance_over_time__coalescence__benign__forposter.png phylo_depth_abundances_over_time.csv
+
+<strong><span style="color:#FFD700">rosiec@Loki</span>:<span style="color:#0000FF">/Volumes/rosiec/__research/devolab_research/evolution_of_modularity/raw_data/082/populations/punish_intertwined_820001</span></strong>$ python ../../../../../scripts/graph_generation/plot_phylogenetic_depth_abundances_over_time.py --title &quot;Hostile Treatment&quot; --most_recent_coalescence=&quot;../../INTERTWINED/punish_intertwined_820001/data/stats.dat,10&quot; --show phylo_depth_abundance_over_time__coalescence__hostile__forposter.png phylo_depth_abundances_over_time.csv</pre>
+
+<p>&nbsp;</p>
+
+<p><img src="./12.198.__-_Notes_-_Week_of_July_16_2012/K8yCxr.png" style="height:257px; width:506px" /></p>
+
+<p><img src="./12.198.__-_Notes_-_Week_of_July_16_2012/lzD7Ne.png" style="height:257px; width:506px" /></p>
+
+<p><img src="./12.198.__-_Notes_-_Week_of_July_16_2012/n96PQM.png" style="height:258px; width:506px" /></p>
+
+<ul>
+	<li>Lineage maps.</li>
+</ul>
+
+<pre>
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span><strong>:<span style="color:#0000FF">/Volumes/rosiec/__research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/control_intertwined_820001/task_mappings</span></strong>$ python ../../../../../../scripts/analysis/extract_task_mappings.py --lineage_map -a complete_lineage_map.csv -v 5 6 8 ../data/lineage.dat ../data/phenotype/
+
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span><strong>:<span style="color:#0000FF">/Volumes/rosiec/__research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/control_intertwined_820001/task_mappings</span></strong>$ python ../../../../../../scripts/graph_generation/draw_map_task.py whole_taskmap.png lineage_map__complete_lineage_map.csv__values_only.csv</pre>
+
+<p>&nbsp;</p>
+
+<p><img src="./12.198.__-_Notes_-_Week_of_July_16_2012/mJVgpS.png" style="height:180px; width:240px" /><img src="./12.198.__-_Notes_-_Week_of_July_16_2012/YoZwnB.png" style="height:178px; width:237px" /></p>
+
+<p><img src="./12.198.__-_Notes_-_Week_of_July_16_2012/zuqxwr.png" style="height:340px; width:452px" /></p>
+
+<ul>
+	<li>Mutational landscaping</li>
+</ul>
+
+<pre>
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span><strong>:<span style="color:#0000FF">/Volumes/rosiec/__research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes</span></strong>$ python ../../../../../scripts/graph_generation/bar_chart_from_csv.py --groups 3 --xticks &quot;Control,Benign,Hostile&quot; --columns &quot;3&quot; --pair --title &quot;Fraction of Second-step Mutants
+
+that Regained Fluctuating Task&quot; --ylabel &quot;Fraction&quot; --xlabel &quot;Treatment&quot; --separator &quot;,&quot; --error --show twostep_does_fluct.png c*_*/mutation_landscape_metrics.csv n*_*/mutation_landscape_metrics.csv p*_*/mutation_landscape_metrics.csv &amp;
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span><strong>:<span style="color:#0000FF">/Volumes/rosiec/__research/devolab_research/evolution_of_modularity/raw_data/085</span></strong>$ python ../../../scripts/graph_generation/bar_chart_from_csv.py --groups 3 --xticks &quot;Control,Control,Hostile&quot; --columns &quot;3&quot; --pair --title &quot;Fraction of Second-step Mutants
+
+that Regained Fluctuating Task&quot; --ylabel &quot;Fraction&quot; --xlabel &quot;Treatment&quot; --separator &quot;,&quot; --show --error two_step__regained_fluct.png c*_i/mutation_landscape_metrics.csv n*_i/mutation_landscape_metrics.csv p*_i/mutation_landscape_metrics.csv &amp;</pre>
+
+<p><img src="./12.198.__-_Notes_-_Week_of_July_16_2012/OuWkjY.png" style="height:380px; width:506px" /></p>
+
+<p><img src="./12.198.__-_Notes_-_Week_of_July_16_2012/HXe5YP.png" style="height:380px; width:506px" /></p>
+
+<p>&nbsp;</p>

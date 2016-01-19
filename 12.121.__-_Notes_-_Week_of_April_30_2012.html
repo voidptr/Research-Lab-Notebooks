@@ -1,0 +1,288 @@
+<h1>Week of April 30, 2012</h1>
+
+<h2>Monday 4/30/12</h2>
+
+<h3>3:03 PM</h3>
+
+<p>DEVO LAB MTG NOTES:</p>
+
+<ul>
+	<li>Measuring fitness in e-coli
+	<ul>
+		<li><img src="./12.121.__-_Notes_-_Week_of_April_30_2012/a.png" style="height:51px; width:73px" /></li>
+	</ul>
+	</li>
+	<li>A &amp; B are different populations</li>
+	<li>f is final population</li>
+	<li>i is initial population</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>11:34 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Prepared weekly status updated for Charles. I&rsquo;m appending it to the end of that week&rsquo;s notebook, and printing that portion out as a PDF for Charles. We&rsquo;ll see what he thinks.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Tuesday 5/1/12</h2>
+
+<h3>3:30 PM</h3>
+
+<p>OFRIALAB MTG NOTES:</p>
+
+<ul>
+	<li>Showed my figures, and re-explained my research objectives.
+	<ul>
+		<li>Explained my interests with regard to the reservoir of neutral mutations that maight become non-neutral when pressed into service in getting a task back or not.</li>
+	</ul>
+	</li>
+	<li>Explained my troubles with creating a control to compare task re-gain.
+	<ul>
+		<li>LUIS: suggested taking the single-step mutants that LOST the fluctuating task, and then go out from them to see what fraction of their mutants REGAINED the task.</li>
+	</ul>
+	</li>
+	<li>Survey the neutral regions to see what kinds of instructions are present.
+	<ul>
+		<li>Do a histogram of the instruction counts. :D</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Wednesday 5/2/12</h2>
+
+<h3>4:45 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Spent some time playing with iPython notebook as a potential replacement to Word in my current lab notebook scheme. Ultimately, while it is appealing to run all my python in-line, because it is strictly local, I can&rsquo;t track all the things I do in different systems, especially on the HPCC, for managing my shit. So, at least for now, close but no cigar.</li>
+	<li>However, I also finally spent some time looking at LaTeX equation writing, and found a little web page that lets you write some latex and renders the equation for you: <a href="http://www.codecogs.com/latex/eqneditor.php">http://www.codecogs.com/latex/eqneditor.php</a>. It&rsquo;s not super pretty, but see above, it gets the job done.</li>
+</ul>
+
+<p>PLAN:</p>
+
+<ul>
+	<li>Per my previous comments, I&rsquo;m going to extract all the single-step mutants that lost the fluctuating task and landscape each of them. This may take a fair amount of processing power. :/</li>
+</ul>
+
+<p>LOG:</p>
+
+<ul>
+	<li>First, I&rsquo;m extracting all the single-step mutants that lost their shit.
+	<ul>
+		<li>Identify those ancestors that did the task in the first place, so as to make sure it was actually LOST. This should be most of the ancestors, except for one or two in punishment, but better safe than sorry.</li>
+	</ul>
+	</li>
+</ul>
+
+<pre>
+<strong><span style="color:#EE82EE"><strong>rosiec@George-Hammond</strong></span></strong>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes/control_intertwined</strong></span></strong>$ cat ancestors_all.dat | grep -n &quot;1 1 2&quot;</pre>
+
+<ul>
+	<li>Then, seeing as every ancestor did the task, extract all the mutants that were viable, then extract all the mutants that LOST the task.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#EE82EE"><strong>rosiec@George-Hammond</strong></span></strong>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes/control_intertwined</strong></span></strong>$ rm *_viable_only.dat ; for i in mutations_*_all__data_only.dat ; do echo $i ; python ../../../../../../scripts/common/extract_line_on_condition.py 2 &quot; &gt; 0&quot; $i &gt;&gt; $i&quot;_viable_only.dat&quot; ; done
+
+<strong><span style="color:#EE82EE"><strong>rosiec@George-Hammond</strong></span></strong>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes/control_intertwined</strong></span></strong>$ rm *_lost_a_task_only.dat ; for i in mutations_*_viable_only.dat ; do echo $i ; python ../../../../../../scripts/common/extract_line_on_condition.py 5 &quot; == 1&quot; $i &gt;&gt; $i&quot;_lost_a_task_only.dat&quot; ; done
+
+<strong><span style="color:#EE82EE"><strong>rosiec@George-Hammond</strong></span></strong>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes/control_intertwined</strong></span></strong>$ rm *_lost_fluct_only.dat ; for i in mutations_*_lost_a_task_only.dat ; do echo $i ; python ../../../../../../scripts/common/extract_line_on_condition.py 4 &quot; == 0&quot; $i &gt;&gt; $i&quot;_lost_fluct_only.dat&quot; ; done</pre>
+
+<ul>
+	<li>And bleh, the much easier way to do it:</li>
+</ul>
+
+<pre>
+<strong><span style="color:#EE82EE"><strong>rosiec@George-Hammond</strong></span></strong>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes/control_intertwined</strong></span></strong>$ rm *__lost_fluct_only_grep.dat ; for i in mutations_*_all__data_only.dat ; do echo $i ; cat $i | grep &quot; 1 0 1 &quot; &gt;&gt; $i&quot;__lost_fluct_only_grep.dat&quot; ; done</pre>
+
+<ul>
+	<li>And finally the alternative way to extract those items that do have the signature we want, if not all the ancestors do the task:</li>
+</ul>
+
+<pre>
+<strong><span style="color:#EE82EE"><strong>rosiec@George-Hammond</strong></span></strong>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes/punish_intertwined</strong></span></strong>$ rm ancestors_all.dat ; for i in {0..50}; do cat ancestor_$i.dat &gt;&gt; ancestors_all.dat ; done
+
+<strong><span style="color:#EE82EE"><strong>rosiec@George-Hammond</strong></span></strong>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes/punish_intertwined</strong></span></strong>$ numbers=(`cat ancestors_all.dat | grep -no &quot;1 1 2&quot; | grep -o [0-9]* | xargs`)
+
+<strong><span style="color:#EE82EE"><strong>rosiec@George-Hammond</strong></span></strong>:<strong><span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes/punish_intertwined</span></strong>$ rm *__lost_fluct_only_grep.dat; for i in ${numbers[@]} ; do (( val = ($i - 1) )) ; echo mutations_$val&quot;_all__data_only.dat&quot; ; cat mutations_$val&quot;_all__data_only.dat&quot; | grep &quot; 1 0 1 &quot; &gt;&gt; mutations_$val&quot;__lost_fluct_only_grep.dat&quot; ; done</pre>
+
+<ul>
+	<li>So, now, after having run this, in every case, there are a stack of mutant/ancestors to look at, named mutations_n__lost_fluct_only_grep.dat. Let&rsquo;s move them out to a second order directory.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#EE82EE"><strong>rosiec@George-Hammond</strong></span></strong>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes/control_intertwined</strong></span></strong>$ mkdir second_step_mutation_ancestors; mv *grep.dat second_step_mutation_ancestors/</pre>
+
+<ul>
+	<li>Now, finally, take them and landscape them all. EEK.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes/noreward_intertwined/second_step_mutation_ancestors</span></strong>$ for i in mutations_*_lost_fluct_only_grep.dat; do echo $i; python ../../../../../../../scripts/analysis/generate_analyze_mode_files_for_map_mutations.py --seq_col 6 $i &gt; analyze__$i&quot;__map_mutations__second_order.cfg&quot; ; done</pre>
+
+<p>&nbsp;</p>
+
+<h2>Friday 5/4/12</h2>
+
+<h3>1:46 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Submitted some jobs to the HPCC yesterday, but it doesn&rsquo;t look like my wallclock time NOR my memory requirement is large enough. Sigh. What&rsquo;s especially frustrating about it is that avida isn&rsquo;t clearing memory the way it should. So I need to write a fucking script to split everything up into digestible chunks and have avida do the right thing&hellip;</li>
+	<li>
+	<p>Split everything up.</p>
+	</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FF0000"><strong>caninoko@dev-intel07</strong></span></strong>:<strong><span style="color:#0000FF"><strong>/mnt/scratch/caninoko/085/analyze_scripts/</strong></span></strong>$ for k in ?_?; do cd $k; for i in {0..50}; do mkdir split_commands_$i; done; cd ../; done
+
+<strong><span style="color:#FF0000"><strong>caninoko@dev-intel07</strong></span></strong>:<strong><span style="color:#0000FF"><strong>/mnt/scratch/caninoko/085/analyze_scripts/</strong></span></strong>$ for k in ?_?; do cd $k; for i in {0..50}; do for j in {0..700} ; do echo $i&quot;_&quot;$j; cat complete/analyze__mutations_$i&quot;_&quot;* | grep --no-group-separator -B 4 &quot;DETAIL mutations_$j/&quot; &gt; split_commands_$i/analyze__mutations_$i&quot;_&quot;$j.cfg ; if [ ! -s split_commands_$i/analyze__mutations_$i&quot;_&quot;$j.cfg ] ; then echo &quot;BREAKING ZOMG&quot;; break ; fi ; done ; done ; cd ../; done</pre>
+
+<ul>
+	<li>Remove all the empty shit we generated.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FF0000"><strong>caninoko@dev-intel07</strong></span></strong>:<strong><span style="color:#0000FF"><strong>/mnt/scratch/caninoko/085/analyze_scripts/</strong></span></strong>$ for k in ?_?; do cd $k; for i in {0..50}; do for j in {0..700}; do if [ ! -s split_commands_$i/analyze__mutations_$i&quot;_&quot;$j.cfg ] ; then echo $i&quot;_&quot;$j empty. ; rm split_commands_$i/analyze__mutations_$i&quot;_&quot;$j.cfg ; fi ; done ; done; cd ../; done</pre>
+
+<h3>&nbsp;</h3>
+
+<h3>5:57 PM</h3>
+
+<ul>
+	<li>So, the script to do the splitting up is still going, but it&rsquo;s near the end. I wrote up a quickie bash script to run the avida runs individually within a seed. It should be fine. So, as soon as this bit is done, and I can clean it up, I&rsquo;ll submit the runs.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>8:43 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>This damned crap is taking forever, especially when I realized that some of the replicate runs had up to 600-some lost-task mutants. Sigh. This is going to take a REALLY LONG TIME to run. :(</li>
+	<li>ChangeEnv: So, in the interest of not wasting a lot of time, I&rsquo;m going to work on setting up the tournaments for the relative fitnesses for the changing environments runs. I&rsquo;ve got a formula for calculating the relative fitnesses. The protocol is as follows:
+	<ul>
+		<li>For each replicate, seed a population with 5 of the ancestor, and 5 of the final dominant.</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>10:36 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>ChangeEnv: I submitted a test-set of runs for making sure my command works. I extracted all the dominants from all the runs and saved them to a directory on each of the new run-sets that will do the competitions for the various intervals. Ultimately, the idea is to be able to get enough data to be able to apply the nifty relatively fitness equation at the top of this week.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FF0000"><strong>caninoko@dev-intel07</strong></span></strong>:<strong><span style="color:#0000FF"><strong>~/changing_environment_fitness/001_Task_Switching_420u/config_extract</strong></span></strong>$ SRC=&quot;006&quot;; DEST=&quot;012&quot;; for i in /mnt/scratch/caninoko/changing_env/$SRC/populations/*; do DIR=`basename $i` ; echo $DIR; gunzip -c $i/detail-50000.spop.gz &gt; detail-50000.spop; ./avida -a -set ANALYZE_FILE analyze__extract_dominant.cfg -set EVENT_FILE events_control_both.cfg ; cp data/dominant.org $DIR&quot;__dominant.org&quot;; done
+
+<strong><span style="color:#FF0000"><strong>caninoko@dev-intel07</strong></span></strong>:<strong><span style="color:#0000FF"><strong>~/changing_environment_fitness/001_Task_Switching_420u/config_extract</strong></span></strong>$ mv *_006*dominant.org ../../012*/config/organisms/</pre>
+
+<ul>
+	<li>Then I modified the various run-lists to perform the runs.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FF0000"><strong>caninoko@dev-intel07</strong></span></strong>:<strong><span style="color:#0000FF"><strong>~/changing_environment_fitness/007_Task_Switching_420u__RelativeFitnessTournaments</strong></span></strong>$ cat run_list
+
+set description 007_Fixed_Length_420u
+set email caninoko@msu.edu
+set freq_email Crash
+set priority 1
+set class_pref 99
+set walltime 16
+set mem_request .5
+set config_dir config
+set max_cpus 90
+set beacon_priority y
+set dest_dir /mnt/scratch/caninoko/changing_env/007/
+
+## XOR/EQU Evolved Intertwined - 0.00075 - Exact Copy - Mut on Divide - 420 update cycle
+1001..1030 control_glucose /bin/cp organisms/control_glucose_00$seed__dominant.org Evolved_Organism.org; ./avida -s $seed -set EVENT_FILE events_control_both__tournament.cfg
+1001..1030 control_glactose /bin/cp organisms/control_glactose_00$seed__dominant.org Evolved_Organism.org; ./avida -s $seed -set EVENT_FILE events_control_both__tournament.cfg
+#1001..1030 control_both /bin/cp organisms/control_both_00$seed__dominant.org Evolved_Organism.org; ./avida -s $seed -set EVENT_FILE events_control_both__tournament.cfg
+1001..1030 noreward_both /bin/cp organisms/noreward_both_00$seed__dominant.org Evolved_Organism.org; ./avida -s $seed -set EVENT_FILE events_control_both__tournament.cfg
+1001..1030 punish_both /bin/cp organisms/punish_both_00$seed__dominant.org Evolved_Organism.org; ./avida -s $seed -set EVENT_FILE events_control_both__tournament.cfg</pre>
+
+<ul>
+	<li>Also, since I&rsquo;m not quite sure how the measurements for fitness are made, I shot Mark Kauth an email.</li>
+</ul>
+
+<blockquote>
+<p><em>Hi Mark,<br />
+<br />
+Hope the end of the semester is treating you well. :)<br />
+<br />
+Can you tell me more about how the competitions are staged? Specifically, how long do you let them grow before you perform your measurement?</em></p>
+
+<p>&nbsp;</p>
+
+<p><em>-r</em></p>
+</blockquote>
+
+<ul>
+	<li>For now, I have the population dumping every 210 updates (or every day at 7 generations per day). I&rsquo;ll change it if Mark&rsquo;s response is not what I anticipated.</li>
+	<li>EvoMod: Also, I submitted the split up runs finally. They still seem to be running, so we&rsquo;ll see how that goes. I upgraded the wallclock to 16 hours, which should serve.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Saturday 5/5/12</h2>
+
+<h3>12:25 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Looks like most of my jobs were successful, but on the ICX machines (class 95), they&rsquo;re zipping up a little slow. There are also still some jobs in the queue. But, looks promising.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>2:04 PM</h3>
+
+<ul>
+	<li>Sadly, not so much. A bunch of my runs were walltime killed, and most of them weren&rsquo;t even finished. :( So, make walltime 40 hours (FUCK IT), and resubmitting.</li>
+</ul>
+
+<div>
+<p>&nbsp;</p>
+</div>
+
+<p>Weekly Status</p>
+
+<p>&nbsp;</p>
+
+<blockquote>
+<p>Last Week</p>
+
+<ul>
+	<li>During the OfriaLab meeting, Luis suggested doing second-step mutants off the mutants that LOST the fluctuating&nbsp; task to see how easy it is for those to regain the task, and thus determine the functional character of the region of the fitness landscape. I submitted a series of runs to the HPCC to perform this landscaping work. Sadly, the HPCC is terrible, and it took several tries to get something that wouldn&rsquo;t choke the HPCC. The last set is now finishing up, and I hope to do the analysis of that data tonight.</li>
+	<li>For the Fitness in Changing Environments project with Mark Kauth, I have set up some preliminary tournaments to determine relative fitness against the ancestor so as to extract comparable fitness data to Mark&rsquo;s results from his e.coli experiments. Now that the HPCC is not completely choked up with my landscaping work, I can run the rest of the tournaments.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>This Week:</p>
+
+<ul>
+	<li>Analyze landscaping data.</li>
+	<li>Formulate a set of definitive experiments to test evolvability of organisms evolved in the landscape.</li>
+	<li>Run Fitness in Changing Environments tournaments to extract relative fitness information.</li>
+</ul>
+</blockquote>

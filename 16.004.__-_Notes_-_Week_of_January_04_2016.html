@@ -1,0 +1,48 @@
+
+<h1>Week of January 4, 2016</h1>
+
+<h2>Tuesday, Jan 5, 2016</h2>
+
+<h3>Log 07:52AM</h3>
+
+<p>Totally did work yesterday. Banged my head against the thing all day. Trying to get my figure to include error bars that are generated via bootstrap, rather than the STD confidence intervals. I&#39;ve finally gotten it to generate stuff, but let me tell you, the jupyter notebook has some problems with stuff going super slow and then hanging. :( I had to keep restarting the kernel, until I figured out that if I mash the interrupt button a shit ton of times, it finally stops a cell from executing. Argh.</p>
+
+<h2>Wednesday, Jan 6, 2016</h2>
+
+<h3>Log 10:15a</h3>
+
+<p>I spent all day yesterday getting plotting working from within pandas and learning a ton of stuff. Ultimately, I&#39;m not happy doing it this way at all. I&#39;ve already written scripts that do this stuff for me, and it seems imbecilic to not use my existing scripts. So, the goal today is to try to get my existing scripts working, and have a way to load it all painlessly. Ultimately, my stuff isn&#39;t for outside consumption, really. It&#39;s for me, so I can recreate my thought process as I was doing data analysis. Unfortunately, this is all about creating a redundant system for my notebook, since it&#39;s not all in the same place.&nbsp;:/</p>
+
+<h3>Log 9:38p</h3>
+
+<p>Ok, after tinkering quite a bit with my graphing scripts, I&#39;ve figured out a way to incorporate them, particularly quickplot, unmolested, into my Jupyter&nbsp;notebooks. Here&#39;s a link to the HGT analysis notebook.</p>
+
+<p>http://localhost:8888/notebooks/Dropbox/School_Docs/Research/HGT/Analysis.ipynb#</p>
+
+<p>Of particular interest:</p>
+
+<p><img src="./16.004.__-_Notes_-_Week_of_January_04_2016/2016_01_07_03_08_343.png" style="height:188px; width:250px" /><img src="./16.004.__-_Notes_-_Week_of_January_04_2016/2016_01_07_03_06_562.png" style="height:188px; line-height:1.42857; width:250px" /><img src="./16.004.__-_Notes_-_Week_of_January_04_2016/2016_01_07_02_59_371.png" style="height:188px; width:250px" />&nbsp;</p>
+
+<p>I can show here that the HGT/noBonus is <u>depressed quite low when there is a 1/4 chance of getting an event</u>, but those with <u>HGT/Bonus it still remains relatively frequent</u>, at about half the rate as the pure Bonus. I think the sweet-spot is P=0.1.&nbsp;This may also tell us something interesting about the interplay between the recombination effect and the worthwhileness of the bonus. It&#39;s probably tenuous, though.</p>
+
+<p>The defaults are at a <span style="background-color:#FFD700">bonus of 1</span>, and a <span style="background-color:#00FF00">homologous recombination site default of 1</span>. I&#39;m going to need to do survey runs of both those parameters as well.</p>
+
+<p><em>I expect as the bonus increases, it&#39;ll behave more like the lower chance runs (.01 and .001)</em>. Equally, I expect that with higher homology, it would also be depressed less. The current default of 1 site seems like it is low, per conversation with Mike.</p>
+
+<p>I&#39;ll also need to do a sweep of fragment sizes to see the effects there. Current default is <span style="background-color:#FF8C00">fragment size 10 with std 2</span>.</p>
+
+<p><span style="background-color:#FFFF00">Todo</span>:</p>
+
+<ul>
+	<li>Sweep:
+	<ul>
+		<li>Bonuses from .1-10</li>
+		<li>homologous recombination 1-5</li>
+		<li>fragment size 5-15</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

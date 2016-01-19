@@ -1,0 +1,376 @@
+<h1>&shy;Week of June 4, 2012</h1>
+
+<h2>Tuesday 6/5/12</h2>
+
+<h3>12:29 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Asked Charles and Dave for some advice a couple weeks ago about how to proceed with competing the organisms.</li>
+</ul>
+
+<blockquote>
+<p>Running Competitions Between Organisms with Unequal Fitness...<br />
+9 messages</p>
+
+<p>Rosangela Canino-Koning &lt;voidptr@gmail.com&gt;</p>
+
+<p>Thu, May 24, 2012 at 2:20 PM</p>
+
+<p>Reply-To: rosiec@voidptr.net</p>
+
+<p>To: Bryson David &lt;dmbryson@gmail.com&gt;, Charles Ofria &lt;charles.ofria@gmail.com&gt;</p>
+
+<p>So, I&#39;m looking for some advice on how to normalize the effect of gestation time between a couple of organisms I&#39;m trying to compete to test their evolvability.</p>
+
+<p>Both organisms are the same fixed length, and perform the same tasks (and thus get the same rewards for those), but have unequal gestation times, and thus unequal fitness. So, predictably, when I try to compete them, the one with the shorter gestation time (and thus the higher fitness) generally wins the competitions, mostly regardless of the tasks I set out for them to do. I was wondering if you had any suggestions for how to make them be on an equal footing for the competitions. I don&#39;t want to edit the organisms to make them equal fitness because that would disturb the genetic background, which is critical to the point of the whole experiment.</p>
+
+<p>Is there some section of the code I should be looking at, or is there some configuration option that I missed to do this? Any advice would be appreciated.</p>
+
+<p>-rose</p>
+</blockquote>
+
+<p>&nbsp;</p>
+
+<blockquote>
+<p>Charles Ofria &lt;charles.ofria@gmail.com&gt;&nbsp;&nbsp;&nbsp;</p>
+
+<p>Tue, May 29, 2012 at 1:26 AM</p>
+
+<p>To: rosiec@voidptr.net</p>
+
+<p>Cc: Bryson David &lt;dmbryson@gmail.com&gt;</p>
+
+<p>Do you need to compete them directly against each other, or would it be acceptable for them to each have their own population&nbsp; and see how quickly fitnesses rise?&nbsp; If the later, you can run them for a fixed number of generations.</p>
+
+<p>The other option would be to make it so that there are two different divide commands (divide-A and divide-B?), each costing a different number of CPU cycles.&nbsp; Make it so that the divides cannot mutate in (weight of zero), which should normalize things.&nbsp; It will have a minor effect on evolvability, but less than any of the other options I came up with.</p>
+
+<p>I&#39;ll keep thinking about it.</p>
+
+<p>Cheers,</p>
+
+<p>--- Charles</p>
+</blockquote>
+
+<p>&nbsp;</p>
+
+<blockquote>
+<p>Rosangela Canino-Koning &lt;rosiec@voidptr.net&gt;<br />
+&nbsp;&nbsp; &nbsp;</p>
+
+<p>Tue, May 29, 2012 at 11:27 AM</p>
+
+<p>To: Charles Ofria &lt;charles.ofria@gmail.com&gt;</p>
+
+<p>What I arrived at was separate runs as races (timing to see which population gets a task first), which should get at the question.</p>
+
+<p>Thx :)</p>
+
+<p>-r</p>
+</blockquote>
+
+<p>&nbsp;</p>
+
+<blockquote>
+<p>David Michael Bryson &lt;dmbryson@gmail.com&gt;<br />
+&nbsp;&nbsp; &nbsp;</p>
+
+<p>Thu, May 31, 2012 at 3:09 PM</p>
+
+<p>To: Charles Ofria &lt;charles.ofria@gmail.com&gt;</p>
+
+<p>Cc: rosiec@voidptr.net</p>
+
+<p>I have been thinking about this as well, and I think Charles suggestion of running them for a fixed number of generations sounds the most promising.&nbsp;&nbsp; Pretty much anything that adjusts for the gestation time will introduce a bias for or against a particular genotype.&nbsp; Assessing the rise in fitness independently eliminates the need to bias.&nbsp; The starting fitness of each genotype sets a unique reference point and then you can just compare the (final fitness / reference fitness) ratios between genotypes.</p>
+
+<p>David</p>
+</blockquote>
+
+<p>&nbsp;</p>
+
+<blockquote>
+<p>Rosangela Canino-Koning &lt;rosiec@voidptr.net&gt;<br />
+&nbsp;&nbsp; &nbsp;</p>
+
+<p>Thu, May 31, 2012 at 3:11 PM</p>
+
+<p>To: David Michael Bryson &lt;dmbryson@gmail.com&gt;</p>
+
+<p>Cc: Charles Ofria &lt;charles.ofria@gmail.com&gt;</p>
+
+<p>Interesting. Thanks.</p>
+
+<p>-r</p>
+</blockquote>
+
+<p>&nbsp;</p>
+
+<blockquote>
+<p>Rosangela Canino-Koning &lt;rosiec@voidptr.net&gt;<br />
+&nbsp;&nbsp; &nbsp;</p>
+
+<p>Fri, Jun 1, 2012 at 1:09 AM</p>
+
+<p>To: David Michael Bryson &lt;dmbryson@gmail.com&gt;</p>
+
+<p>Cc: Charles Ofria &lt;charles.ofria@gmail.com&gt;</p>
+
+<p>So, the bit about evolving for a fixed number of generations seems promising, but the end result I&#39;m looking for is not a rise in fitness, per se.<br />
+Maybe I&#39;m thinking about this wrong, but it seems to me that fitness in this context is just a proxy for whether the organisms have acquired the new tasks (and thus how evolvable they are). I can look at task acquisition directly by looking at the task counts without resorting to fitness as a proxy.</p>
+
+<p>So, fitness ratios aren&#39;t really useful unless I am using them as some sort of starting point, which I can then use to somehow programmatically normalize generation time for head-to-head competitions. If I avoid head-to-head competitions by just measuring the amount of time till the evolution (and sweep) of a target task for a set of populations evolving in isolation, then I avoid the issue altogether.</p>
+
+<p>Does that make sense? Am I missing something?</p>
+
+<p>-rose</p>
+</blockquote>
+
+<p>&nbsp;</p>
+
+<blockquote>
+<p>David Michael Bryson &lt;dmbryson@gmail.com&gt;<br />
+&nbsp;&nbsp; &nbsp;</p>
+
+<p>Fri, Jun 1, 2012 at 2:07 PM</p>
+
+<p>To: Rosangela Canino-Koning &lt;rosiec@voidptr.net&gt;</p>
+
+<p>Cc: Charles Ofria &lt;charles.ofria@gmail.com&gt;</p>
+
+<p>I think that ideally you will want to look at both fitness and task success.&nbsp; I guess it depends on your specific aims.&nbsp; If you are looking at evolvability from an engineering standpoint of simply solving a computational problem, then task counts are may simply to be the most important.&nbsp; However, fitness is not just a proxy for task evolution, but rather it encompasses the efficiency of task performance as well as the ability of the organism to self-replicate.&nbsp; The efficiency component itself may be important from an engineering perspective.&nbsp; For example, a given pair of genotypes may be essentially equally capable of evolving to perform a given set of tasks.&nbsp; However, one of the genotypes in the pair may have an architecture that allows the evolved tasks to be computed faster and with less detriment to gestation time.</p>
+
+<p>David</p>
+</blockquote>
+
+<p>&nbsp;</p>
+
+<blockquote>
+<p>Rosangela Canino-Koning &lt;rosiec@voidptr.net&gt;<br />
+&nbsp;&nbsp; &nbsp;</p>
+
+<p>Fri, Jun 1, 2012 at 2:10 PM</p>
+
+<p>To: David Michael Bryson &lt;dmbryson@gmail.com&gt;</p>
+
+<p>Cc: Rosangela Canino-Koning &lt;rosiec@voidptr.net&gt;, Charles Ofria &lt;charles.ofria@gmail.com&gt;</p>
+
+<p>Thanks! That&#39;s exactly the type of feedback I was looking for.</p>
+
+<p>-r</p>
+</blockquote>
+
+<p>&nbsp;</p>
+
+<blockquote>
+<p>Charles Ofria &lt;charles.ofria@gmail.com&gt;<br />
+&nbsp;&nbsp; &nbsp;</p>
+
+<p>Fri, Jun 1, 2012 at 3:04 PM</p>
+
+<p>To: Rosangela Canino-Koning &lt;rosiec@voidptr.net&gt;</p>
+
+<p>Cc: David Michael Bryson &lt;dmbryson@gmail.com&gt;</p>
+
+<p>I agree completely.&nbsp; &quot;Evolvability&quot; is a vague term, and you typically need to specify context for it to be meaningful.&nbsp; If you&#39;re talking about evolvability in regards to the task, then that&#39;s all you want to look at.&nbsp; If you want to talk about the more general evolvability of the organism in this new environment, the fitness ration will tell you how quickly it manages to improve fitness.&nbsp; Ultimately, that is what the selective pressures are pushing for.&nbsp; None-the-less, sometimes you want to have a broader set of selective pressures to evolve a particular trait most effectively.</p>
+
+<p>Cheers,</p>
+
+<p>--- Charles</p>
+
+<p>&nbsp;</p>
+</blockquote>
+
+<ul>
+	<li>Right, so per above, I&#39;m going to extract the fitness information, and then calculate the ratio to plot.
+	<ul>
+		<li>Extract fitness to a piled up file (regularly used as input to plot_from_csv.)</li>
+		<li>Write a script to craft an analyze file to determine the starting fitness of the seed organism.</li>
+		<li>Write a new script (calculate_relative_fitness_increase.py) to extract the starting fitness for each run, and then craft a ratio for each succeeding entry. Store that ratio in a new file in the same format.</li>
+		<li>Plot the fitness ratio file.</li>
+	</ul>
+	</li>
+	<li>Starting with job 088 &ndash; single task straight evolvability</li>
+</ul>
+
+<pre>
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span>:<span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/088</strong></span>$ for j in control punish; do for i in and nand andn nor not or orn; do ls -1 *_$i&quot;_&quot;*&quot;&quot;$j&quot;&quot;*/data/average.dat | xargs python ../../../scripts/common/extract_single_column_to_csv.py -s &quot; &quot; 4 &gt; $i&quot;_&quot;$j&quot;_&quot;fitnesses.csv ; done ; done</pre>
+
+<ul>
+	<li>Run analyze a bunch of times to determine the real fitness of the things. :/</li>
+</ul>
+
+<pre>
+<span style="color:#FF0000"><strong>caninoko@dev-intel07</strong></span><strong>:<span style="color:#0000FF">~/evolution_of_modularity/configs/088_Testing_Evolvability__Two_Input__Timing_Races/config_fitnesses/organisms</span>$</strong> for i in *; do seq=`cat $i`; echo PURGE_BATCH; echo LOAD_SEQUENCE $seq; echo RECALCULATE; echo DETAIL $i&quot;__fitness.dat&quot; fitness task.0 sequence; echo ; done &gt; ../all_organisms_analyze.cfg
+
+</pre>
+
+<pre>
+<span style="color:#FF0000"><strong>caninoko@dev-intel07</strong></span><strong>:<span style="color:#0000FF">~/evolution_of_modularity/configs/088_Testing_Evolvability__Two_Input__Timing_Races/config_fitnesses</span>$</strong> for i in and nand andn nor not or orn; do ./avida -a -set ANALYZE_FILE all_organisms_analyze.cfg -set ENVIRONMENT_FILE environment_$i.cfg; mv data data_$i; done</pre>
+
+<ul>
+	<li>One thing to note is that these are all essentially single-replicate experiments, because I&#39;m only running the individual seeds once. This is really bad. :/ To fix this, I need to arrange for the individual seeds to be run 30 times each. :/</li>
+	<li>Then, extract the seed fitnesses
+	<ul>
+		<li>Before we extract, we notice that in control_not, the evolvability run with seed <u>820007</u> failed for some reason. So, we are going to move that <em>seed analyzed fitness</em> out of the stack, so the rest of the script works correctly.</li>
+	</ul>
+	</li>
+</ul>
+
+<pre>
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span><strong>:<span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/088</span>$</strong> mv config_fitnesses/data_not/control_intertwined_820007__last_common_ancestor.org__fitness.dat config_fitnesses/data_not/UNUSED__control_intertwined_820007__last_common_ancestor.org__fitness.dat
+
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span><strong>:<span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/088/config_fitnesses</span>$</strong> for j in and nand andn nor not or orn; do cd data_$j; for k in control noreward punish; do for i in $k&quot;_&quot;intertwined_8200*; do tail -1 $i | cut -d &quot; &quot; -f1; done &gt; $k&quot;_&quot;fitnesses.dat; done ; cd ../; done</pre>
+
+<ul>
+	<li>And prepend them to the fitness files, which is a little weird, but whatever. We can skip the first couple values when we plot</li>
+</ul>
+
+<pre>
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span><strong>:<span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/088</span></strong>$ for k in control punish; do for j in and nand andn nor not or orn; do paste -d &quot;,&quot; config_fitnesses/data_$j/$k&quot;_&quot;fitnesses.dat $j&quot;_&quot;$k&quot;_&quot;fitnesses.csv &gt; combined_seed_$k&quot;_&quot;$j&quot;_&quot;fitnesses.csv ; done; done</pre>
+
+<ul>
+	<li>Then calculate the ratios using the script.</li>
+</ul>
+
+<pre>
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span><strong>:<span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/088</span></strong>$ for k in control punish; do for j in and nand andn nor not or orn; do echo $k $j; python ../../../scripts/analysis/calculate_relative_fitness_increase.py combined_seed_$k&quot;_&quot;$j&quot;_&quot;fitnesses.csv &gt; combined_seed_$k&quot;_&quot;$j&quot;_&quot;relative_fitness_ratios.csv ; done; done</pre>
+
+<ul>
+	<li>Now, plot.</li>
+</ul>
+
+<pre>
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span><strong>:<span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/088</span></strong>$ python ../../../scripts/graph_generation/plot_from_csv.py --error --start_at 2 -o --xtick_multiplier 100 --xlim_max 499 --title &quot;Relative Fitness - Race Control vs Punishment&quot; --ylabel &quot;Relative Fitness Increase&quot; --xlabel &quot;Update&quot; --data_members 2 --legend &quot;not control,not punish,nand control,nand punish,and control,and punish,orn control,orn punish,or control,or punish,andn control,andn punish,nor control,nor punish&quot; relative_fitness_ratios.png *_not_*ratios.csv *_nand_*ratios.csv *_and_*ratios.csv *_orn_*ratios.csv *_or_*ratios.csv *_andn_*ratios.csv *_nor_*ratios.csv</pre>
+
+<p><img src="./12.156.__-_Notes_-_Week_of_June_4_2012/1.png" style="height:326px; width:434px" /></p>
+
+<ul>
+	<li>And this results in a dramatically different picture than just task completion. Interesting. <s>I think what is happening is that though the tasks may already be present in the controls (sure looks like it!), they aren&#39;t achieving nearly as good fitness increases over the longer term as the punishment ancestors</s>. Ed 6/6: wrong, see below.</li>
+	<li>Next step is to fix the methodological error above (not enough replicates), and graph again.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3 class="item_body_heading_3">3:45 PM</h3>
+
+<p>OFRIA LAB MTG</p>
+
+<ul>
+	<li>Showed the relative fitness graph
+	<ul>
+		<li>Charles &ndash; punishment sucked, and are getting better than control. Duh.
+		<ul>
+			<li>Aaron &ndash; The assumption here is that evolvability is just total potential achieved. The max case would be an organism that starts out doing nothing. :/</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Showed the task achievement graph
+	<ul>
+		<li>Heather &ndash; Just normalize the graph based on generations
+		<ul>
+			<li>The assumption here is that evolvability is independent of gestation time. Should it be?</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Anu &ndash; alter the cycle time of the divide instruction (make it 5000 or whatever), such that it normalizes the gestation time, but they are still relatively the same.
+	<ul>
+		<li>Meh</li>
+	</ul>
+	</li>
+	<li>Heather &ndash; So, add repro at the end (fixed length), and add repro at the end, and remove flow control. Thus, they are fixed length</li>
+	<li>Luis &ndash; Do a set of runs where control organisms (in the constant environment where they evolved, how long does it take to evolve NEW tasks. Do the same for the punishment organisms (in the fluctuating env where they evolved), how long does it take to evolve NEW tasks.</li>
+	<li>Aaron - So, how do we tease apart what the hell we are talking about?
+	<ul>
+		<li>Does this mean addressing all the assumptions of what evolvability is?
+		<ul>
+			<li>If you have two ancestors, one achieves the task immediately, but the other takes longer but achieves higher fitness. Which is more evolvable?</li>
+			<li>Is it faster task achievement?
+			<ul>
+				<li>By generations, rather than in real time?</li>
+			</ul>
+			</li>
+			<li>Is it more improvement in fitness?
+			<ul>
+				<li>(comparing relative fitness problems, see above)</li>
+			</ul>
+			</li>
+			<li>Is it heritable variation?
+			<ul>
+				<li>See stuff from Status for May 7.</li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Re-read &ldquo;what is evolvability paper&rdquo; and see if there is anything useful for what questions I should be asking.</li>
+	<li>How are the organisms controlling their task expression?
+	<ul>
+		<li>Is it flow control?
+		<ul>
+			<li>Disable jmp or if?</li>
+			<li>Step through the organisms in the viewer with an without an enabling/disabling mutation</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Thursday 6/7/12</h2>
+
+<h3>9:39 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>To address one of the questions about why the last plot was weird, I&#39;m going to plot the absolute fitnesses. This should paint a clearer picture.</li>
+</ul>
+
+<pre>
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span><strong>:<span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/088</span></strong>$ python ../../../scripts/graph_generation/plot_from_csv.py --error --start_at 2 -o --xtick_multiplier 100 --xlim_max 499 --title &quot;Relative Fitness - Race Control vs Punishment&quot; --ylabel &quot;Relative Fitness Increase&quot; --xlabel &quot;Update&quot; --data_members 2 --legend &quot;not control,not punish,nand control,nand punish,and control,and punish,orn control,orn punish,or control,or punish,andn control,andn punish,nor control,nor punish&quot; relative_fitness_ratios.png not_*fitnesses.csv nand_*fitnesses.csv and_*fitnesses.csv orn_*fitnesses.csv or_*fitnesses.csv andn_*fitnesses.csv nor_*fitnesses.csv</pre>
+
+<p><img src="./12.156.__-_Notes_-_Week_of_June_4_2012/2.png" style="height:326px; width:434px" /></p>
+
+<ul>
+	<li>Yep, this makes sense and goes with Charles&#39;s guess. The punishment ones simply didn&#39;t have very high fitness to start with, thus improved more.</li>
+	<li>So, what are these organisms better at, anyway? In a constant environment, they don&#39;t seem to evolve the task any faster than the control. By what measure of evolvability are they actually more evolvable? Are they actually more evolvable? I&#39;m not sure that they are&hellip;
+	<ul>
+		<li>They don&#39;t gain the task faster.</li>
+		<li>They start at, and stay at lower fitness.</li>
+	</ul>
+	</li>
+	<li>Er, what tasks did they start out doing? Could this bias the results? Let&#39;s see.
+	<ul>
+		<li>First, we gotta move the UNUSED file in data_not back into the stack, since I care about the seed data.</li>
+	</ul>
+	</li>
+</ul>
+
+<pre>
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span><span style="color:#0000FF"><strong>:/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/088/config_fitnesses/data_not</strong></span>$ mv UNUSED__control_intertwined_820007__last_common_ancestor.org__fitness.dat control_intertwined_820007__last_common_ancestor.org__fitness.dat
+
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span><strong>:<span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/088/config_fitnesses</span></strong>$ for j in and nand andn nor not or orn; do cd data_$j; for k in control noreward punish; do echo $j &gt; $k&quot;_&quot;task.dat ; for i in $k&quot;_&quot;intertwined_8200*; do tail -1 $i | cut -d &quot; &quot; -f2; done &gt;&gt; $k&quot;_&quot;task.dat; done ; cd ../; done
+
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span><strong>:<span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/088/config_fitnesses</span></strong>$ for k in control noreward punish; do paste -d &quot;,&quot; data_not/$k&quot;_&quot;task.dat data_nand/$k&quot;_&quot;task.dat data_and/$k&quot;_&quot;task.dat data_orn/$k&quot;_&quot;task.dat data_or/$k&quot;_&quot;task.dat data_andn/$k&quot;_&quot;task.dat data_nor/$k&quot;_&quot;task.dat &gt; $k&quot;_&quot;tasks.csv; done</pre>
+
+<ul>
+	<li>Plot it</li>
+</ul>
+
+<pre>
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span><strong>:<span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/088/config_fitnesses</span></strong>$ python ../../../../scripts/graph_generation/bar_chart_from_csv.py --has_header --groups 7 --xticks=&quot;not,nand,and,orn,or,andn,nor&quot; --legend &quot;control,punish&quot; --columns &quot;1,2,3,4,5,6,7&quot; --pair --title &quot;Proportion of Seeds Performing a Task&quot; --ylabel &quot;Proportion of Seed Set&quot; --xlabel &quot;Task&quot; average_starting_tasks.png control_tasks.csv punish_tasks.csv</pre>
+
+<p><img src="./12.156.__-_Notes_-_Week_of_June_4_2012/3.png" style="height:326px; width:434px" /></p>
+
+<ul>
+	<li>Nope. If anything Punish should have a head start on Not, but it really doesn&#39;t. :/</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

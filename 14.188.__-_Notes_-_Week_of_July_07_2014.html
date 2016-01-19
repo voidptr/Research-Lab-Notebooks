@@ -1,0 +1,198 @@
+<h1>Week of July 07, 2014</h1>
+
+<h2>Monday, Jul 07, 2014</h2>
+
+<h3>Log 01:06PM</h3>
+
+<p>Right, so I didn&#39;t do anything on Saturday OR Sunday.</p>
+
+<p>The thing I had to think about was how to track the gene-flow.</p>
+
+<ul>
+	<li>Add something to the organisms, maybe to phenotype, to track geneflow
+	<ul>
+		<li>A new array?</li>
+	</ul>
+	</li>
+</ul>
+
+<h3>&nbsp;</h3>
+
+<h3>Meeting w/ Charles 3pm</h3>
+
+<p>Whee! I chatted with Charles and he got me back on a workable path.</p>
+
+<ul>
+	<li>Do a single generation mating experiment.
+	<ul>
+		<li>Evolve the organisms under whatever conditions
+		<ul>
+			<li>Lots of generations apart</li>
+			<li>few generations apart</li>
+			<li>diferent environments</li>
+			<li>similar environments</li>
+			<li>etc. etc.</li>
+		</ul>
+		</li>
+		<li>Drop the wall, measure if they mate.
+		<ul>
+			<li>BAM</li>
+			<li>Add some code to record this specifically.</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Separately, as interesting data, make separate instruction sets for the different lineages. Then, you can measure hybridization.</li>
+</ul>
+
+<p>The key bit here is two points</p>
+
+<ul>
+	<li>Doing the simple experiments gets you the intuition</li>
+	<li>No experimental design survives contact with the data
+	<ul>
+		<li>Once you do your first experiment, you may realize your whole setup is bullshit. It&#39;s better not to spend a lot of time getting ahead of yourself.</li>
+	</ul>
+	</li>
+</ul>
+
+<p>The basic hypothesis</p>
+
+<ul>
+	<li>After they evolve separately, they won&#39;t mate with each other.</li>
+</ul>
+
+<p>Prerequisites.</p>
+
+<ul>
+	<li><strong>Evolve them for a while, see if they evolve to target a particular display value</strong>
+
+	<ul>
+		<li>NO IDEA IF THEY WILL EVEN DO THIS</li>
+	</ul>
+	</li>
+	<li>If they never do target a particular display value:
+	<ul>
+		<li>think about some other method.</li>
+	</ul>
+	</li>
+</ul>
+
+<p>Ok, once I&#39;m sure I can get that bit working</p>
+
+<ul>
+	<li>Do the wall dropping experiments, with the single contact hybridization thing.</li>
+</ul>
+
+<p><span style="font-size:22px"><strong><span style="background-color:#FF0000">KEEP IT SIMPLE, STUPID</span></strong></span></p>
+
+<h2>&nbsp;</h2>
+
+<h2>Tuesday July 8, 2014</h2>
+
+<h3>Lab Meeting 3pm</h3>
+
+<ul>
+	<li>Explained my research to everyone.
+	<ul>
+		<li>Heather suggests: rather than targeting a particular display, target a phenotype.
+		<ul>
+			<li>Target the closes combination of tasks. A bit string.</li>
+			<li>Do not reward the tasks, just use them for mating.</li>
+			<li>The females set a bit string, and select based on that.
+			<ul>
+				<li>Do runs with limited vs unlimited resources.</li>
+			</ul>
+			</li>
+			<li>Implement a task-target system for selection.</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<h2>&nbsp;</h2>
+
+<h2>Wednesday July 9, 2014</h2>
+
+<h3>Log 7:51p</h3>
+
+<p>Implemented tracking of the mating preferences by zone. About to implement the mating display output also by zone.</p>
+
+<h3>&nbsp;</h3>
+
+<h3>Log 8:53p</h3>
+
+<p>Implemented a raw output, so I can just pull in the data myself, and do whatever analysis.</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Saturday July 12, 2014</h2>
+
+<h3>Log 11:52p</h3>
+
+<p>I&#39;ve actually done quite a bit of work the last few days.</p>
+
+<ul>
+	<li>Ok, so I&#39;ve implemented a new mechanism for targeting. Now, it uses a char instead of a full int. This narrows the field, so that it&#39;s not impossible to zoom into a value.
+	<ul>
+		<li>It&#39;s put in as a new display trait (c)
+		<ul>
+			<li>all of the crap to go along with it, like setting it.</li>
+		</ul>
+		</li>
+		<li>mating preference for target display trait c</li>
+	</ul>
+	</li>
+	<li>I also modified several of the mating type print actions to display based on the zone.
+	<ul>
+		<li>female mating preference</li>
+		<li>raw mating display data</li>
+	</ul>
+	</li>
+	<li>I also re-enabled successful mate tracking, with some protections against indiscriminate growth. Now, every time you print the information, it clears the buffers. I also only turn it on right before I need it, and
+	<ul>
+		<li>in the birth chamber</li>
+		<li>print actions print and clears it. code is in stats.cc</li>
+	</ul>
+	</li>
+	<li>I added an independent clear instruction to keep the buffer small. I&#39;m a huge fucking fan of the SetConfig action. It does everything I want.
+	<ul>
+		<li>population action just clears it. code in stats.cc</li>
+	</ul>
+	</li>
+</ul>
+
+<p>Secondly, I&#39;ve been chasing a problem where my populations are dying out in some of the zones. It varies depending on the seed. :/ I first noticed it because my female_mating_preference file was starting to go static on one side. So, right now I can see that my birth chambers are filling up with those organisms that are from the living zone, but I don&#39;t know if it&#39;s just that they are submitting seeds SO MUCH FASTER that they keep pushing out the seeds from the other zone. It&#39;s not a ridiculous scenario.</p>
+
+<p>To confirm that, i&#39;m doing some data analysis to pull out the counts of seeds in my birth-chambers, along with the merit of each of the parents. If they are preferentially spamming the birth chamber, then it should show up as much higher merit than the competition, correlating with a drop in the contents of the birthchamber for the opposing zone.</p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/data_C_birthrecord/birth_chamber/summary</span>$</strong> for i in {1..501}; do echo $i;  python ~/Dropbox/School\ Docs/Research/research_scripts/common/extract_line_on_condition.py 11 &quot;&lt; 1800&quot; ../bc-$i&quot;00.dat&quot; | wc -l &gt;&gt; zone1_timeseries.dat ; done
+
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/data_C_birthrecord/birth_chamber/summary</span>$</strong> for i in {1..501}; do echo $i;  python ~/Dropbox/School\ Docs/Research/research_scripts/common/extract_line_on_condition.py 11 &quot;&gt; 1799&quot; ../bc-$i&quot;00.dat&quot; | wc -l &gt;&gt; zone2_timeseries.dat ; done
+
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/data_C_birthrecord/birth_chamber/summary</span>$</strong> for i in {1..501}; do echo $i;&nbsp; python ~/Dropbox/School\ Docs/Research/research_scripts/common/extract_line_on_condition.py 11 &quot;&lt; 1800&quot; ../bc-$i&quot;00.dat&quot; &gt; tmp; python ~/Dropbox/School\ Docs/Research/research_scripts/common/extract_single_column_to_csv.py -c 3 tmp &gt;&gt; zone1_merit_timeseries.csv ; done
+
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/data_C_birthrecord/birth_chamber/summary</span>$ </strong>for i in {1..501}; do echo $i;&nbsp; python ~/Dropbox/School\ Docs/Research/research_scripts/common/extract_line_on_condition.py 11 &quot;&gt; 1799&quot; ../bc-$i&quot;00.dat&quot; &gt; tmp; python ~/Dropbox/School\ Docs/Research/research_scripts/common/extract_single_column_to_csv.py -c 3 tmp &gt;&gt; zone2_merit_timeseries.csv ; done
+
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/data_C_birthrecord/birth_chamber/summary</span>$</strong> python ~/Dropbox/School\ Docs/Research/research_scripts/common/extract_single_column_to_csv.py 1 zone1_timeseries.dat &gt; bc_count_zone1.csv
+
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/data_C_birthrecord/birth_chamber/summary</span>$</strong> python ~/Dropbox/School\ Docs/Research/research_scripts/common/extract_single_column_to_csv.py 1 zone2_timeseries.dat &gt; bc_count_zone2.csv
+
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/data_C_birthrecord/birth_chamber/summary</span>$</strong> python ~/Dropbox/School\ Docs/Research/research_scripts/common/extract_single_column_to_csv.py -s &quot;,&quot; 1 zone1_merit_timeseries.csv &gt; bc_merit_zone1.csv
+
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/data_C_birthrecord/birth_chamber/summary</span>$</strong> python ~/Dropbox/School\ Docs/Research/research_scripts/common/extract_single_column_to_csv.py -s &quot;,&quot; 1 zone2_merit_timeseries.csv &gt; bc_merit_zone2.csv
+
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/tmp</span>$</strong> python ~/research_scripts/graph_generation/plot_from_csv.py -t &quot;Avg Zone Merit vs Birth Chamber Origin&quot; -x &quot;Updates&quot; --xtick_multiplier 100 -w &quot;Birth Chamber Seed Count&quot; -y &quot;Average Merit&quot; --ylog --alt_axis 3 bc_all_stats.png bc_merit_zone1.csv bc_merit_zone2.csv bc_count_zone1.csv bc_count_zone2.csv
+</pre>
+
+<p><img alt="" src="./14.188.__-_Notes_-_Week_of_July_07_2014/bc_all_stats.png" style="height:386px; width:515px" /></p>
+
+<p>Right right. So, exactly as I suspected! Which is super annoying. I&#39;m going to have to separate the birth chambers.</p>
+
+<p>This also leads to concerns about a population wiping out the other after they are unified, because even if I separate the birth chambers by zone, they&#39;ll still get un-separated when I drop the wall. Essentially, they&#39;re competing for breeding space. :( At least my initial experimental setup isn&#39;t threatened, since I&#39;m just measuring whether they mate as soon as I drop the wall.</p>
+
+<p>Erm, another option is to not fully drop the wall. Rather, keep the zones up, but just drop the mating restriction. This will take some code to look in the whole array for mates, even though organisms are only depositing their seed in their side of the array. That&#39;s fine.</p>
+
+<p>&nbsp;</p>

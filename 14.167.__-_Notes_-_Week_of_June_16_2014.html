@@ -1,0 +1,327 @@
+<h1>Week of June 16, 2014</h1>
+
+<h2>Monday, Jun 16, 2014</h2>
+
+<h3>Log 01:09AM</h3>
+
+<p>Ok, per last update (sigh), I need to finish the modifications to the source code to only shove offspring into the right place (BIRTH_METHOD 14).</p>
+
+<pre>
+avida-core/source/main/cPopulation.cc:5158 - Added handling of BIRTH_METHOD 14 (reproduce into zone)
+avida-core/source/main/cPopulation.cc:5520 - Added FindRandEmptyCellInRange
+avida-core/source/main/cPopulation.h:465 - Added FindRandEmptyCellInRange declaration
+</pre>
+
+<p>Ok, that&#39;s done, committed, and pushed. Testing seems to show that it is indeed segregating based on the zones...</p>
+
+<p>Erm, but I&#39;m not sure this is what I should have done...</p>
+
+<p>The segregation is just to make sure that things are born into the same zone as their parent... How the hell is mating discrimination based on lineage label actually useful? I need to make sure I can do mate discrimination based on lineage label does NOT interfere with the other kinds of mate discrimination... So, div mate discriminate needs to interact with other kinds of mate discrimination. I&#39;m still going to need to fuck with the birth chamber. :/</p>
+
+<p>Ok, so zoning is still valid. But, I need to be able to raise and lower it with an event, just like the lineage label. Or... do I? maybe not. Never mind. It can stay zoned. <strong>I&#39;ll get rid of it if it becomes a problem</strong></p>
+
+<ul>
+	<li>&nbsp;zones, ok</li>
+	<li>lineage label mate discrimination - integrate with cBirthMatingTypeGlobalHandler as a subhandler (or something that can pull in cBirthMateSelect as a handler or vet the possible mates before they are selected among).
+	<ul>
+		<li>Ok, the place to add it in is in cBirthMatingTypeGlobalHandler.cc:331, where I can add a check for whether ALLOW_MATE_SELECTION is turned on, and then check to see if the possible mate is the same mating_id.</li>
+	</ul>
+	</li>
+</ul>
+
+<h3>&nbsp;</h3>
+
+<h3>Log 3:00am</h3>
+
+<p>Right, so I&#39;ve added support inside of cBirthMatingTypeGlobalHandler.cc for grabbing the mate_id from the phenotype when they get placed in the birth chamber (cBirthEntry.cc and .h), and then checking against it if ALLOW_MATE_SELECTION is turned on in the config. Further, it&#39;ll only check the mate_ID if mate_ID &gt; 0, which suits me. This mate_id only gets set when instructions &quot;div-sex-MS&quot; (for the nop label), or &quot;div-sex-MSL&quot; (using the lineage label) is executed.</p>
+
+<p>So, what this means is that I now have the pieces to have sexual selection in an environment that is physically (and birth-chamberly) separated.</p>
+
+<p>The final thing to add is some better selection capabilities (like fixing the adding in of DisplayMerit to cBirthMatingTypeGlobalHandler.cc).</p>
+
+<p>To make this whole set of configurations work, you need the following ingredients:</p>
+
+<ul>
+	<li>ENVIRONMENTAL SEPARATION (Pre-zygotic isolation in the form of never encountering each other)
+	<ul>
+		<li>An instruction set and organism that includes &quot;div-sex-MSL&quot; as your divide instruction (for setting mate_id from lineage label)
+		<ul>
+			<li>this is for enforcing environmental separation when mating, not actual mate selection (TODO, clarify the comments/documentation to reflect this)</li>
+		</ul>
+		</li>
+		<li>An event to set the lineage labels (&quot;SetLineageLabelRange&quot;) for organisms
+		<ul>
+			<li>this gives &quot;div-sex-MSL&quot; something to set to mate_id</li>
+		</ul>
+		</li>
+		<li>ALLOW_MATE_SELECTION to be turned on (so that the mate_id gets paid attention to when choosing mates)</li>
+		<li>BIRTH_METHOD 14 turned on.
+		<ul>
+			<li>this enforces environmental separation when giving birth (no coockoos)</li>
+		</ul>
+		</li>
+		<li>BIRTH_ZONES &gt; 1
+		<ul>
+			<li>this creates the environmental zones that never shall meet.</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>MATE SELECTION
+	<ul>
+		<li>instruction set that includes the mating type instructions (see choosy females, etc.; for setting mating preferences)
+		<ul>
+			<li>this is the actual sexual selection aspect.</li>
+		</ul>
+		</li>
+		<li>MATING_TYPES turned on (so that we get in the birth chamber with our choosy females)</li>
+	</ul>
+	</li>
+</ul>
+
+<p>Todo:</p>
+
+<ul>
+	<li>Test the above implementation</li>
+	<li>Add DisplayMerit to cBirthMatingTypeGlobalHandler.cc - so that we have something more granular than just displayA/B for sexual selection.</li>
+</ul>
+
+<h2>&nbsp;</h2>
+
+<h2>Wednesday, Jun 18, 2014</h2>
+
+<h3>Log 10:36p</h3>
+
+<p>Gonna try doing some science. First, I&#39;m going to set up some runs with the current implementation.</p>
+
+<h3>&nbsp;</h3>
+
+<h3>Log 11:46p</h3>
+
+<p>Discovered I had missed something important with the setting of the lineages (mate_id) when saving entries. Apparently, it sets all the objects through the accessors. :/</p>
+
+<p>Anyway, fixed that, and decided to go ahead and add the targeted displayA/B stuff. So, we&#39;re looking for a particular value, and it gets set based on what&#39;s in your registers. It&#39;s a different instruction, and it&#39;s going to be in a different place than the one that sets it in the males, so I don&#39;t see it being a problem.</p>
+
+<pre>
+avida-core/include/public/avida/core/Definitions.h:202 - added MATE_PREFERENCE_TARGET_DISPLAY_A, MATE_PREFERENCE_TARGET_DISPLAY_B
+avida-core/source/cpu/cHardwareCPU.cc:441 - added instructions to set mate preference to target A or B; 10853 - added added methods to set mate preferences to target A or B
+avida-core/source/cpu/cHardwareCPU.h:1046 - new method definitions, as above.
+avida-core/source/main/cBirthChamber.cc:155 - fixed to store entry including mate_id
+avida-core/source/main/cBirthEntry.cc:45 - set m_mate_id to initialize at construction.
+avida-core/source/main/cBirthMatingTypeGlobalHandler.cc:228 - added code to compare closeness of TARGET displays; 375 - fixed adding checking for lineage matching when being choosy instead of only when not choosy.
+avida-core/source/main/cBirthMatingTypeGlobalHandler.h:42 - change to declaration to support comparing target display, per 228 above.</pre>
+
+<p>These are my changes. I think it should cover everything... Let&#39;s test it out.</p>
+
+<p>The events file looks like this:</p>
+
+<pre>
+# Seed the population with a couple pairs of organism
+# in the zones defined by BIRTH_METHOD 14, and BIRTH_ZONES 2
+u begin InjectRange default-heads-sex-male.org 0 899
+u begin InjectRange default-heads-sex-female.org 900 1799
+
+u begin InjectRange default-heads-sex-male.org 1800 2699
+u begin InjectRange default-heads-sex-female.org 2700 3599
+
+# establishing the labels that ALLOW_MATE_SELECT will act upon, supporting
+# BIRTH_METHOD 14
+u 0 PrintLineageCounts
+u 0 SetLineageLabelRange 0 1799 5 # first half
+u 0 SetLineageLabelRange 1800 3599 7 # second half
+
+u 0:100:end PrintLineageCounts
+
+# Print all of the standard data files...
+u 0:100:end PrintAverageData       # Save info about they average genotypes
+u 0:100:end PrintDominantData      # Save info about most abundant genotypes
+u 0:100:end PrintCountData         # Count organisms, genotypes, species, etc.
+u 0:100:end PrintTasksData         # Save organisms counts for each task.
+u 0:100:end PrintTimeData          # Track time conversion (generations, etc.)
+u 0:100:end PrintResourceData      # Track resource abundance.
+
+u 0:100:end PrintMatingTypeHistogram
+u 0:100:end PrintFemaleMatePreferenceData
+u 0:100:end PrintBirthChamberMatingTypeHistogram
+u 0:100:end PrintMatingDisplayData
+u 0:100:end PrintInstructionData
+u 0:100:end PrintInstructionAbundanceHistogram
+
+u 100:100:end PrintBirthChamber
+u 100:100:end PrintSuccessfulMates
+
+# Setup the exit time and full population data collection.
+u 20000:20000:end SavePopulation save_historic=0        # Save current state of population.
+u 100000 Exit                        # exit</pre>
+
+<p>The instruction set file:</p>
+
+<pre>
+#DISPLAY+PREFERENCE (FEMALE COST=200, COST OF CHOICE=0)
+INSTSET heads_sex:hw_type=0
+
+# No-ops
+INST nop-A         # a
+INST nop-B         # b
+INST nop-C         # c
+
+# Flow control operations
+INST if-n-equ      # d
+INST if-less       # e
+INST if-label      # f
+INST mov-head      # g
+INST jmp-head      # h
+INST get-head      # i
+INST set-flow      # j
+
+# Single Argument Math
+INST shift-r       # k
+INST shift-l       # l
+INST inc           # m
+INST dec           # n
+INST push          # o
+INST pop           # p
+INST swap-stk      # q
+INST swap          # r
+
+# Double Argument Math
+INST add           # s
+INST sub           # t
+INST nand          # u
+
+# Biological Operations
+INST h-copy        # v
+INST h-alloc       # w
+
+# Mating Type Operations
+INST set-mating-type-male                                                           # x
+INST set-mating-type-female                                                         # y
+INST div-sex-mating-type:female_cost=200:choosy_female_cost=0:redundancy=0             # z # THIS STILL WORKS BECAUSE COST IS SET HERE
+INST if-mating-type-juvenile                                                        # A
+INST if-mating-type-male                                                            # B
+INST if-mating-type-female                                                          # C
+INST set-mate-preference-random                                                     # D
+INST set-mate-preference-highest-display-a#:redundancy=0                             # E
+INST set-mate-preference-highest-display-b#:redundancy=0                             # F
+
+INST set-mate-preference-highest-merit:redundancy=0                                 # G
+INST increment-mating-display-a#:redundancy=0                                        # H
+INST increment-mating-display-b#:redundancy=0                                        # I
+
+# I/O and Sensory
+INST IO            # J
+INST h-search      # K
+
+INST div-sex-MSL                                                     #L This is the one we&#39;re using
+INST set-mate-preference-target-display-a                             #M
+INST set-mate-preference-target-display-b:redundancy=0                #N
+INST set-mating-display-a                                             #O
+INST set-mating-display-b:redundancy=0                                 #P</pre>
+
+<p>And the relevant configs in avida.cfg:</p>
+
+<pre>
+COPY_MUT_PROB 0.0025           # Substitution rate (per copy)
+BIRTH_METHOD 14            # Which organism should be replaced when a birth occurs?
+BIRTH_ZONES 2             # With BIRTH_METHOD 14, how many birth zones should the population be subdivided into? Default = 1
+ALLOW_MATE_SELECTION 1  # Allow organisms to select mates (requires instruction set support)
+MATING_TYPES 1                      # Turn on separate mating types (i.e., males/females; off by default; requires instruction set support)
+DISABLE_GENOTYPE_CLASSIFICATION 1&nbsp;&nbsp; # Disable tracking of historical genotypes to conserve memory (off by default)</pre>
+
+<p>And finally, the organisms have:</p>
+
+<pre>
+set-mating-type-male or set-mating-type-female</pre>
+
+<p>and divide with</p>
+
+<pre>
+div-sex-MSL #    ...divide (with sex... controlled by lineage)!</pre>
+
+<p>So, right now it&#39;s segfaulting at something at update 100. I&#39;m almost certain that it&#39;s the output printing stuff.</p>
+
+<h3>&nbsp;</h3>
+
+<h3>Log ~1:30am</h3>
+
+<p>Ok, I&#39;ve fixed it. It was, indeed, a problem with the priting of the mating types.</p>
+
+<p>I&#39;ve submitted some runs to the HPCC (job 37522) just to explore the qualities of the system.</p>
+
+<p>I need to add the following, so I can print out what the hell the population is doing.</p>
+
+<ul>
+	<li>mate discrimination info for each sub-population
+	<ul>
+		<li>this will almost certainly require some mucking with new print actions</li>
+	</ul>
+	</li>
+	<li>histogram or scatter plot of mating display values for each sub-population.
+	<ul>
+		<li>I may need to add a range feature to the print instruction to subdivide into zones... alternatively, I can just add zone autodetection, and print it out like that by default</li>
+	</ul>
+	</li>
+	<li>flame graph to make sure there are indeed two separate lineages. I can pull those out of the population file.</li>
+</ul>
+
+<p>Next, I also need to do the wall removal and see what happens. Also a shit ton of controls</p>
+
+<ul>
+	<li>no mate discrimination, per se. (raise wall</li>
+</ul>
+
+<h2>&nbsp;</h2>
+
+<h2>Thursday, June 19, 2014</h2>
+
+<h3>Log 4:11p</h3>
+
+<p>Ok, my 104 job that I started thismorning just finished. I had messed up the instruction set such that lots of instructions weren&#39;t disabled, so I had some weird shit happening. Now, I&#39;m going to do a regular flame graph and see what happens.</p>
+
+<pre>
+<span style="color:#FF0000"><strong>caninoko@dev-intel14</strong></span>:<span style="color:#0000FF">~/mate_discrimination/output/104_Testing_Functionality_FullTest/basic_104001/summary</span>$ python ~/research_scripts/graph_generation/flamegraph/flamegraph.py flamegraph.png 14 5 ../data/detail-?0000.spop* ../data/detail-?00000.spop*</pre>
+
+<p><img alt="" src="./14.167.__-_Notes_-_Week_of_June_16_2014/flamegraph.png" style="height:189px; width:252px" /></p>
+
+<p>oookay. So, there&#39;s something very wrong here. I looked at the datafile, and it&#39;s just ... every single one has a phylogenetic depth of zero. Which is fuuucked up.</p>
+
+<p>Let&#39;s have a look at mating displays, then. Or, at least one of them.</p>
+
+<pre>
+<span style="color:#FF0000"><strong>caninoko@dev-intel14</strong></span>:<span style="color:#0000FF">~/mate_discrimination/output/104_Testing_Functionality_FullTest/basic_104001/summary</span>$ python ~/research_scripts/quickplot.py mating_display_data mating_display_data.dat.gz 3 ../data/ female mating_display_data.dat.gz 4 ../data/ male</pre>
+
+<p><img alt="" src="./14.167.__-_Notes_-_Week_of_June_16_2014/mating_display_data.png" style="height:297px; width:396px" /></p>
+
+<p>Hmmn. That&#39;s ... fucked, and completely unreadable. I need a history, a snapshot of every mating display value, ideally identifiable by what cell it was in at the time.</p>
+
+<p>Ok, what I was hoping to be able to extract was something that would show me that the character of these populations, such that I could tell when and if they were interbreeding. The flame graphs would ideally have told me all this. Fine, I&#39;m going to re-run some of these using the same seeds, just to pull out enough data for some flame graphs.</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Friday June 20, 2014</h2>
+
+<h3>Log 12:12p</h3>
+
+<p>Feeling slightly stuck. I spent a ton of time yesterday evening trying to track down why birth-chamber-originating organisms didn&#39;t have their phylogenetic depth set. Fucking bunny trail. So, I&#39;ll have to do it some other different way. Ultimately, I need to pull out the lineages. This may not be possible, since everything is interbreeding with everything else. So, what I want to figure out, is how to tell if the organisms are indeed interbreeding with each other. <strong>I need to know if there is gene flow!</strong></p>
+
+<h2>&nbsp;</h2>
+
+<h2>Sunday Jun 22, 2014</h2>
+
+<h3>Log 11:22am</h3>
+
+<p>Ok, so, if I&#39;m going to pull out the lineage data, I need to have the parents be saved in the population dump. Not having it is unacceptable. So, I need to figure this out. First, I&#39;m going to see if that setting in the config file does something horrible.</p>
+
+<h3>&nbsp;</h3>
+
+<h3>Log 11:31a</h3>
+
+<p>AHA! It was &quot;<tt>DISABLE_GENOTYPE_CLASSIFICATION 1</tt>&quot;. And, it was non-obvious, because I had to follow the bunnytrail alluded to above, to find that parent and phylogenentic depth is being stored in genotype (not organism, or phenotype, or whatever). The genotype is only set if you do classification. Ergo, disabling genotype classification disables this step from ever taking place. BAM.</p>
+
+<p>So, now the question then becomes whether this will blow up memory to the point where the runs crash. I suspect not, because I think there was a different bug that was causing the blowup, which had nothing to do with genotype classification. So, I&#39;ll set some runs going on the HPCC, and then we&#39;ll see. In the mean time, I need to create some scripts to pull out the information from the detail files. I want to do flame graphs, which is fine, but I really need to see if there is geneflow.</p>
+
+<p><em>Separately, it occurs to me that setting the phylogenetic depth as being a single step from an arbitrary parent loses information. It should be the different of the offspring from each parent, somehow. :/</em> This might not end up being important, especially since I&#39;m not really depending on phylo depth for anything important.</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

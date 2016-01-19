@@ -1,0 +1,376 @@
+<h1>Week of January 30, 2012</h1>
+
+<h2>Monday 1/30/12</h2>
+
+<h3>3:14 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Still waiting for the various batches of Job 061 to finish.</li>
+</ul>
+
+<p>PLAN:</p>
+
+<ul>
+	<li>Experiment: Test whether scatter genome is beneficial for evolving new tasks.
+	<ul style="list-style-type:circle">
+		<li>Summary: Prepare tournament runs between XOR/EQU genomes: one with the tasks compacted into each other, and the other being scattered.</li>
+		<li>Seed Organisms:
+		<ul>
+			<li>Gather the dominant at the end of the recovery period of the last phase in punishment run.</li>
+			<li>Compete against the dominant at the end of the recovery period of the last phase in no reward run, of the run with the same seed as the punishment run.</li>
+		</ul>
+		</li>
+		<li>Environment:
+		<ul>
+			<li>Regular logic-9 fitness landscape. No fluctuation.</li>
+		</ul>
+		</li>
+		<li>Winner:
+		<ul>
+			<li>Identify the base ancestor of the final dominant.</li>
+		</ul>
+		</li>
+		<li>Measure:
+		<ul>
+			<li>Population modularity</li>
+			<li>Two-task organism modularity</li>
+			<li>Individual organism modularity</li>
+			<li>Individual organism modularity under two-task regime.</li>
+			<li>Pull out functional and physical modularity
+			<ul>
+				<li>Functional modularity: proportion of non-overlapping sites</li>
+				<li>Physical modularity: ?? (look at legend)</li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Figure out how to statistically measure the fluctuation effect on the speed of achieving the modularity basement.</li>
+	<li>Extract fitness (!) and graph along with modularity.
+	<ul style="list-style-type:circle">
+		<li>This should help me connect fitness with inverse modularity</li>
+	</ul>
+	</li>
+	<li>Taking the output of 061 reanalysis to generate confidence intervals
+	<ul style="list-style-type:circle">
+		<li>Check on whether the modularity measures at a sample point are normally distributed. If so, I can just use error bars.</li>
+	</ul>
+	</li>
+	<li>Experiment: Test whether the modularity can be correlated to the environment. <em>(ED: Job 062)</em>
+	<ul style="list-style-type:circle">
+		<li>Summary: Prepare environment that does fluctuation for a period in punish, then period of no reward, then period of punish, etc., and see if modularity measures track with the treatment. This will help to eliminate any contingency effects.</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Tuesday 1/31/12</h2>
+
+<h3>10:58 AM</h3>
+
+<p>STATUS</p>
+
+<ul>
+	<li>Prepared and submitted job 062, which tests the contingency effects</li>
+	<li>Prepared a script to back the data up mid-stream. This provides some peace of mind in case of wallclock kills of my ridiculous analysis step.</li>
+</ul>
+
+<pre>
+: ${1?&quot;Usage: $0 DATA_DIR_PREFIX SEED&quot;}
+: ${2?&quot;Usage: $0 DATA_DIR_PREFIX SEED&quot;}
+
+echo Making Directory /mnt/scratch/caninoko/$1/data_backup_$2
+
+if [ ! -e /mnt/scratch/caninoko/$1/ ];
+then
+    echo ERROR: /mnt/scratch/caninoko/$1 does not exist.
+    exit 1
+fi
+
+mkdir /mnt/scratch/caninoko/$1/data_backup_$2
+
+echo Copying Data
+cp ./data/* /mnt/scratch/caninoko/$1/data_backup_$2/
+
+echo DONE</pre>
+
+<p>LAB MTG NOTES:</p>
+
+<ul>
+	<li>Add &ldquo;foreach&rdquo; equivalent feature to avida analyze mode</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>THOUGHTS:</p>
+
+<ul>
+	<li>To measure physical modularity, use ratio of fields:
+	<ul style="list-style-type:circle">
+		<li>11 &amp; 12 &ndash; Average # of sites necessary for each task</li>
+		<li>16 &amp; 17 &ndash; Average task length</li>
+	</ul>
+	</li>
+</ul>
+
+<pre>
+# Avida analyze modularity data
+A# 1: organism length
+B# 2: number of tasks done
+C# 3: number of sites used in tasks
+D# 4: proportion of sites used in tasks
+E# 5: average number of tasks done per site
+F# 6: average number sites per task done
+G# 7: average number tasks per site per task
+H# 8: average proportion of the non-overlaping region of a task
+I# 9-17: average StDev in positions used for task 1-9
+J# 18-26: average number of sites necessary for each of the tasks
+K# 27-36: number of sites involved in 0-9 tasks
+L# 37-45: average task length (distance from first to last inst used)
+
+A 1 - 123.643
+B 2 - 1.2624
+C 3 - 16.7156
+D 4 - 0.136069
+E 5 - 1.17033
+F 6 - 15.495
+G 7 - 0.939564
+H 8 - 0.794587
+I 9,10 - 2.97058 2.32495
+J 11,12 - 15.5243 18.065
+K 13,14,15 - 106.928 13.0356 3.68
+L 16,17 - 19.4028 6.3904</pre>
+
+<h2>&nbsp;</h2>
+
+<h2>Wednesday 2/1/12</h2>
+
+<h3>5:41 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Job 061 finally finished. Tarring and copying.</li>
+	<li>FUCK. Most of the job got walltime killed AGAIN. MOTHER FUCKER.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Thursday 2/2/12</h2>
+
+<h3>5:45 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Modified cAnalyze.cc and cAnalyze.h to add CommandIndividualModularity(&hellip;) which prints out the individual modularity measures in a file.</li>
+	<li>Recompiled and brought it over to the HPC with a different version tag, so the output is identifiable. :/</li>
+</ul>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Building, and running job 062 with a modified analyze.cfg to make the thing run a lot faster. So annoying.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Friday 2/3/12</h2>
+
+<h3>2:30 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Job 062 seems to be running orders of magnitude faster. Whee!</li>
+</ul>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Developing a script to pull apart the INDIVIDUAL_MODULARITY output, which includes a line for every living organism. The script &ldquo;extract_line_on_condition.py&rdquo; takes a column parameter, and an expression to evaluate. If the expression is true, it keeps the line and writes it to a new file, named after the original file with a prefix prepended.</li>
+</ul>
+
+<pre>
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span>:<span style="color:#0000FF"><strong>~/research/Devolab Research/evolution_of_modularity/raw_data/062/punish_first_intertwined_620005/data</strong></span>$ python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_line_on_condition.py 2 &quot; &gt; 1&quot; two_task_only individual_modularity-?.dat* individual_modularity-??.dat* individual_modularity-???.dat* individual_modularity-????.dat* individual_modularity-?????.dat*</pre>
+
+<h2>&nbsp;</h2>
+
+<h2>Saturday 2/4/12</h2>
+
+<h3>12:57 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Job 062 finished! :D Tarring and copying.</li>
+</ul>
+
+<pre>
+[<span style="color:#FF0000"><strong>caninoko@dev-intel07</strong></span>]:[5]:[<span style="color:#0000FF"><strong>/mnt/scratch/caninoko/062</strong></span>]:$ mkdir populations/; for i in *_??????; do if [ ! -e $i.tar.gz ] ; then mkdir $i/data/populations/; mv $i/data/detail* $i/data/populations/; mv $i/data/populations/ ./populations/$i; tar -cvf $i.tar.gz $i ; else : ; fi; done</pre>
+
+<h2>&nbsp;</h2>
+
+<h2>Sunday 2/5/12</h2>
+
+<h3>9:53 AM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Successfully established a tunnel to atlantis so that I could connect to my file volumes!</li>
+</ul>
+
+<pre>
+<strong>[<span style="color:#EE82EE">rosiec@George-Hammond</span>]:[2]:[<span style="color:#0000FF">~</span>]:$</strong> sudo ssh -L 549:atlantis.local:548 rosiec@atlantis.kkoning.net</pre>
+
+<ul>
+	<li>Then, connected using Apple-k -&gt; afp://localhost:549</li>
+</ul>
+
+<p>PLAN:</p>
+
+<ul>
+	<li>Contents of Job 062 finished copying to atlantis. Now I just need to gather up all the bits and pieces.
+	<ul style="list-style-type:circle">
+		<li>Graph the Modularity!
+		<ul>
+			<li>First step is to go through and extract all the two-task modularity organisms (see script above) for each update sample (detail file).</li>
+			<li>Then, I need to generate the average modularity for each update sample (detail file), along with the std deviation, etc.
+			<ul>
+				<li>Result file, every line is a sample update, and in a line is:
+				<ul style="list-style-type:circle">
+					<li>Average Functional Modularity</li>
+					<li>Functional Modularity STD</li>
+					<li>Average Physical Modularity</li>
+					<li>Physical Modularity STD
+					<ul>
+						<li>Calculated from the two values near the end of the raw data file
+						<ul>
+							<li>11 &amp; 12 &ndash; Average # of sites necessary for each task</li>
+							<li>16 &amp; 17 &ndash; Average task length</li>
+						</ul>
+						</li>
+					</ul>
+					</li>
+				</ul>
+				</li>
+				<li>Also test the distribution fit and see if normal is acceptable, which it probably isn&rsquo;t. So&hellip; see about generating confidence intervals some other way. (for the life of me, I can&rsquo;t remember how.) But this is ok for now.</li>
+			</ul>
+			</li>
+			<li>Once I have the average modularity for each update sample and each run, graph them out in the usual way.</li>
+		</ul>
+		</li>
+		<li>Co-Graph the # of organisms doing # of tasks at any given time.
+		<ul>
+			<li>Go through and extract the counts for each sample update in a run into a csv.
+			<ul>
+				<li>Result file, every line is a sample update, containing
+				<ul style="list-style-type:circle">
+					<li># organisms doing 0 tasks</li>
+					<li># organisms doing 1 task</li>
+					<li># organisms doing 2 tasks</li>
+				</ul>
+				</li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Doing the initial two-task data extraction:</li>
+</ul>
+
+<pre>
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span>:<span style="color:#0000FF"><strong>~/research/Devolab Research/evolution_of_modularity/raw_data/062</strong></span>$ for i in *_??????; do echo $i; cd $i/data; rm two_task_only*.dat*; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_line_on_condition.py 2 &quot; &gt; 1&quot; two_task_only individual_modularity-?.dat* individual_modularity-??.dat* individual_modularity-???.dat* individual_modularity-????.dat* individual_modularity-?????.dat*; cd ../../; done</pre>
+
+<ul>
+	<li>Some of the data is now extracted. Writing the script to do step 2.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>11:47 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Extracted all the functional modularity stats.</li>
+</ul>
+
+<pre>
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span>:<span style="color:#0000FF"><strong>~/research/Devolab Research/evolution_of_modularity/raw_data/062</strong></span>$ for i in *_??????; do echo $i; cd $i/data/; rm two_task_functional_modularity__stats.csv ;python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py -c 8 two_task*-?.dat* two_task*-??.dat* two_task*-???.dat* two_task*-????.dat* two_task*-?????.dat* &gt;&gt; two_task_functional_modularity__stats.csv; cd ../../; done</pre>
+
+<ul>
+	<li>Modified extract single column to pull things out in a second round by defining a customizable separator using the &ndash;s option.</li>
+</ul>
+
+<pre>
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span>:<span style="color:#0000FF"><strong>~/research/Devolab Research/evolution_of_modularity/raw_data/062</strong></span>$
+
+rm punish_first_separated__functional_modularity.csv; for i in punish_first_sep*; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 two_task_functional_modularity__stats.csv &gt;&gt; ../../punish_first_separated__functional_modularity.csv; cd ../../; done
+
+
+rm noreward_first_separated__functional_modularity.csv; for i in noreward_first_sep*; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 two_task_functional_modularity__stats.csv &gt;&gt; ../../noreward_first_separated__functional_modularity.csv; cd ../../; done
+
+
+rm control_separated__functional_modularity.csv; for i in control_sep*; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 two_task_functional_modularity__stats.csv &gt;&gt; ../../control_separated__functional_modularity.csv; cd ../../; done
+
+
+rm control_intertwined__functional_modularity.csv; for i in control_inter*; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 two_task_functional_modularity__stats.csv &gt;&gt; ../../control_intertwined__functional_modularity.csv; cd ../../; done
+
+
+rm noreward_first_intertwined__functional_modularity.csv; for i in noreward_first_inte*; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 two_task_functional_modularity__stats.csv &gt;&gt; ../../noreward_first_intertwined__functional_modularity.csv; cd ../../; done
+
+
+rm punish_first_intertwined__functional_modularity.csv; for i in punish_first_inter*; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 two_task_functional_modularity__stats.csv &gt;&gt; ../../punish_first_intertwined__functional_modularity.csv; cd ../../; done</pre>
+
+<ul>
+	<li>Generated graphs from this data.</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<span style="color:#0000FF"><strong>/Volumes/Atlantis/research/Devolab Research/evolution_of_modularity/raw_data/062</strong></span>$ python ../../../scripts/generate_graphs_from_raw_data/plot_from_csv.py -o -t &quot;Intertwined Task Ancestor&quot; -x &quot;Updates x50&quot; -y &quot;Modularity&quot; comparitive_modularity__intertwined__two_task.png control_intertwined__functional_modularity.csv noreward_first_intertwined__functional_modularity.csv punish_first_intertwined__functional_modularity.csv
+
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<span style="color:#0000FF"><strong>/Volumes/Atlantis/research/Devolab Research/evolution_of_modularity/raw_data/062</strong></span>$ python ../../../scripts/generate_graphs_from_raw_data/plot_from_csv.py -o -t &quot;Separated Task Ancestor&quot; -x &quot;Updates x50&quot; -y &quot;Modularity&quot; comparitive_modularity__separated__two_task.png control_separated__functional_modularity.csv noreward_first_separated__functional_modularity.csv punish_first_separated__functional_modularity.csv</pre>
+
+<p><img src="./12.030.__-_Notes_-_Week_of_Jan_30_2012/image001.png" style="height:158px; width:210px" /><img src="./12.030.__-_Notes_-_Week_of_Jan_30_2012/image003.png" style="height:164px; width:218px" /></p>
+
+<p style="margin-left:.5in">&nbsp;</p>
+
+<p>ANALYSIS:</p>
+
+<ul>
+	<li>Interestingly, it looks like, once established, the scatter is hard to re-compact. Or, maybe it&rsquo;s beneficial?
+	<ul style="list-style-type:circle">
+		<li>In both cases of punish first (separated and intertwined), there may be a slope back toward the modularity basement, but it didn&rsquo;t go long enough to get a clear picture&hellip;</li>
+		<li>In the case of punish first intertwined, it&rsquo;s clearly not done climbing the hill.</li>
+		<li>THOUGHT: Is the scatter a kind of modularity? I know the punishment basement is higher than the no-reward basement. Does this mean that the genome is forming more tightly coupled functional sub-modules of commonality between XOR and EQU, that are being preserved?
+		<ul>
+			<li>HOW DO I QUANTIFY THIS?</li>
+			<li>Is there a predictable balance (a ratio) between the scattered bits (the one-off bits of code) and the shared components that are being reused? Is there a way to figure this out? Are the bits that are scattered the ONE OFF SEGMENTS? I can check on this by seeing whether the scattered bits belong to only one task, not both.</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>In the case of no-reward, it definitely separates out as soon as punishment is applied. I think this can be quantified as an increase in scatter. TODO &ndash; extract this measurement!</li>
+</ul>
+
+<p style="margin-left:2.5in">&nbsp;</p>
+
+<p style="margin-left:2.5in">&nbsp;</p>
+
+<p style="margin-left:2.5in">&nbsp;</p>
+
+<p style="margin-left:2.5in">&nbsp;</p>

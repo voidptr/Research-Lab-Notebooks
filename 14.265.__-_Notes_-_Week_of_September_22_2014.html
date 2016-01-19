@@ -1,0 +1,106 @@
+<h1>Week of September 22, 2014</h1>
+
+<h2>Monday, Sep 22, 2014</h2>
+
+<h3>Log 02:48PM</h3>
+
+<p>Oh Hai. So, I have a meeting with Charles in a minute.</p>
+
+<p>- Working on duplicating the basic display trait code</p>
+
+<p>- still can&#39;t find bug. will keep looking</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Friday, Sep 26, 2014</h2>
+
+<h3>Log 8:46pm</h3>
+
+<p>Wheee! So, I found the bug right before lab meeting. It was that in the mate evalution method the target value was being set by getting current display value. This value would always be zero. So, I pulled from last display value, and voila! It worked!</p>
+
+<p>Right, so now I need to go back and set up my evolution experiments so that they actually run. So, the original setup with a common population with all resources, then separate populations with the split branches for resources, and then rejoining and seeing if they mate. I&#39;ll also need to alter the content of the population files so that they load. This means changing where the organisms will be placed. This is systematically changing to be offset appropriately.</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Saturday, Sept 27, 2014</h2>
+
+<h3>Log 5:53p</h3>
+
+<p>Spent some time figurin gout what my next steps are. Per my notebook, I want to run the experiments that I originally went with. Question: Do populations of organisms that started out as a single population, and are then physically separated, that already use sexual selection, do they stay as separate populations when rejoined?</p>
+
+<ol>
+	<li>Single population
+	<ol>
+		<li>All resources?</li>
+		<li>Half resources?</li>
+	</ol>
+	</li>
+	<li>Split populations with impetus to adapt to new environment
+	<ol>
+		<li>Split tree?</li>
+		<li>Additional tasks and resources?</li>
+	</ol>
+	</li>
+	<li>Re-join populations, with combined resources.</li>
+</ol>
+
+<p>As is implied above, there are a few flavors of this with resources. I&#39;m going to try all combinations.</p>
+
+<p>Scenario A: 1: All logic 9 2: Split tree logic 9 3: All logic 9</p>
+
+<p>Scenarion B: 1: All logic 9 2: split Additional tasks (3 input) 3: all logic 9 + all additional tasks (3 input)</p>
+
+<p>Scenario C: 1: Lower half of whole tree logic 9 2: Split upper tree logic 9 3: all logic 9</p>
+
+<p>I think this covers all the options...</p>
+
+<p>Scenario B and C should be equivalent.</p>
+
+<p>Scenario A vs Scenarios B/C is qualitatively different because A is about loss of resources (not really new adaptation), while B/C is about new adaptation. So, this should allow me to identify if it is adaptation that is the cause of the divergence.</p>
+
+<p>Also, in terms of practical considerations, I&#39;m going to do step 2 as a zoned thing, and kill the excess, and only pull them out of the zone I want.</p>
+
+<p>Separately, I also want to do all the above experiments with hard vs soft match. Right now this is a hard-coded thing, but that&#39;s ok.</p>
+
+<p>Ok, so I&#39;ve copied in &quot;_hardmatch&quot; and &quot;_softmatch&quot; executables. Scenarios A and B are the same in step 1.</p>
+
+<p>I should consider removing the max_count limit, so that they can chew up the resource and push each other to do it.</p>
+
+<p>&nbsp;</p>
+
+<p>Ok, got so far as to run the first test (1000updates) of the whole logic 9 run (Step 1). Next is to do Step 2!</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Sunday Sept 28, 2014</h2>
+
+<h3>Log 7:41p</h3>
+
+<p>First, some utility bash scripts:</p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@13-67-42</span></strong>:<span style="color:#0000FF"><strong>~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/experimental_setup/data1_wholelogic9__hardmatch</strong></span>$ for i in {0..100} ; do python ../../../../research_scripts/graph_generation/flamegraph/flamegraph.py flamegraph.png 14 5 detail-?00.spop* detail-??00.spop* detail-???00.spop*; echo &quot;DONE&quot;; open flamegraph.png; sleep 130; done</pre>
+
+<p>Above generates a flame graph as the run is progressing.</p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@13-67-42</span></strong>:<span style="color:#0000FF"><strong>~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/experimental_setup/data1_wholelogic9__hardmatch</strong></span>$ for i in {1..100}; do while [ ! -f mating_display_c_histogram-$i&quot;000&quot;.dat ]; do sleep 5; done; cat mating_display_c_histogram-$i&quot;000&quot;.dat; done;</pre>
+
+<p>Below prints the latest mating display c histogram file, as the run is progressing.</p>
+
+<p>I&#39;ve worked out the kinks in my pipeline. One thing I need to do is between steps 2 and 3, I need to concatenate the detail files, because otherwise, they&#39;ll overwrite each other. Annoying.</p>
+
+<h3 class="item_body_heading_3">&nbsp;</h3>
+
+<h3 class="item_body_heading_3">Retrospective</h3>
+
+<p>I did the following:</p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@13-67-42</span></strong>:<span style="color:#0000FF"><strong>~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/experimental_setup</strong></span>$ ./avida_hardmatch -set EVENT_FILE events_1.cfg -set ENVIRONMENT_FILE environment_1_wholelogic9.cfg -set DATA_DIR data1_wholelogic9__hardmatch; ./avida_hardmatch -set EVENT_FILE events_2a.cfg -set ENVIRONMENT_FILE environment_2a_lefttreeupperlogic9.cfg -set DATA_DIR data2a_leftupperlogic9; ./avida_hardmatch -set EVENT_FILE events_2b.cfg -set ENVIRONMENT_FILE environment_2b_righttreeupperlogic9.cfg -set DATA_DIR data2b_rightupperlogic9; cat data2a_leftupperlogic9/detail-1000.spop &gt; detail-combined.spop; tail -n +24 data2b_rightupperlogic9/detail-1000.spop &gt;&gt; detail-combined.spop; ./avida_hardmatch -set EVENT_FILE events_3.cfg -set ENVIRONMENT_FILE environment_3_wholelogic9.cfg -set DATA_DIR data3_wholelogic9/</pre>
+
+<p>This is the complete pipeline to generate the data that I am looking for.</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

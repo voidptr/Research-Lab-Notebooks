@@ -1,0 +1,173 @@
+<h1>Week of February 3, 2014</h1>
+
+<h2>Monday, Feb 3, 2014</h2>
+
+<h3>Log:</h3>
+
+<p>Looking through code, and working on merging the HGT code with Dave&rsquo;s LGT code. Created a branch &ldquo;combinedHGT&rdquo; to git.</p>
+
+<p>First set of steps:</p>
+
+<ul>
+	<li>
+	<p>Isolate and test the fragment resevoir resource code</p>
+
+	<ul>
+		<li>
+		<p>extend the resources so that they can be adjusted like other resources, with inflows and outflows</p>
+		</li>
+	</ul>
+	</li>
+	<li>
+	<p>Alter Dave&rsquo;s LGT code to use the resource resevoirs. Add this to the <code>GetLGTFragment()</code> code in \(cPopulationInterface.cc\)</p>
+	</li>
+</ul>
+
+<p>Other todos, and things I should do:</p>
+
+<ul>
+	<li>
+	<p>regenerate the config files. I think this takes just running the executable. Also, update the config file that gets copied out of the installer ./build_avida script. Or, alter this shit so that it isn&rsquo;t just copying a stale file. Fucking bullshit.</p>
+	</li>
+	<li>
+	<p>Add some console.write code to the fragment resource thing to make sure it works</p>
+	</li>
+</ul>
+
+<p>While altering Dave&rsquo;s code, add the following options</p>
+
+<ul>
+	<li>
+	<p><code>LGT_SOURCE_REGION_RESOURCE</code> - or something similar, which will draw from the resevoir fragment instead of from live organisms.</p>
+	</li>
+</ul>
+
+<h3>HGT Code Analysis</h3>
+
+<ul>
+	<li>
+	<p>\(Avida2Driver.cc\) - Point mutation probability is altered by adding <code>DIV_LGT_PROB</code>. (line 80)</p>
+	</li>
+	<li>
+	<p>\(cAvidaConfig.h\) - Config options <code>DIV_LGT_PROB</code>, <code>DIVIDE_LGT_PROB</code>, <code>DIVIDE_POISSON_LGT_MEAN</code>, <code>LGT_FILL_MODE</code>, and <code>LGT_SOURCE_REGION</code></p>
+	</li>
+	<li>
+	<p>\(cHardwareBase.cc\) - Applying LGT mutations (starting line 346); <code>doLGTMutation()</code> (line 765)</p>
+
+	<ul>
+		<li>
+		<p>This is where the majority of the mutation actioning code is located.</p>
+		</li>
+	</ul>
+	</li>
+	<li>
+	<p>\(cMutationRates.cc\) - Declaration and storage of the values set in the configuration options. (starting line 43).</p>
+	</li>
+	<li>
+	<p>\(cMutationRates.h\) - inline <code>TestDivideLGT()</code> methods. (line 133), accessors, etc.</p>
+	</li>
+	<li>
+	<p>\(cOrganism.h\) - Convenience methods pointing to \(cMutationRates\). (line 317)</p>
+	</li>
+	<li>
+	<p>\(cOrgInterface.h\) - virtual declaration of <code>GetLGTFragment()</code>. (line 106)</p>
+	</li>
+	<li>
+	<p>\(cPopulationInterface.h\) - derives from cOrgInterface. Includes sub-declaration of <code>GetLGTFragment().</code></p>
+
+	<ul>
+		<li>
+		<p>You don&rsquo;t need this declaration, so I don&rsquo;t know why it&rsquo;s there. Stupid. Futher, it seems to silently cover the virtual method \(cOrgInterface\).</p>
+		</li>
+	</ul>
+	</li>
+	<li>
+	<p>\(cPopulationInterface.cc\) - implementation of <code>GetLGTFragment()</code> (line 158)</p>
+
+	<ul>
+		<li>
+		<p><em>This method will need to be changed to be able to draw down resources.</em></p>
+		</li>
+		<li>
+		<p>kinda baffled why there are method bodies in a class with the word Interface in its name. Is it because it&rsquo;s not a software interface, as much as the place where the population interfaces with the environment? weird. don&rsquo;t like it.</p>
+		</li>
+	</ul>
+	</li>
+	<li>
+	<p>\(cTestCPUInterface.h\) - same song and dance. derives from \(cOrgInterface.h\).</p>
+	</li>
+</ul>
+
+<p>So, it looks incredibly simple. Most of the work and code is done in <code>cHardwareBase</code>. To add the appropriate resource-drawing code, I&rsquo;ll need to have a look at what other resource users are doing. In the HGT code, the resource drawing code is in <code>cPopulationInterface.cc</code>. It looks like the LGT code is always available</p>
+
+<p>So, at minimum, merging will require:</p>
+
+<ul>
+	<li>
+	<p>connecting to the resource code (<code>cPopulation.cc, cPopulationCell.cc, cEnvironment.cc, cResource.h</code>), if a fragment resource is requested via config options (such as <code>LGT_SOURCE_REGION</code> option).</p>
+	</li>
+	<li>
+	<p>adding appropriate stats (<code>cStats.h</code> and <code>.cc</code>)</p>
+	</li>
+</ul>
+
+<p>Optionally, to bring the full vestment of previous features:</p>
+
+<ul>
+	<li>
+	<p>engaging the ACTIONS (<code>PopulationActions.cc</code>)</p>
+	</li>
+	<li>
+	<p>implement the HGTDonation concept. This may already be implemented in some LGT code, but I&rsquo;m not sure.</p>
+	</li>
+</ul>
+
+<p><em>Finally, to do the experiments I want, I want to create a mutagenic instruction. Specifically, one that increases the uptake of fragments for energy, but also increases the LGT mutation rate.</em></p>
+
+<h2>&nbsp;</h2>
+
+<h2>Tuesday Feb 4, 2014</h2>
+
+<h3>Log - noonish</h3>
+
+<p>Reviewing the HGT fragment code. Specifically, examining how the fragment code is initialized, and when it is used. It looks like there is a potential bug. In <code>cPopulationCell.h</code>, the fragment struct for a cell is lazily initialized. This means that the fragment resevoir is not neccesarily being created at the beginning of time, but only upon the first HGT mutation coming up :/. Argh, it looks like <code>InitHGTSupport()</code> is being called EVERYFUCKINGPLACEWHY (all the HGT fragment-dealing code). So, it&rsquo;s called when a cell is being copy-constructed. And also being called at <code>AddGenomeFragment()</code>, which itself is called at <code>KillOrganism()</code>, which actually makes sense. The fragment code really should be set up as a clean singleton, not this other hackish bullshit. Now, assume that we actually need a singleton (which I&rsquo;m not sure we do, because we should be able to trust that the code will run in a predictable manner), then they should just have done that, rather than having to remember to call the Init every time because we don&rsquo;t trust that the code. FUUUUUU. Code should not be written expecting it to blow up. FUCK YOU LAZY PARANOIDS.</p>
+
+<p>Further, there seems to be a duplicate definition of this struct in cPopulationInterface.h. WHY WHY WHY. Will ask Dave what the implication of this is. I&rsquo;m probably not understanding what the structure is supposed to be here, and what role cPopulationInterface is supposed to do.</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Wednesday Feb 5, 2014</h2>
+
+<h3>Log - 11:15p</h3>
+
+<p>Working on putting together my hypotheses for Mike W.</p>
+
+<p>Per our conversation on Tuesday after lab meeting, the basic set of experiments is:</p>
+
+<h4>HGT Use</h4>
+
+<p>Hypothesis 1: Organisms will use an instruction to uptake fragments if it gives them energy, even though it may be mutagenic (cause LGT events to become more frequent). Without an energy benefit, the uptake instruction will remain at low frequency.</p>
+
+<h4>Evolvability</h4>
+
+<p>Hypothesis 2: Organisms will use an instruction to uptake fragments if their environment is changing faster than they can adapt to it.</p>
+
+<p>Hypothesis 2b: Organisms that uptake fragments have better evolvability than organisms that don&rsquo;t.</p>
+
+<p>Hypothesis 3: Organisms that uptake fragments will have more modular genomes than those that don&rsquo;t uptake fragments. (this is a modularity hypothesis)</p>
+
+<h4>Sexual Reproduction Stepping Stones</h4>
+
+<p>Hypothesis 4: Organisms will choose to use an instruction that uptakes fragments if those fragments are not integrated randomly, but if they are lined up to the genome. (this leads to the sexual reproduction hypothesis).</p>
+
+<p>Mike sent me a list of hypotheses as well, which seem super interesting as well.</p>
+
+<p>Thursday Feb 6, 2014</p>
+
+<h3>&nbsp;</h3>
+
+<h3>Log 6:32</h3>
+
+<p>I can work for about half an hour before I need to start getting ready to go to derby scrimmage</p>
+
+<p>&nbsp;</p>

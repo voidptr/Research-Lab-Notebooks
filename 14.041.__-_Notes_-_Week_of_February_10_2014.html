@@ -1,0 +1,27 @@
+<h1>Week of February 10, 2014</h1>
+
+<h2>Monday, Feb 10, 2014</h2>
+
+<h3>Log:</h3>
+
+<p>Working on the proposal for the HGT work. Below.</p>
+
+<h4>Evolvable HGT vs Accidental HGT</h4>
+
+<p>There are two major hypotheses about HGT usage. First, that HGT usage is a random side-effect of grazing for energy sources[ref]. The second is that HGT is an evolved mechanism for increasing evolvability [ref]. We will test these two hypotheses by giving organisms an opportunity use HGT in various contexts that may or may not reward evolvability.</p>
+
+<p>Hypothesis ?: Organisms will uptake gene fragments from the environment at a higher rate if they are useful as an energy source, even if such an uptake increases the chance of mutation. Without an energy bonus, gene fragment uptake will remain at low frequency.</p>
+
+<p>In static environments, evolvability pressures are expected to be low, therefore the primary benefit of gene fragment uptake is expected to be from the energy received. Without this energy bonus, the disruptive effect of integrating random gene fragments into your genome would result in reduced fitness, and thus lower frequency of uptake in the population.</p>
+
+<p>Hypothesis ?: Organisms will uptake gene fragments from the environment at a higher rate in environments where evolvability is beneficial, such as in changing environments. In static environments, uptake frequency will remain lower.</p>
+
+<p>Hypothesis ?b: In changing environments, organisms will still uptake gene fragments at higher frequencies, even with reduced, or non-existent bonus reward from uptake.</p>
+
+<p>In environments where evolvability pressures are high, such as changing environments, increased mutation rates are selected for, whereas in static environments, high mutation rates are selected against[ref]. HGT-mediated mutations are therefore expected to be selected for in changing environments, vs static environments. Further, in changing environments, the energy bonus from uptake may not be neccesary to ensure fragment uptake.</p>
+
+<p>Methods:</p>
+
+<p>We propose to implement HGT within Avida. As organisms die, their genomes will be accumulate in reservoirs within world-cells. These resevoirs will age-out, with older genomes disappearing from the resevoir as new ones are accumulated. Fragments for uptake will be randomly selected from the reservoir. Two new mutagenic instructions will be created to trigger uptake of fragments. One of the instructions will conferr an energy bonus upon uptake, while the other will not. Both instructions will incurr a random chance of incorporating the fragment as an insertion into the genome. If the insertion occurs, no energy bonus will be given. The energy bonus level, uptake mutagenic chance, and fragment size will be configurable per experiement.</p>
+
+<p>&nbsp;</p>

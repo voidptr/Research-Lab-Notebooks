@@ -1,0 +1,292 @@
+<h1>Week of April 22, 2012</h1>
+
+<h2>Tuesday 4/23/12</h2>
+
+<h3>11:15 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Trying out Linux for the first time as my home desktop for research. We shall see how it goes. :/</li>
+	<li>Created &quot;extract_last_common_ancestor.py&quot; to look through stats.dat and lineage.dat to pull out the line with the info for the last common ancestor per lineage.</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF"><strong>/Arcturus/home/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/SEPARATED</strong></span></strong>$ for i in *_??????; do echo $i; cd $i; python ../../../../../scripts/analysis/extract_last_common_ancestor.py data/lineage.dat data/stats.dat &gt; last_common_ancestor.dat ;&nbsp; cd ../; done</pre>
+
+<ul>
+	<li>This editor is super tedious, and buggy. :( Going to try LibreOffice now.</li>
+</ul>
+
+<ul>
+	<li>LATER: The idea with the above is to set up a series of analyze mode scripts that can be run against the ancestor. I&#39;m going to pull a Luis, and generate the analyze mode files. To that end, created &ldquo;generate_analyze_mode_files_for_map_mutations.py&rdquo;</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF">/Arcturus/home/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/SEPARATED</span></strong>$ for i in *_??????; do echo $i; cd $i; python ../../../../../scripts/analysis/generate_analyze_mode_files_for_map_mutations.py last_common_ancestor.dat &gt; analyze__map_mutations_last_common_ancestor.cfg ;&nbsp; cd ../; done</pre>
+
+<ul>
+	<li>Tested out running the above on the HPCC and it seems to run pretty quickly. Like, in a few seconds</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel07</span></strong>:<strong><span style="color:#0000FF"><strong>~/evolution_of_modularity/084_Map_Mutations/config_testing</strong></span></strong>$ ./avida -a -set ANALYZE_FILE analyze__map_mutations_last_common_ancestor.cfg</pre>
+
+<ul>
+	<li>Because it runs so quickly, I&#39;m going to combine all the things for each treatment. Generated the scripts for control, noreward, and punish for both intertwined and separated. Each file is about 35mb (!!), so I&#39;ve set them uploading, and will run it in the morning. Sigh. So late</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF"><strong>/Arcturus/home/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/SEPARATED</strong></span></strong>$ python ../../../../scripts/analysis/generate_analyze_mode_files_for_map_mutations.py control_separated_??????/last_common_ancestor.dat &gt; analyze__map_mutations_last_common_ancestor__control_separated.cfg</pre>
+
+<h2>&nbsp;</h2>
+
+<h2>Wednesday 4/24/12</h2>
+
+<h3>10:35 AM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>The analyze files have finished uploading, so I&rsquo;m going to run them in screen on the HPCC. I would do this work at home if I could get my computer to compile Avida, but it seems to be having some trouble. :( The below should take about 15 minutes or so, since each replicate takes about 20 seconds, and there are 50 replicates.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel07</span></strong>:<strong><span style="color:#0000FF">~/evolution_of_modularity/084_Map_Mutations/config_ci</span>$ </strong>./avida -a -set ANALYZE_FILE analyze__map_mutations_last_common_ancestor__c*_i*.cfg -set EVENT_FILE events_c*_i*.cfg</pre>
+
+<ul>
+	<li>Ok, the files are done analyzing. Zipping up and copying down.</li>
+	<li>LATER: Created script to analyze the downloaded mutation landscape stuff. Three prerequisites:
+	<ul>
+		<li>Catted together the individual landscape files into one big file per replicate.</li>
+		<li>Copied the ancestor down to the mutation landscape data section, for simplicity&rsquo;s sake.</li>
+		<li>Made an analysis script &ldquo;extract_mutation_landscape_metrics.py&rdquo; that would compare the ancestor with the individual landscaping outcomes, and ran it on all the treatments.</li>
+	</ul>
+	</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@atlantis</span></strong>:<strong><span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes/control_intertwined</span></strong>$ rm mutation_landscape_metrics.csv ; for i in {0..50}; do python ../../../../../../scripts/analysis/extract_mutation_landscape_metrics.py ancestor_$i&quot;.dat&quot; mutations_$i&quot;_all__data_only.dat&quot; &gt;&gt; mutation_landscape_metrics.csv ; done</pre>
+
+<ul>
+	<li>Now, I will make a set of bar charts for each metric. Had to do these on Loki, because the stuff doesn&rsquo;t work on Malp, and my libraries on my laptop are fucked. :/</li>
+</ul>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@caninoko-2</span></strong>:<strong><span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/SEPARATED/last_common_ancestor_mutation_landscapes</span></strong>$ python ../../../../../scripts/graph_generation/bar_chart_from_csv.py --ylim 1 --groups 3 --xticks &quot;Control,No Reward,Punish&quot; --legend &quot;FracViable,FracDoesTask1,FracDoesTask2,FracDoesBoth,FracChangedTask1,FracChangedTask2,FracChangedBoth&quot; --pair --title &quot;Mutation Landscape - Separated Ancestor&quot; --ylabel &quot;Fraction&quot; --xlabel &quot;Treatment&quot; --separator &quot;,&quot; mut_metrics.png control_*/mutation_landscape_metrics.csv noreward_*/mutation_landscape_metrics.csv punish_*/mutation_landscape_metrics.csv;
+
+<strong><span style="color:#EE82EE"><strong>rosiec@caninoko-2</strong></span></strong>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes</strong></span></strong>$ python ../../../../../scripts/graph_generation/bar_chart_from_csv.py --ylim 1 --groups 3 --xticks &quot;Control,No Reward,Punish&quot; --legend &quot;FracViable,FracDoesTask1,FracDoesTask2,FracDoesBoth,FracChangedTask1,FracChangedTask2,FracChangedBoth&quot; --pair --title &quot;Mutation Landscape - Intertwined Ancestor&quot; --ylabel &quot;Fraction&quot; --xlabel &quot;Treatment&quot; --separator &quot;,&quot; mut_metrics.png control_*/mutation_landscape_metrics.csv noreward_*/mutation_landscape_metrics.csv punish_*/mutation_landscape_metrics.csv;</pre>
+
+<p><img src="./12.114.__-_Notes_-_Week_of_April_23_2012/1.png" style="height:353px; width:470px" /></p>
+
+<p><img src="./12.114.__-_Notes_-_Week_of_April_23_2012/2.png" style="height:353px; width:470px" /></p>
+
+<p>OFRIA LAB MEETING NOTES:</p>
+
+<ul>
+	<li>Regarding the mutation landscape stuff
+	<ul>
+		<li>Charles: Re-scale the fraction of viable based bars (frac does task, etc.) to be on the same scale as the fraction viable bar.</li>
+		<li>Dave: Separate the gains and lose task portions of FracChangedTask, so as to be able to tell whether it is easier to gain or lose a task.
+		<ul>
+			<li>Normalize to a comparable number of organisms that does the task and a number of organisms that does not do the task for comparison in the gaining/losing of tasks.</li>
+			<li>This will tell me about whether the architectures evolved gain or lose tasks more easily than the control.
+			<ul>
+				<li>Think about this and remember.</li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Thursday 4/25/12</h2>
+
+<h3>12:14 AM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Updated &ldquo;bar_chart_from_csv.py&rdquo; to do multiple columns in one file, AS WELL AS select which columns you want, which will be members of the same group. Limitation: the files must all be the same. This was the case before, but was enforced by there being only a single column. This makes sense from a data processing standpoint.</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF"><strong>/Arcturus/home/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes</strong></span></strong>$ python ../../../../../scripts/graph_generation/bar_chart_from_csv.py --groups 3 --xticks &quot;Control,No Reward,Punish&quot; --columns &quot;5,6,7&quot; --legend &quot;FracChangedTask1,FracChangedTask2,FracChangedBoth&quot; --pair --title &quot;Mutation Landscape&quot; --ylabel &quot;Fraction&quot; --xlabel &quot;Treatment&quot; --separator &quot;,&quot; --ylim 1 mut_metrics.png control_intertwined/mutation_landscape_metrics.csv noreward_intertwined/mutation_landscape_metrics.csv punish_intertwined/mutation_landscape_metrics.csv</pre>
+
+<p><img src="./12.114.__-_Notes_-_Week_of_April_23_2012/3.png" style="height:161px; width:212px" /></p>
+
+<ul>
+	<li>Also, fixed it so I can generate graphs from malp. This forwards the X desktop.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#EE82EE"><strong>rosiec@George-Hammond</strong></span></strong>:<strong><span style="color:#0000FF"><strong>~</strong></span></strong>$ ssh -X malp</pre>
+
+<ul>
+	<li>Now, to add more columns to the file, so as to include straight columns for task loss and gain, as well as making the fractions of task whatever be straight, rather than as fraction of viable.</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF">/Arcturus/home/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes</span></strong>$ python ../../../../../scripts/graph_generation/bar_chart_from_csv.py --groups 3 --xticks &quot;Control,No Reward,Punish&quot; --legend &quot;frac_viable,frac_does_task1,frac_does_task2,frac_does_both,frac_changed_task1,frac_changed_task2,frac_changed_both,frac_gained_task1,frac_gained_task2,frac_gained_both,frac_lost_task1,frac_lost_task2,frac_lost_both,frac_gained_task1_lost_task2,frac_lost_task1_gained_task2&quot; --pair --title &quot;Mutation Landscape&quot; --ylabel &quot;Fraction&quot; --xlabel &quot;Treatment&quot; --separator &quot;,&quot; --ylim 1 mut_metrics.png control_intertwined/mutation_landscape_metrics.csv noreward_intertwined/mutation_landscape_metrics.csv punish_intertwined/mutation_landscape_metrics.csv</pre>
+
+<p><sub><img src="./12.114.__-_Notes_-_Week_of_April_23_2012/4.png" style="height:325px; width:432px" /></sub></p>
+
+<p><img src="./12.114.__-_Notes_-_Week_of_April_23_2012/5.png" style="height:326px; width:434px" /></p>
+
+<ul>
+	<li>Clearly, the fraction of mutants that lost the task is much greater than the fraction of mutants that gained the task. Sigh. This is not conclusive, however, because the ancestor almost certainly did the task.
+	<ul>
+		<li>Do a bar chart of the fraction of the ancestors that did the fluctuating task. This should be easy to retrieve by plotting only column 11 of last_common_ancestor.dat.
+		<ul>
+			<li>I catted &ldquo;ancestor_?+.dat&rdquo; for each treatment into &ldquo;ancestors_all.dat&rdquo;</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF">/Arcturus/home/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/SEPARATED/last_common_ancestor_mutation_landscapes</span></strong>$ python ../../../../../scripts/graph_generation/bar_chart_from_csv.py --groups 3 --xticks &quot;Control,No Reward,Punish&quot; --columns &quot;10,11&quot; --legend &quot;%DoXor,%DoEqu&quot; --pair --title &quot;Task Performance by Last Common Ancestor - Separated&quot; --ylabel &quot;% Performing Task&quot; --xlabel &quot;Treatment&quot; --separator &quot; &quot; --ylim 1 task_performance.png control*/ancestors_all.dat noreward_*/ancestors_all.dat punish_*/ancestors_all.dat</pre>
+
+<p><img src="./12.114.__-_Notes_-_Week_of_April_23_2012/6.png" style="height:164px; width:217px" /><img src="./12.114.__-_Notes_-_Week_of_April_23_2012/7.png" style="height:165px; width:219px" /></p>
+
+<ul>
+	<li>Right, so the ancestor almost certainly does the task, though the average is a little lower for punishment and the fluctuating task. So, I modified &ldquo;extract_last_common_ancestor.py&rdquo; by adding a flag for extracting the last common ancestor that didn&rsquo;t do the task. This should help me get a better picture of what happens in the opposite case.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED</span></strong>$ for i in *_??????; do echo $i; cd $i; python ../../../../../scripts/analysis/extract_last_common_ancestor.py --ancestor_without_fluct data/lineage.dat data/stats.dat &gt; last_common_ancestor__without_fluct.dat ;&nbsp; cd ../; done
+
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF"><strong>~/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED</strong></span></strong>$ python ../../../../scripts/analysis/generate_analyze_mode_files_for_map_mutations.py n*_??????/last_common_ancestor__without_fluct.dat &gt; analyze__map_mutations_last_common_ancestor__without_fluct__noreward_separated.cfg</pre>
+
+<ul>
+	<li>So, it looks like there are no ancestors in the controls that don&rsquo;t perform both tasks, and very few in no-reward. Sigh. So, those comparisons will be a little weird. Even so, I&rsquo;ll set them going and see if I can find a use for them.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel07</span></strong>:<strong><span style="color:#0000FF"><strong>~/evolution_of_modularity/084_Map_Mutations/config_nofluct_ni</strong></span>$ </strong>./avida -a -set ANALYZE_FILE analyze__map_mutations_last_common_ancestor__w*__n*_i*.cfg -set EVENT_FILE events_n*_i*.cfg</pre>
+
+<ul>
+	<li>Those are now done and downloaded. Will continue in the morning.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>5:02 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Going to perform the analysis of the no-fluct tasks. First,I need to put it all in the right format. First, move the data directory into its own at the root of the directory.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF"><strong>~/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes__nofluct/punish_intertwined</strong></span></strong>$ for i in mutations_?; do echo $i; cat $i/*.dat &gt; $i&quot;_all.dat&quot;; done
+
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF"><strong>~/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes__nofluct/punish_intertwined</strong></span></strong>$ for i in mutations_??; do echo $i; cat $i/*.dat &gt; $i&quot;_all.dat&quot;; done
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF"><strong>~/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes__nofluct/punish_intertwined</strong></span></strong>$ for i in mutations_*_all.dat; do cat $i | grep ^[0-9] &gt; $i&quot;_data_only.dat&quot; ; done
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF"><strong>~/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED</strong></span></strong>$ for i in punish_*_??????/*without_fluct.dat ; do val=`wc -l $i | cut -f1 -d&#39; &#39;`; if [ $val -gt 0 ] ; then echo $i ; fi ; done | xargs
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF"><strong>~/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED</strong></span></strong>$ files=( <strong><em>...whatever the output of the prev command was ...</em></strong>)
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED</span></strong>$ for i in {0..50} ; do cp ${files[i]} last_common_ancestor_mutation_landscapes__nofluct/punish_intertwined/ancestor_$i.dat ; done</pre>
+
+<ul>
+	<li>Ok, that&rsquo;s all done. Now to actually extract the mutation landscape metrics.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF"><strong>~/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes__nofluct/noreward_intertwined</strong></span></strong>$ rm mutation_landscape_metrics.csv ; for i in {0..50}; do python ../../../../../../scripts/analysis/extract_mutation_landscape_metrics.py ancestor_$i&quot;.dat&quot; mutations_$i&quot;_all.dat_data_only.dat&quot; &gt;&gt; mutation_landscape_metrics.csv ; done
+</pre>
+
+<ul>
+	<li>Now, generate the bar charts.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FF0000">rosiec@caninoko-2</span></strong>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes__nofluc</strong></span>t</strong> $ python ../../../../../scripts/graph_generation/bar_chart_from_csv.py --groups 2 --xticks &quot;Control,No Reward&quot; --columns &quot;10,11&quot; --legend &quot;%DoXor,%DoEqu&quot; --pair --title &quot;Task Performance by Last Common Ancestor - Intertwined&quot; --ylabel &quot;% Performing Task&quot; --xlabel &quot;Treatment&quot; --separator &quot; &quot; --ylim 1 task_performance.png noreward_*/ancestors_all.dat punish_*/ancestors_all.dat;
+
+<strong><span style="color:#FF0000"><strong>rosiec@caninoko-2</strong></span></strong>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes__no</strong><strong>fluct</strong></span></strong>$ python ../../../../../scripts/graph_generation/bar_chart_from_csv.py --groups 2 --xticks &quot;No Reward,Punish&quot; --legend &quot;frac_viable,frac_does_task1,frac_does_task2,frac_does_both,frac_changed_task1,frac_changed_task2,frac_changed_both,frac_gained_task1,frac_gained_task2,frac_gained_both,frac_lost_task1,frac_lost_task2,frac_lost_both,frac_gained_task1_lost_task2,frac_lost_task1_gained_task2&quot; --pair --title &quot;Mutation Landscape&quot; --ylabel &quot;Fraction&quot; --xlabel &quot;Treatment&quot; --separator &quot;,&quot; --ylim 1 mut_metrics__nofluct.png noreward_*/mutation_landscape_metrics.csv punish_*/mutation_landscape_metrics.csv
+</pre>
+
+<p><img src="./12.114.__-_Notes_-_Week_of_April_23_2012/8.png" style="height:163px; width:217px" />&nbsp;<img src="./12.114.__-_Notes_-_Week_of_April_23_2012/9.png" style="height:164px; width:218px" /></p>
+
+<p><img src="./12.114.__-_Notes_-_Week_of_April_23_2012/10.png" style="height:272px; width:362px" /></p>
+
+<p><strong><img src="./12.114.__-_Notes_-_Week_of_April_23_2012/11.png" style="height:271px; width:360px" /></strong></p>
+
+<ul>
+	<li>So, there are definitely some single mutants that re-enable the task, but way fewer than the ones that lose the task in the opposite case.</li>
+	<li>Since I couldn&rsquo;t compare against a control case, it might be a good idea to make a control by taking the control last common ancestor, and allowing the task to decay (in a punishment and no-reward situation) for the same number of updates as is the down-part of the cycle, and see if there is a difference in the fraction of point mutations that will bring the task back.</li>
+</ul>
+
+<div>
+<p>&nbsp;</p>
+</div>
+
+<p>WEEKLY SUMMARY &ndash; Week of 4/23/12:</p>
+
+<blockquote>
+<ul>
+	<li>Evolution of Modularity project
+	<ul>
+		<li>Extracted last common ancestors from each replicate of each treatment (control, no-reward, and punish; intertwined and separated), and surveyed the functional (task) landscape out to one mutational step away.</li>
+	</ul>
+	</li>
+</ul>
+
+<p><img src="./12.114.__-_Notes_-_Week_of_April_23_2012/12.png" style="height:271px; width:361px" /></p>
+
+<p><img src="./12.114.__-_Notes_-_Week_of_April_23_2012/13.png" style="height:271px; width:361px" /></p>
+
+<ul>
+	<li>Of interest is the fraction of in the punishment treatment mutants that lost task2 (red bar) with a single mutation, as compared to no-reward and control.
+	<ul>
+		<li>Also notice that in the punishment treatments there is a small blip in fraction of mutants that gained the fluctuating task from a single mutation. That is because not quite all the final common ancestors actually performed the fluctuating task, therefore for some replicates, the task was there to be gained.</li>
+	</ul>
+	</li>
+</ul>
+
+<p style="margin-left:1.5in">&nbsp;</p>
+
+<ul>
+	<li>Regardless, is to be expected that it would be easier to lose a task rather than gain it. To that end, I extracted the last common ancestor that did NOT do the fluctuating task from the final common lineage, and performed the same functional landscaping.</li>
+</ul>
+
+<p><img src="./12.114.__-_Notes_-_Week_of_April_23_2012/14.png" style="height:271px; width:360px" /></p>
+
+<p><img src="./12.114.__-_Notes_-_Week_of_April_23_2012/15.png" style="height:271px; width:361px" /></p>
+
+<ul>
+	<li>Note that there is no control in these graphs. This is because under the control, there was no ancestor in the common ancestor line that did not perform the fluctuating task.</li>
+	<li>Of interest is the fraction of mutants that gained task2 (fluctuating) (purply pink two left of the bright blue). Both no-reward and punish both show a small blip, but they are not significantly different from each other. In any case, in order to get a semi-conclusive result, I&rsquo;ll need to produce a control-evolved organism that does not do the fluctuating task (see plans for this week).</li>
+</ul>
+
+<ul>
+	<li>Spent Friday, Saturday, and Sunday manning the SSE booth at the USA Science Festival.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>NEXT WEEK PLANS:</p>
+
+<ul>
+	<li>Evo of Modularity project
+	<ul>
+		<li>Create control organisms to compare mutation landscape and perform landscaping.
+		<ul>
+			<li>Take both-task-performing organism from ech control run, and remove reward for fluctuating task for half a cycle.</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>For e.coli switching environments experiments
+	<ul>
+		<li>Perform relative fitness tournaments (see Notes from Devolab Mtg 4/30/12)</li>
+	</ul>
+	</li>
+</ul>
+</blockquote>
+
+<p style="margin-left:1.0in">&nbsp;</p>

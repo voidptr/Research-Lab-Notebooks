@@ -1,0 +1,280 @@
+<h1>&shy;&shy;Week of February 20, 2012</h1>
+
+<h2>Monday 2/20/12</h2>
+
+<h3>1:49 PM</h3>
+
+<ul>
+	<li>Writing my alife paper.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>8:46 PM</h3>
+
+<ul>
+	<li>Developing new measure for physical modularity, because the current measure can give a highly inflated measure of scatter. I have characterized the properties of three candidate measures: Task Instruction Count/Task Length (end pos &ndash; start pos); Task&rsquo;s Instructions&rsquo; Position STD; and Ratio of Optimal STD against actual STD. &nbsp;The properties I am interested in, in particular are task length insensitivity, and single-outlier robustness.</li>
+	<li>Length insensitivity test:
+	<ul style="list-style-type:circle">
+		<li>&nbsp;I provided tasks that are &ldquo;zoomed&rdquo;. Specifically, they are a set arranged like so:
+		<ul>
+			<li>Set 1: X_X, XX__XX, XXX___XXX</li>
+			<li>Set 2: X__X, XX____XX, XXX______XXX</li>
+			<li>Set 3: X___X, XX______XX, XXX_________XXX</li>
+			<li>Etc.</li>
+		</ul>
+		</li>
+		<li>These tasks in each set all have the same kind of structure, with the same ratio of separation to task-size. Each set is a line. So, I want the slope to be 0, but the intercept to vary based on set.</li>
+	</ul>
+	</li>
+	<li>Outlier test:
+	<ul style="list-style-type:circle">
+		<li>I provided sets of tasks with increasingly separated single instruction outliers. Each set consists of an outlier a consistent length away, and the rest of the task increasing in length.
+		<ul>
+			<li>Set 1: X_X, X_XX, X_XXX</li>
+			<li>Set 2: X__X, X__XX, X__XXX</li>
+			<li>Set 3: X___X, X___XX, X___XXX</li>
+			<li>Etc.</li>
+		</ul>
+		</li>
+		<li>The tasks in each set have the same outlier distance, but increasing mass on the other side, where the task is compact. Each set is a line. So, as the ratio of outlier/compact mass decreases, I want the modularity measure to disregard the outlier. I want this to be independent of gap length, so I want the curves to be pretty tight together.</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<ul>
+	<li>First test the Length/Count Ratio:</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p><img src="./12.051.__-_Notes_-_Week_of_Feb_20_2012/image001.png" style="height:146px; width:202px" /><img src="./12.051.__-_Notes_-_Week_of_Feb_20_2012/image003.png" style="height:146px; width:194px" /></p>
+
+<ul style="list-style-type:circle">
+	<li>Definitely not length sensitive, because it&rsquo;s a ratio that includes length. However, you can see that the spread is pretty bad in the outlier test. The distance of the outlier is having a huge effect.</li>
+</ul>
+
+<ul>
+	<li>STD:</li>
+</ul>
+
+<p><img src="./12.051.__-_Notes_-_Week_of_Feb_20_2012/image005.png" style="height:146px; width:194px" /><img src="./12.051.__-_Notes_-_Week_of_Feb_20_2012/image007.png" style="height:146px; width:194px" /></p>
+
+<ul style="list-style-type:circle">
+	<li>Fails in length insensitivity, and can&rsquo;t tell the difference between different gap sizes when ignoring mass. Outlier test is not terrible. The outliers get disregarded pretty quickly as the mass builds up on the other side. However, length sensitivity is pronounced in the outlier test set, where the bottom line should be FLAT, because the tasks are compact.</li>
+</ul>
+
+<ul>
+	<li>Optimal STD/STD Ratio</li>
+</ul>
+
+<p><img src="./12.051.__-_Notes_-_Week_of_Feb_20_2012/image009.png" style="height:146px; width:194px" /><img src="./12.051.__-_Notes_-_Week_of_Feb_20_2012/image011.png" style="height:146px; width:194px" /></p>
+
+<ul style="list-style-type:circle">
+	<li>Performs almost as well as ct/length, except for a weird glitch in length 1 tasks. The outlier test is FAR better than ct/length, especially as the mass gets significantly to the right, but not as good as STD.</li>
+</ul>
+
+<ul>
+	<li>So, Optimal STD/STD ratio it is! Interpreting this measure should also be very straightforward. Essentially, the closer to the optimum that a task is, the closer the value approaches 1.</li>
+	<li>Modified calculate_physical_modularity.py to use inverse OSTD/STD ratio in addition to the ct/length ratio. They are called scatter and unity, respectively.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>Mtg Notes</p>
+
+<ul>
+	<li>Think about estimating STD and fitting a line (Kernel Density)</li>
+	<li>Rather than calculating length, Charles suggests avg sqrt(gap).</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Wednesday 2/22/12</h2>
+
+<h3>12:18 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Manually ran backfill command (dist_qsub_backfill) on HPCC to submit the rest of my jobs.</li>
+	<li>Will run profile of average sqrt(gap) to see what happens.
+	<ul style="list-style-type:circle">
+		<li>Ok, it&rsquo;s got a really tight profile for the gaps thing (maybe too tight?), but it&rsquo;s length sensitive, like the others. Also, it&rsquo;s not a ratio, so absolute differences are weird.</li>
+	</ul>
+	</li>
+	<li>NEED TO START WRITING AGAIN</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Thursday 2/23/12</h2>
+
+<h3>12:07 AM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Writing</li>
+	<li>Job 065 finished. Copying over the results</li>
+</ul>
+
+<pre>
+[<strong><span style="color:#FF0000"><strong>caninoko@gateway</strong></span></strong>]:[7]:[<strong><span style="color:#0000FF">/mnt/scratch/caninoko/065</span></strong>]:$ mkdir populations/; for i in *_??????; do echo $i; if [ ! -e $i.tar.gz ] ; then mkdir $i/data/populations/; mv $i/data/detail* $i/data/populations/; mv $i/data/populations/ ./populations/$i; tar -cvf $i.tar.gz $i ; else : ; fi; done
+
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/065</span>$</strong> scp caninoko@gateway.hpcc.msu.edu:/mnt/scratch/caninoko/063/*.tar.gz ./
+
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/065</span>$</strong> for i in *.tar.gz; do tar -xvf $i; done; rm *.tar.gz
+</pre>
+
+<p>&nbsp;</p>
+
+<h3>2:35 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Edited 065&rsquo;s analyze.bash. Added more documentation to it, and it should just work to put everything together.</li>
+</ul>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Running the script</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF"><strong>~/research/Devolab Research/evolution_of_modularity/raw_data/065</strong></span></strong>$ ./analyze.bash 1
+
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF"><strong>~/research/Devolab Research/evolution_of_modularity/raw_data/065</strong></span></strong>$ ./analyze.bash 2
+
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF"><strong>~/research/Devolab Research/evolution_of_modularity/raw_data/065</strong></span></strong>$ ./analyze.bash 3 ; ./analyze.bash 4; ./analyze.bash 5; ./analyze.bash 6; ./analyze.bash 7</pre>
+
+<h3>&nbsp;</h3>
+
+<h3>8:58 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Fussing with getting the cladeogram stuff working. Sadly the code in Avida is BROKEN, so I need to harvest the information by hand. To that end, I wrote extract_clade_counts_from_population_dumps.py, which I then copied to the HPCC, to run on dev-amd09, since it allows interactive jobs. I&rsquo;m running them right on HPCC because they use the detail dump files, which are huge, and I&rsquo;d rather not copy over the data just to do this one thing. The individual harvestings take a while, since I can&rsquo;t build on the lineage information from previous dumps. :/ So, I&rsquo;m running them under screen, separated by treatment.</li>
+</ul>
+
+<pre>
+[<strong><span style="color:#FF0000">caninoko@dev-amd09</span></strong>]:[2]:[<strong><span style="color:#0000FF"><strong>/mnt/scratch/caninoko/065</strong></span></strong>]:$ screen -dmS c_i bash -c &#39;for i in c*_i*_??????; do echo $i; cd $i/data/; rm cclade_counts.dat*; python ~/scripts/extract_clade_counts_from_population_dumps.py -v -o cclade_counts.dat -m 15 dominant.dat* ../../populations/$i/detail-?.spop.gz ../../populations/$i/detail-??.spop.gz ../../populations/$i/detail-???.spop.gz ../../populations/$i/detail-????.spop.gz ../../populations/$i/detail-?????.spop.gz ; cd ../../; done;&#39;
+[<strong><span style="color:#FF0000">caninoko@dev-amd09</span></strong>]:[2]:[<strong><span style="color:#0000FF"><strong>/mnt/scratch/caninoko/065</strong></span></strong>]:$ screen -dmS n_i bash -c &#39;for i in n*_i*_??????; do echo $i; cd $i/data/; rm cclade_counts.dat*; python ~/scripts/extract_clade_counts_from_population_dumps.py -v -o cclade_counts.dat -m 15 dominant.dat* ../../populations/$i/detail-?.spop.gz ../../populations/$i/detail-??.spop.gz ../../populations/$i/detail-???.spop.gz ../../populations/$i/detail-????.spop.gz ../../populations/$i/detail-?????.spop.gz ; cd ../../; done;&#39;
+
+[<strong><span style="color:#FF0000">caninoko@dev-amd09</span></strong>]:[2]:[<strong><span style="color:#0000FF"><strong>/mnt/scratch/caninoko/065</strong></span></strong>]:$ screen -dmS p_i bash -c &#39;for i in p*_i*_??????; do echo $i; cd $i/data/; rm cclade_counts.dat*; python ~/scripts/extract_clade_counts_from_population_dumps.py -v -o cclade_counts.dat -m 15 dominant.dat* ../../populations/$i/detail-?.spop.gz ../../populations/$i/detail-??.spop.gz ../../populations/$i/detail-???.spop.gz ../../populations/$i/detail-????.spop.gz ../../populations/$i/detail-?????.spop.gz ; cd ../../; done;&#39;
+
+[<strong><span style="color:#FF0000">caninoko@dev-amd09</span></strong>]:[2]:[<strong><span style="color:#0000FF"><strong>/mnt/scratch/caninoko/065</strong></span></strong>]:$ screen -dmS c_s bash -c &#39;for i in c*_s*_??????; do echo $i; cd $i/data/; rm cclade_counts.dat*; python ~/scripts/extract_clade_counts_from_population_dumps.py -v -o cclade_counts.dat -m 15 dominant.dat* ../../populations/$i/detail-?.spop.gz ../../populations/$i/detail-??.spop.gz ../../populations/$i/detail-???.spop.gz ../../populations/$i/detail-????.spop.gz ../../populations/$i/detail-?????.spop.gz ; cd ../../; done;&#39;
+
+[<strong><span style="color:#FF0000">caninoko@dev-amd09</span></strong>]:[2]:[<strong><span style="color:#0000FF"><strong>/mnt/scratch/caninoko/065</strong></span></strong>]:$ screen -dmS n_s bash -c &#39;for i in n*_s*_??????; do echo $i; cd $i/data/; rm cclade_counts.dat*; python ~/scripts/extract_clade_counts_from_population_dumps.py -v -o cclade_counts.dat -m 15 dominant.dat* ../../populations/$i/detail-?.spop.gz ../../populations/$i/detail-??.spop.gz ../../populations/$i/detail-???.spop.gz ../../populations/$i/detail-????.spop.gz ../../populations/$i/detail-?????.spop.gz ; cd ../../; done;&#39;
+
+[<strong><span style="color:#FF0000">caninoko@dev-amd09</span></strong>]:[2]:[<strong><span style="color:#0000FF"><strong>/mnt/scratch/caninoko/065</strong></span></strong>]:$ screen -dmS p_s bash -c &#39;for i in p*_s*_??????; do echo $i; cd $i/data/; rm cclade_counts.dat*; python ~/scripts/extract_clade_counts_from_population_dumps.py -v -o cclade_counts.dat -m 15 dominant.dat* ../../populations/$i/detail-?.spop.gz ../../populations/$i/detail-??.spop.gz ../../populations/$i/detail-???.spop.gz ../../populations/$i/detail-????.spop.gz ../../populations/$i/detail-?????.spop.gz ; cd ../../; done;&#39;</pre>
+
+<ul>
+	<li>Once the results are in place, I&rsquo;ll run the following to copy them to a single directory, and then copy them down.</li>
+</ul>
+
+<pre>
+[<strong><span style="color:#FF0000">caninoko@dev-amd09</span></strong>]:[2]:[<strong><span style="color:#0000FF"><strong>/mnt/scratch/caninoko/065</strong></span></strong>]:$ for i in *_??????; do echo $i; cp $i/data/cclade* clade_files/$i&quot;_cclade_counts.dat&quot; ; done</pre>
+
+<ul>
+	<li>Ok server crashed, and the cladeograms are totally not very helpful, since the fitness colors suck. So, ok, time for bed.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Friday 2/24/12</h2>
+
+<h3>3:56 PM</h3>
+
+<p>BEACON Mtg Notes:</p>
+
+<ul>
+	<li>Think about pulling the dominant from my run and doing a line of descent to get the modularity of that line back in time.
+	<ul style="list-style-type:circle">
+		<li>Compare this to the population, and see what the deal is.</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Saturday 2/25/12</h2>
+
+<h3>1:17 AM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Earlier, made script to combine the population files into a single file so that I can get actual fitness information from the cladeogram script. This took a long time to run, but it&rsquo;s finally done. Unfortunately, the files are rather&hellip; large. So, I&rsquo;m only copying the combined spop files for the first replicate of each treatment and basing my cladeograms on that. Hopefully that&rsquo;s good enough.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>5:23 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>The server is crashing more and more often. :/ So, we&rsquo;re going to copy all the stuff off. I made a nice bash command that goes through a list of directories, and compresses them with verification, but only doing the ones that haven&rsquo;t already been done. It also excludes some files that aren&rsquo;t needed at all.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@atlantis</span></strong>:<strong><span style="color:#0000FF"><strong>~/research/Devolab Research/evolution_of_modularity/raw_data/043_Selected_Combinatoric_Combinations</strong></span></strong>$ for i in control*_??????; do if [ ! -e $i.tar.gz ] ; then echo &quot;Compressing $i&quot; ; /usr/gnu/bin/tar --exclude=*tasksites*html --exclude=*lineage*html --exclude=.DS_Store* --exclude=.AppleDouble* -Wcvf $i.tar $i; if [ $? == 0 ] ; then echo &quot; TAR OK - $i&quot;; gzip -c $i.tar &gt; $i.tar.gz ; gzip -t $i.tar.gz; if [ $? == 0 ] ; then echo &quot; GZIP OK - $i&quot;; rm $i.tar ; else echo &quot; GZIP FAILED - $i&quot; ; rm $i.tar.gz ; fi ; else echo &quot; TAR FAILED - $i&quot;; rm $i.tar ; fi; else echo &quot;Skipping $i&quot;; fi; done</pre>
+
+<h2>&nbsp;</h2>
+
+<h2>Sunday 2/26/12</h2>
+
+<h3>12:49 AM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Finally got the cladeogram stuff working. Here are some samples</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF"><strong>~/Desktop/tmp_cladeogram</strong></span></strong>$ python /Volumes/rosiec-1/research/Devolab\ Research/scripts/cladeogram/plot_cclade.py -p ~/Desktop/tmp_cladeogram/control_separated__by_parent.png control_separated_650001_cclade_counts.dat.gz control_separated_650001_combined.spop.gz 3600</pre>
+
+<p>Relative Fitness by Parent.</p>
+
+<p><img src="./12.051.__-_Notes_-_Week_of_Feb_20_2012/image013.png" style="height:295px; width:469px" /></p>
+
+<p>Figure 1 - Cladeogram - Control, Separated Ancestr</p>
+
+<p><img src="./12.051.__-_Notes_-_Week_of_Feb_20_2012/image015.png" style="height:291px; width:463px" /></p>
+
+<p>Figure 2 - Cladeogram - No Reward, Separated Ancestor</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p><img src="./12.051.__-_Notes_-_Week_of_Feb_20_2012/image017.png" style="height:291px; width:463px" /></p>
+
+<p>Figure 2 - Cladeogram - Punish, Separated Ancestor</p>
+
+<p><img src="./12.051.__-_Notes_-_Week_of_Feb_20_2012/image019.png" style="height:291px; width:463px" /></p>
+
+<p>Figure 4 - Cladeogram - Control, Intertwined Ancestor</p>
+
+<p>&nbsp;</p>
+
+<p><img src="./12.051.__-_Notes_-_Week_of_Feb_20_2012/image021.png" style="height:291px; width:463px" /></p>
+
+<p>Figure 5 - Cladeogram &ndash; No Reward, Intertwined Ancestor</p>
+
+<p>&nbsp;</p>
+
+<p><img src="./12.051.__-_Notes_-_Week_of_Feb_20_2012/image023.png" style="height:291px; width:463px" /></p>
+
+<p>Figure 6 - Cladeogram - Punish, Intertwined Ancestor</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

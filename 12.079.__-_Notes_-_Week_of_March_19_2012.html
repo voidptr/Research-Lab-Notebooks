@@ -1,0 +1,375 @@
+<h1>Week of March 19, 2012</h1>
+
+<h2>Monday 3/19/12</h2>
+
+<h3>10:19 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Re-creating the lineages with html alignments so I can eyeball it.</li>
+	<li>Preparing my weekly status.</li>
+</ul>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Set analyze mode regenerating the lineage alignments, and mapping the tasks so I can see the phenotypic effect of every mutation.
+	<ul style="list-style-type:circle">
+		<li>Need to write a script to extract the info and create a visualization of some sort, identifying the mutations that affect phenotype only, and coloring where in the genome (relative to the tasks) those mutations occur.</li>
+	</ul>
+	</li>
+	<li>Ran this to generate the coefficient of variation. It may be slightly half-assed because I treated the NANs as 0s, along with means of 0. :/ Don&rsquo;t think this measure will be very useful:</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@atlantis</span></strong>:<strong><span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/069/INTERTWINED</span></strong>$ rm *gapcv.csv; ../../../../scripts/common_modules_and_helper_scripts/combine_columns_by_condition.py -s &quot;,&quot; -f &quot;a / b&quot; noreward___backbone_task_gapstd.csv noreward___backbone_task_gapmean.csv &gt;&gt; noreward___backbone_task_gapcv.csv; ../../../../scripts/common_modules_and_helper_scripts/combine_columns_by_condition.py -s &quot;,&quot; -f &quot;a / b&quot; punish___backbone_task_gapstd.csv punish___backbone_task_gapmean.csv &gt;&gt; punish___backbone_task_gapcv.csv ; ../../../../scripts/common_modules_and_helper_scripts/combine_columns_by_condition.py -s &quot;,&quot; -f &quot;a / b&quot; control___backbone_task_gapstd.csv control___backbone_task_gapmean.csv &gt;&gt; control___backbone_task_gapcv.csv ; ../../../../scripts/common_modules_and_helper_scripts/combine_columns_by_condition.py -s &quot;,&quot; -f &quot;a / b&quot; punish___fluct_task_gapstd.csv punish___fluct_task_gapmean.csv &gt;&gt; punish___fluct_task_gapcv.csv ; ../../../../scripts/common_modules_and_helper_scripts/combine_columns_by_condition.py -s &quot;,&quot; -f &quot;a / b&quot; noreward___fluct_task_gapstd.csv noreward___fluct_task_gapmean.csv &gt;&gt; noreward___fluct_task_gapcv.csv ; ../../../../scripts/common_modules_and_helper_scripts/combine_columns_by_condition.py -s &quot;,&quot; -f &quot;a / b&quot; control___fluct_task_gapstd.csv control___fluct_task_gapmean.csv &gt;&gt; control___fluct_task_gapcv.csv</pre>
+
+<ul>
+	<li>REVIEW
+	<ul style="list-style-type:circle">
+		<li>Job 069_Mutation_Rate_0.00075__Written_Ancestors
+		<ul>
+			<li>Written separated ancestor</li>
+			<li>Evolved intertwined ancestor</li>
+			<li>30k updates</li>
+		</ul>
+		</li>
+		<li>071_Mut_Rate_0.001__Written_Ancestors
+		<ul>
+			<li>Written separated ancestor</li>
+			<li>Evolved intertwined ancestor</li>
+			<li>30k updates</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Just submitted Job 077, which is 069 (0.00075 mutation rate), for 60k updates. This should be long enough to get the modularity basement.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Tuesday 3/20/12</h2>
+
+<h3>3:42 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Zipping up and pulling down 077.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Wednesday 3/21/12</h2>
+
+<h3>4:33 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>077 is screwed up. I didn&rsquo;t analyze 30-60k, and it was missing the script to turn the data to organisms. Fixed the problems, and resubmitted.</li>
+	<li>Converted all of my notes files to .doc format, since it compresses way better than RTF, and dropbox can open it just fine. I can&rsquo;t open it in Notability, but that&rsquo;s ok, because Notability couldn&rsquo;t see the images in my RTFs anyway, which is part of the point.</li>
+	<li>Changed the numbering scheme of my notebook to be YY.DDD.n (DDD is day of year). Week of X have an _ instead of an n. Renumbered my old notebooks/notes/etc. to match. Now everything sorts gracefully.</li>
+</ul>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Working on creating a script to produce a plot of all the organisms tasks arrangements for a lineage. Modifying &ldquo;draw_map_task.py&rdquo; to take in a stack of map task files which I have defined the columns to look at for the various things. &hellip; Does it already do this? Sort of</li>
+</ul>
+
+<p style="margin-left:.5in"><img src="./12.079.__-_Notes_-_Week_of_March_19_2012/image001.png" style="height:225px; width:300px" /><img src="./12.079.__-_Notes_-_Week_of_March_19_2012/image003.png" style="height:225px; width:300px" /></p>
+
+<p style="margin-left:.5in">(above &ndash; punish separated (left), punish intertwined (right) )</p>
+
+<p style="margin-left:.5in">&nbsp;</p>
+
+<ul>
+	<li>Generated the above graphs.</li>
+	<li>This is GREAT. The vast majority of the backbone task overlaps with the fluctuating task (the purple), and the blue sections are those bits of the fluctuating task that are kicked off to the right. The effect is really clear in the intertwined ancestor (right).</li>
+	<li>The left side shows an interesting effect. I looks like MUCH of the backbone task can be coopted to perform the fluctuating task, because we get that from a SINGLE mutation.</li>
+</ul>
+
+<p style="margin-left:.5in">&nbsp;</p>
+
+<p style="margin-left:.5in"><img src="./12.079.__-_Notes_-_Week_of_March_19_2012/image005.png" style="height:225px; width:300px" /><img src="./12.079.__-_Notes_-_Week_of_March_19_2012/image007.png" style="height:225px; width:300px" /></p>
+
+<p style="margin-left:.5in">(above &ndash; noreward separated (left), noreward intertwined (right) )</p>
+
+<p style="margin-left:.5in">&nbsp;</p>
+
+<ul>
+	<li>TODO: Double-check that there aren&rsquo;t bugs. Clearly, my fitness values aren&rsquo;t getting accounted for, because my left-most bit and right-most bit (repro loop), show up as overlapping, which doesn&rsquo;t make sense. The rest looks ok, but best make sure.</li>
+	<li>TODO: Look at including mutation information, and somehow high-light degenerate sites (sites that didn&rsquo;t mutate, but are now non-functional). Use the alignment for this (lineage.dat).</li>
+	<li>TODO: Find some way to identify what phase the task organisms were in. From lineage.dat maybe?</li>
+</ul>
+
+<p style="margin-left:.5in">&nbsp;</p>
+
+<h2>Thursday 3/22/12</h2>
+
+<h3>1:14 AM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Created derivative scripts from draw_task:
+	<ul style="list-style-type:circle">
+		<li>draw_map_task__using_lineage_and_alignment.py, which draws the following. Singlepoint mutations are in white.
+		<ul>
+			<li>TODO:
+			<ul>
+				<li>Add support for in/dels</li>
+				<li>Add support for degenerate sections</li>
+				<li>Add support for displaying aligned sequences. (this is probably a prereq for the above two items)</li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<pre>
+python ../../../../../scripts/evolution_of_modularity_pipelines/draw_map_task__using_lineage_and_alignment.py -v -a ~/Desktop/punish_sep_29_lineage_tasks__2.png 5 6 8 ../../lineage_results_069/punish_separated_690029__detail-30000.spop.gz_lineage.dat ./</pre>
+
+<p style="margin-left:.5in"><img src="./12.079.__-_Notes_-_Week_of_March_19_2012/image009.png" style="height:300px; width:400px" /></p>
+
+<p style="margin-left:.5in">&nbsp;</p>
+
+<h2>Friday 3/23/12</h2>
+
+<h3>2:39 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Generated reasonably accurate lineage graphs. Yay! These get generated on a run by run basis, so they can&rsquo;t really go in makegraphs.py&hellip; or can they? :P</li>
+</ul>
+
+<pre>
+<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/Devolab Research/evolution_of_modularity/raw_data/077/SEPARATED</strong></span></strong>$ for i in *_??????; do if [ -e $i/data ] ; then cd $i/data/;&nbsp; python ../../../../../../scripts/evolution_of_modularity_pipelines/draw_map_task__using_lineage_and_alignment.py --aligned_lineage_map --lineage_map --task_map --mutation_map --aligned_task_map --show_mutations --show_phase --title &quot;$i&quot; -v -a ../.png 5 6 8 lineage.dat ./phenotype/; cd ../../ ; fi ; done ;</pre>
+
+<p style="margin-left:.5in">&nbsp;</p>
+
+<p style="margin-left:.5in"><img src="./12.079.__-_Notes_-_Week_of_March_19_2012/image011.png" style="height:150px; width:200px" />&nbsp;<img src="./12.079.__-_Notes_-_Week_of_March_19_2012/image013.png" style="height:150px; width:200px" /><img src="./12.079.__-_Notes_-_Week_of_March_19_2012/image015.png" style="height:150px; width:200px" /></p>
+
+<p style="margin-left:.5in">&nbsp;</p>
+
+<ul>
+	<li>Generated functional modularity graphs for 077. Looks like the controls STILL haven&rsquo;t leveled off, though no-reward definitely did. So, I started job 078 to run for 100k updates, and hopefully that will be the end of it.</li>
+</ul>
+
+<p style="margin-left:.5in">&nbsp;</p>
+
+<p style="margin-left:.5in"><img src="./12.079.__-_Notes_-_Week_of_March_19_2012/image017.png" style="height:150px; width:200px" />&nbsp;<img src="./12.079.__-_Notes_-_Week_of_March_19_2012/image019.png" style="height:150px; width:200px" /></p>
+
+<ul>
+	<li>Trying out a new template for describing my experiments:</li>
+	<li>Job 078_Mut_Rate_0.00075__Written_Ancestors__100k
+	<ul style="list-style-type:circle">
+		<li>General Settings:
+		<ul>
+			<li>100k updates</li>
+			<li>Mut Rate 0.00075</li>
+			<li>No resources</li>
+		</ul>
+		</li>
+		<li>Experimental Settings:
+		<ul>
+			<li>Treatment &ndash; Control
+			<ul>
+				<li>Constant environment</li>
+				<li>XOR &ndash; POW 3 &ndash; Max 1</li>
+				<li>EQU &ndash; POW 5 &ndash; Max 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</li>
+			</ul>
+			</li>
+			<li>Treatment &ndash; No Reward
+			<ul>
+				<li>Fluctuating Environment &ndash; 1k cycle in two parts
+				<ul style="list-style-type:circle">
+					<li>Startup &ndash; 0-1k updates
+					<ul>
+						<li>EQU &ndash; POW 5</li>
+						<li>XOR &ndash; POW 3</li>
+					</ul>
+					</li>
+					<li>Experiment &ndash; 1k+ Fluct starts
+					<ul>
+						<li>1<sup>st</sup> half &ndash; 500 updates
+						<ul>
+							<li>EQU &ndash; POW 0</li>
+							<li>XOR &ndash; POW 3 (backbone task)</li>
+						</ul>
+						</li>
+						<li>2<sup>nd</sup> half &ndash; 500 updates
+						<ul>
+							<li>EQU &ndash; POW 5</li>
+							<li>XOR &ndash; POW 3 (backbone task)</li>
+						</ul>
+						</li>
+					</ul>
+					</li>
+				</ul>
+				</li>
+			</ul>
+			</li>
+			<li>Treatment &ndash; Punish
+			<ul>
+				<li>Fluctuating Environment &ndash; 1k cycle in two parts
+				<ul style="list-style-type:circle">
+					<li>Startup &ndash; 0-1k updates
+					<ul>
+						<li>EQU &ndash; POW 5</li>
+						<li>XOR &ndash; POW 3</li>
+					</ul>
+					</li>
+					<li>Experiment &ndash; 1k+ &nbsp;Fluct starts
+					<ul>
+						<li>1<sup>st</sup> half &ndash; 500 updates
+						<ul>
+							<li>EQU &ndash; POW -5</li>
+							<li>XOR &ndash; POW 3 (backbone task)</li>
+						</ul>
+						</li>
+						<li>2<sup>nd</sup> half &ndash; 500 updates
+						<ul>
+							<li>EQU &ndash; POW 5</li>
+							<li>XOR &ndash; POW 3 (backbone task)</li>
+						</ul>
+						</li>
+					</ul>
+					</li>
+				</ul>
+				</li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p style="margin-left:3.5in">&nbsp;</p>
+
+<p style="margin-left:1.0in">&nbsp;</p>
+
+<ul>
+	<li>Also, still working on getting the legends to show up right, on both the lineage map figures, and on the regular figures (above)</li>
+	<li>TODO: figure out how to measure the mutational rates in and out of functional areas. Based on the lineage maps, I think I need to measure the following:
+	<ul style="list-style-type:circle">
+		<li>Mutations in functional areas
+		<ul>
+			<li>Mutations in areas that overlap</li>
+			<li>Mutations in areas that do not overlap</li>
+		</ul>
+		</li>
+		<li>Mutations in degenerate areas</li>
+		<li>Mutations in the rest of it (including the death-zones)</li>
+	</ul>
+	</li>
+</ul>
+
+<p style="margin-left:.5in">&nbsp;</p>
+
+<p style="margin-left:.5in">Thankfully, I have the lineage_map script that already collects a lot of this information, so I can just base my analysis script on that to pull it the data out of the lineage.dat and task_map.dat. They seem to go pretty fast, so, while ultimately, I may integrate them into the hpcc work-flow, I don&rsquo;t really have to.</p>
+
+<p style="margin-left:.5in">&nbsp;</p>
+
+<h3>7:15 PM</h3>
+
+<p>THOUGHTS:</p>
+
+<ul>
+	<li>As I&rsquo;m thinking about the problem of what to look at, it occurs to me that <strong>where</strong> the mutations happen is less important than <strong>what</strong> they affect. You can have mutations that do nothing while being right on top of a section, and you can have mutations far away that do a lot elsewhere.</li>
+</ul>
+
+<p style="margin-left:.5in">So, maybe I should be thinking about measuring how many mutations are in a genome, and how many sites they changed the function of. If there are multiple mutations, it will be impossible to ascribe responsibility to individual ones, but we can just partition that out.</p>
+
+<p style="margin-left:.5in">So, there are a few different classes of mutations:</p>
+
+<ul style="list-style-type:circle">
+	<li>Functional site mutations</li>
+	<li>Upstream/downstream mutations that affect function</li>
+	<li>Mutations that do not affect function at all. (silent mutations)</li>
+</ul>
+
+<p style="margin-left:.5in">What functions? Can we distinguish this way?</p>
+
+<ul style="list-style-type:circle">
+	<li>Functions that are at particular types of sites?
+	<ul>
+		<li>Backbone, Fluct, and Overlapping?</li>
+	</ul>
+	</li>
+</ul>
+
+<p style="margin-left:.5in">So, compare the sites that are affected by mutations.</p>
+
+<ul style="list-style-type:circle">
+	<li>Count the mutations</li>
+	<li>Count and identify the functional sites that are affected.</li>
+</ul>
+
+<p style="margin-left:.5in">Because the comparisons are purely parent to child, there are no hidden mechanisms, and the whole flow makes sense because we are looking at the ultimate survivor, so historical contingency works in that survivor&rsquo;s favor.</p>
+
+<ul style="list-style-type:circle">
+	<li>Graph this out by taking a count of each mutation/effect type and graph a line for each by lineage.</li>
+</ul>
+
+<p style="margin-left:.5in">&nbsp;</p>
+
+<p style="margin-left:.5in">Further, if we want to show a general environmental flow, we can look at the lineages of the entire historical population, which should show progressively more skewed mutational effects (assuming that the environment is having this effect).</p>
+
+<ul style="list-style-type:circle">
+	<li>You can do this by looking at every entry in the detail file, and just compare to the parent and weight by num_cpu.</li>
+</ul>
+
+<p style="margin-left:.5in">&nbsp;</p>
+
+<h2>Sunday 3/25/12</h2>
+
+<h3>11:35 AM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Submitted job 079 (200k) &ndash; to see if some of the trends from 078 (below) continue to play out over 200k updates.</li>
+	<li>Generated plots from 078 (100k).</li>
+</ul>
+
+<p style="margin-left:.5in"><img src="./12.079.__-_Notes_-_Week_of_March_19_2012/image021.png" style="height:225px; width:300px" /><img src="./12.079.__-_Notes_-_Week_of_March_19_2012/image023.png" style="height:225px; width:300px" /></p>
+
+<p style="margin-left:.5in"><img src="./12.079.__-_Notes_-_Week_of_March_19_2012/image025.png" style="height:225px; width:300px" /><img src="./12.079.__-_Notes_-_Week_of_March_19_2012/image027.png" style="height:225px; width:300px" /></p>
+
+<p style="margin-left:.5in"><img src="./12.079.__-_Notes_-_Week_of_March_19_2012/image029.png" style="height:225px; width:300px" /><img src="./12.079.__-_Notes_-_Week_of_March_19_2012/image031.png" style="height:225px; width:300px" /></p>
+
+<ul>
+	<li>So, when you run things out longer, you get a LOT of fragmentation in the No Reward scenario, particularly the intertwined ancestor. Two thoughts about what is happening.
+	<ul style="list-style-type:circle">
+		<li>&nbsp;Over time, in No Reward, the fluctuating task goes from Selection&agrave;Drift&agrave;Selection&agrave;Drift. This leads to fragmentation.</li>
+		<li>In the intertwined treatment, when you fragment, you could go anywhere, and frequently do. Whereas in the separated treatment, you have the separate task acting as a redundant space to spread into. Because it is relatively close to you, the gap measures are smaller.
+		<ul>
+			<li>Prediction. Over a long enough time-span, the separated ancestor will end up fragmenting more too, as it chews up the opportunities presented by the nearby redundant instructions.</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p style="margin-left:.5in"><img src="./12.079.__-_Notes_-_Week_of_March_19_2012/image033.png" style="height:225px; width:300px" /><img src="./12.079.__-_Notes_-_Week_of_March_19_2012/image035.png" style="height:225px; width:300px" /></p>
+
+<ul>
+	<li>Functional modularity is still acting as seen before, though there doesn&rsquo;t seem to be a difference in the separated treatment between where the overlap level ended up. This bit seems really variable depending on your seed. The intertwined treatment doesn&rsquo;t seem nearly as variable, but you can see that after a while, the no-reward treatment climbs up toward the punishment treatment.</li>
+	<li>A lot of this is back to the drawing board because when I dropped the mutation rate, it takes that many times as long for things to settle out. And because there are longer &ldquo;ecological&rdquo; periods, the population dynamics and the reward dynamics come to the fore. Which I guess is fine&hellip;
+	<ul style="list-style-type:circle">
+		<li>High Mutation Rate * Low Time != Low Mutation Rate * High Time. :(</li>
+	</ul>
+	</li>
+	<li>This whole thing seems really sloppy to me. :/</li>
+</ul>
+
+<p style="margin-left:.5in">&nbsp;</p>
+
+<p>&nbsp;</p>

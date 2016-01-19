@@ -1,0 +1,471 @@
+<h1>Week of November 24, 2014</h1>
+
+<h2>Monday, Nov 24, 2014</h2>
+
+<h3>Log 01:48PM</h3>
+
+<p>Hey, look! It&#39;s Monday. I&#39;m working from work today, which is exciting and different. :)</p>
+
+<p>Right, so I did some things. I made another analysis script. :) Posted for posterity here:</p>
+
+<pre>
+#!/bin/bash
+
+me=`basename $0`
+
+if [ $# -lt 2 ]
+then
+    echo &quot;usage ${me} &lt;description&gt; &lt;prefix&gt;&quot;
+    echo &quot;e.g. % ${me} \&quot;118\&quot; 118&quot;
+    exit
+fi
+
+description=$1
+prefix=$2
+
+echo &quot;Description: &quot; $1 ${1}
+echo &quot;Prefix: &quot; $2 ${2}
+
+module load matplotlib
+
+each_dir() {
+
+    pattern=$1
+    funct=$2
+
+    for k in *_${prefix}???;
+    do
+        if [[ -e ${k}/${pattern} ]]
+        then
+            echo $k;
+            cd $k/${pattern};
+            pwd;
+              
+            eval ${funct}
+            
+            cd -;
+        fi ;
+    done
+}
+
+each_root_dir() {
+
+    pattern=$1
+    funct=$2
+
+    echo &quot;1&quot;
+
+    roots=( Ctrl ScenA ScenB ScenC ScenD ScenE )
+    for root in ${roots[@]}
+    do
+        echo $root
+
+        for k in ${root}*_${prefix}???;
+        do
+            echo $k
+            path=${k}/${pattern}
+            if [[ -f $path ]]
+            then
+                echo $k;
+                cd $k/${pattern};
+                pwd;
+              
+                eval ${funct}
+            
+                cd -;
+            fi ;
+        done
+    done
+}
+
+extract_forcedmatings() {
+
+    rm *recombinant_viability.csv    
+    
+    roots=( Ctrl ScenA ScenB ScenC ScenD_Drift ScenE )
+    for root in ${roots[@]}
+    do
+        dobit=true
+
+        for k in ${root}*_${prefix}???;
+        do
+            path=${k}/data__${root}_analyze
+            file=${path}/detail_avg__baselined.dat
+            if [ -e $file ]
+            then
+                cd $path;
+                pwd;
+
+                if [ $dobit == true ]
+                then
+                    part1=`python ~/research_scripts/common/extract_single_column_to_csv.py 1 detail_avg__baselined.dat`
+                    header=&quot;#&quot;${part1}
+                    echo $header &gt; ../../${root}_recombinant_viability.csv
+                    dobit=false
+                fi
+                
+                python ~/research_scripts/common/extract_single_column_to_csv.py 2 detail_avg__baselined.dat &gt;&gt; ../../${root}_recombinant_viability.csv
+            
+                cd -;
+            fi ;
+        done
+    done
+
+    #cat detail_avg.dat | tail -n +26 &gt;&gt; detail-total.spop;
+   
+    
+}
+
+plot_forcedmatings() {
+
+        python ~/research_scripts/graph_generation/bar_chart_from_csv.py \
+        -x Treatment -y &quot;Viability&quot; -t &quot;Forced Matings (unfiltered) - Viability - ${description}&quot; --pair --groups=5 \
+        --xticks=&quot;Drift,A,B,C,E&quot; --legend=&quot;ViabilityAA,ViabilityBB,ViabilityAB&quot; \
+        --columns=&quot;11,17,5&quot; --error \
+        ${prefix}_forcedmatingviability_unfiltered.png \
+        ScenD_Drift_recombinant_viability.csv \
+        ScenA_recombinant_viability.csv \
+        ScenB_recombinant_viability.csv \
+        ScenC_recombinant_viability.csv \
+        ScenE_recombinant_viability.csv
+
+        python ~/research_scripts/graph_generation/bar_chart_from_csv.py \
+        -x Treatment -y &quot;Viability&quot; -t &quot;Forced Matings (viable parents) - Viability - ${description}&quot; --pair --groups=5 \
+        --xticks=&quot;Drift,A,B,C,E&quot; --legend=&quot;ViabilityAA,ViabilityBB,ViabilityAB&quot; \
+        --columns=&quot;14,20,8&quot; --error \
+        ${prefix}_forcedmatingviability_filtered.png \
+        ScenD_Drift_recombinant_viability.csv \
+        ScenA_recombinant_viability.csv \
+        ScenB_recombinant_viability.csv \
+        ScenC_recombinant_viability.csv \
+        ScenE_recombinant_viability.csv
+
+        roots=( ScenA ScenB ScenC ScenD_Drift ScenE )
+        for root in ${roots[@]}
+        do
+            echo $root
+            python ~/research_scripts/graph_generation/scatterplot_from_csv.py \
+            -x &quot;AB Recombinant Viability&quot; -y &quot;AA and BB Recombinant Viability&quot; \
+            -t &quot;${root} - Unfiltered AA/BB vs AB Recombinant Viability - ${description}&quot; \
+            -c &quot;5,11,17&quot; \
+            ${prefix}_${root}_AABBvsAB_unfiltered_viability.png \
+            ${root}_recombinant_viability.csv \
+            ${root}_recombinant_viability.csv \
+            ${root}_recombinant_viability.csv
+            echo &quot; &quot;
+            python ~/research_scripts/graph_generation/scatterplot_from_csv.py \
+            -x &quot;AB Recombinant Viability&quot; -y &quot;AA and BB Recombinant Viability&quot; \
+            -t &quot;${root} - Filtered AA/BB vs AB Recombinant Viability - ${description}&quot; \
+            -c &quot;8, 14, 12&quot; \
+            ${prefix}_${root}_AABBvsAB_filtered_viability.png \
+            ${root}_recombinant_viability.csv \
+            ${root}_recombinant_viability.csv \
+            ${root}_recombinant_viability.csv
+
+        done
+}
+
+#extract_forcedmatings
+plot_forcedmatings
+
+</pre>
+
+<p><img alt="" src="./14.328.__-_Notes_-_Week_of_November_24_2014/118_forcedmatingviability_filtered.png" style="height:300px; width:400px" /><img alt="" src="./14.328.__-_Notes_-_Week_of_November_24_2014/118_forcedmatingviability_unfiltered.png" style="border-style:solid; border-width:0px; height:300px; width:400px" /></p>
+
+<p>So, this is mildly depressing.</p>
+
+<p>Also, I generated a bunch of pretty much uninformative scatter plots, because I am hella dumb.</p>
+
+<p><img alt="" src="./14.328.__-_Notes_-_Week_of_November_24_2014/118_ScenA_AABBvsAB_filtered_viability.png" style="height:150px; width:200px" /><img alt="" src="./14.328.__-_Notes_-_Week_of_November_24_2014/118_ScenA_AABBvsAB_unfiltered_viability.png" style="height:150px; width:200px" /><img alt="" src="./14.328.__-_Notes_-_Week_of_November_24_2014/118_ScenB_AABBvsAB_filtered_viability.png" style="height:150px; width:200px" /><img alt="" src="./14.328.__-_Notes_-_Week_of_November_24_2014/118_ScenB_AABBvsAB_unfiltered_viability.png" style="height:150px; width:200px" /></p>
+
+<p><img alt="" src="./14.328.__-_Notes_-_Week_of_November_24_2014/118_ScenC_AABBvsAB_filtered_viability.png" style="height:150px; width:200px" /><img alt="" src="./14.328.__-_Notes_-_Week_of_November_24_2014/118_ScenC_AABBvsAB_unfiltered_viability.png" style="height:150px; width:200px" /><img alt="" src="./14.328.__-_Notes_-_Week_of_November_24_2014/118_ScenD_Drift_AABBvsAB_filtered_viability.png" style="height:150px; width:200px" /><img alt="" src="./14.328.__-_Notes_-_Week_of_November_24_2014/118_ScenD_Drift_AABBvsAB_unfiltered_viability.png" style="height:150px; width:200px" /></p>
+
+<p><img alt="" src="./14.328.__-_Notes_-_Week_of_November_24_2014/118_ScenE_AABBvsAB_filtered_viability.png" style="height:150px; width:200px" /><img alt="" src="./14.328.__-_Notes_-_Week_of_November_24_2014/118_ScenE_AABBvsAB_unfiltered_viability.png" style="height:150px; width:200px" /></p>
+
+<p>----</p>
+
+<p>As of the last dated update, I had a nice conversation with Kendall about how to use my data. She suggested using a multiple regression, which would give me the strength of each of the coefficients. This is so that I can differentiate between the effect of having viable parents, vs unfiltered parents VS the effect of sympatry/allopatry.</p>
+
+<p style="margin-left:40px">I did some reading, re-familiarizing myself with Ordinary Least Squares / Linear Regressions. The resulting output is a plotted line, where there is an intercept (coefficient beta_0), and a slope (coefficient beta_1). The slope and intercept are derived using the OLS method (big old linear algebra equation) to solve for the minimum distance between your points and the line described by the coefficients.</p>
+
+<p style="margin-left:40px">So, that&#39;s all fine. I remember what it&#39;s supposed to be doing. That&#39;s good.</p>
+
+<p>Ok, so here&#39;s what I already have. I know that there is a big increase in pre-zygotic isolation when allopatry + sexual selection are introduced. I also know that without sexual selection, allopatry doesn&#39;t really do anything.</p>
+
+<p style="margin-left:40px">Limitations to my approach: Sexual selection is the only mechanism by which they can choose their mates. AND it&#39;s a purely speciation-based sexual selection. The fact that they&#39;re choosing a mate based on targeting a value, as opposed to maximizing a value, concerns me, since I&#39;m not sure that it matches what organisms do in nature. I feel like I want to refine the system to have some <strong>huge number of possible traits, and let them choose among them, and then maximize on those traits</strong>. This feels like it would be more realistic. But would this be too complicated? And what mechanism would they use to max on those traits? Would they fill their genomes to +1 it, <strong>or would a single instruction, or a handful be sufficient to max it,</strong> without needing to COMPLETELY FILL THEIR GENOMES. :/</p>
+
+<p style="margin-left:40px">Separately, does it make sense that the traits that they are focusing on be random? Is that realistic in the how nature does it? Are the traits random? This feels like a separate question. It&#39;s not obvious that the traits HAVE to be condition dependent, though we can&#39;t really find many examples in nature that aren&#39;t condition dependent. But, I found a paper that seems to indicate that they don&#39;t have to continue to be condition dependent. [<a href="http://scholar.google.com/scholar?cluster=14282707546808572799&amp;hl=en&amp;as_sdt=0,23&amp;as_vis=1">Johnstone, R. A., S. A. Rands, and M. R. Evans. &quot;Sexual selection and condition dependence.&quot; Journal of evolutionary biology 22.12 (2009): 2387-2394.</a>] SO, maybe having a single instruction or handfull of duplicated instructions for &quot;enlargement/enhancement&quot; would make sense?</p>
+
+<h3>&nbsp;</h3>
+
+<h3>Log 6:16p</h3>
+
+<p>Had some conversations with various folks today (THIS IS WHY I COME IN TO WORK).</p>
+
+<p>I&#39;ve decided that my overarching work will be in evolvability.</p>
+
+<ul style="margin-left:40px">
+	<li>Sexual selection and evolvability
+	<ul>
+		<li>Other Sexual Selection Work</li>
+	</ul>
+	</li>
+	<li>Sexual reproduction and evolvability</li>
+	<li>Horizontal Gene Transfer and evolvability
+	<ul>
+		<li>Other HGT work</li>
+	</ul>
+	</li>
+	<li>Modularity and Evolvability
+	<ul>
+		<li>Other modularity work</li>
+	</ul>
+	</li>
+	<li>Cyclically changing environments and evolvability</li>
+	<li>Environmental change and evolvability (NEW)
+	<ul>
+		<li>Hypothesis: Organisms that have adapted to a series of new environments will more easily adapt to a new environment.
+		<ul>
+			<li>Population X, starting from default blank, is allowed to adapt to an environment J, for 1m updates.</li>
+			<li>Population Y, starting from default blank, is subjected to a series of intervening environments, and allowed to adapt to them (A-J), each for 100k updates, totally 1m updates.</li>
+			<li>Subject X and Y to environment K. Measure how fast they adapt to K.</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Evolvability. What does it mean? Is it evolutionary potential?</li>
+</ul>
+
+<h4>EVOLVABILITY</h4>
+
+<p style="margin-left:40px">Per wikipedia:</p>
+
+<blockquote>
+<p style="margin-left:40px"><cite>Evolvability is defined as the capacity of a system for adaptive evolution. Evolvability is the ability of a population of organisms to not merely generate genetic diversity, but to generate adaptive genetic diversity, and thereby evolve through natural selection.</cite></p>
+</blockquote>
+
+<p style="margin-left:40px">Actually, the wikipedia article on evolvability is pretty nice, especially the bit about alternate definitions.</p>
+
+<p>------</p>
+
+<p>I want to make a book of my lab notebooks, where I can include papers that I&#39;ve read or am interested in, and can then take notes on. Also, the physical lab notebook will be easier to page through than my electronic documents. To that end, I need to finish bringing in all my previous lab notebook entries into noodle. The formatting is key for my project.</p>
+
+<p>Features to implement with noodle:</p>
+
+<ul>
+	<li><s>add keyboard shortcut for starting an unordered list. Command+* perhaps?</s></li>
+	<li>search box to home page that&#39;ll grep through, and provide search results.</li>
+	<li>appify the script, so that I can double-click it have it start up.</li>
+	<li>storing the documents in &quot;My Documents&quot; or &quot;Documents&quot; folder.</li>
+	<li>configuration page</li>
+</ul>
+
+<p>------</p>
+
+<p>Noodle lost its shit when I rebooted, and I lost my thoughts from meeting with charles. I *think* they were</p>
+
+<ul>
+	<li>measure fitness of organisms</li>
+	<li>switch to non-fixed length</li>
+</ul>
+
+<p>Also, I started a couple of runs (120, 121):</p>
+
+<ul>
+	<li>120_LongRuns_HardAndSoftMatch
+	<ul>
+		<li>Runs to 1m updates, using the same env as the previous runs</li>
+	</ul>
+	</li>
+	<li>121_NonFixedLength_HardAndSoftMatch
+	<ul>
+		<li>Runs to 300k, like others, but non-fixed length</li>
+	</ul>
+	</li>
+</ul>
+
+<h3>&nbsp;</h3>
+
+<h3>Log 8:43p</h3>
+
+<p>I generated graphs for 118, pulling out the fitnesses and the number of different tasks. There&#39;s something wrong with my total task count</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Tuesday Nov 25, 2014</h2>
+
+<h3>Log 3:55p</h3>
+
+<p>In the meeting with Stickleback folks, showed my stuff</p>
+
+<ul>
+	<li>measure plasticity of individual samples.</li>
+	<li>look at in/dels for mutations (similar to 120 and 121)</li>
+</ul>
+
+<p>Need to add 122 - Based on 121, but, add indel</p>
+
+<p>----</p>
+
+<ul>
+	<li>Email helix videos to folks in the lab.</li>
+</ul>
+
+<h2>&nbsp;</h2>
+
+<h2>Thursday, Nov 27, 2014</h2>
+
+<h3>Log 2:12p</h3>
+
+<p>Updated noodle to save a .md copy alongside the .html copy. Dunno how that&#39;ll play out long-term, but it&#39;s probably ok.</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Friday, Nov 28, 2014</h2>
+
+<h3>Log 2:42p</h3>
+
+<p>Made a bunch of updates to noodle, as well as finished importing every single log I could get my hands on, back to 2011. Exceptions include the notebooks that are in OneNote (.one) format, that I can&#39;t seem to import without having access to a windows machine with OneNote on it. :/ Also made a lot of progress on formatting these old logs so that they look consistent with the modern logs.</p>
+
+<p>&nbsp;</p>
+
+<h2>Saturday, Nov 29, 2014</h2>
+
+<h3>Log 10:36p</h3>
+
+<p>Ok, after a senseless ridiculous push, I&#39;ve formatted every single entry in my lab notebook to match the latest correct formatting for dates, spacing, console commands, etc. It&#39;s all coherent, and looks moderately pretty. I am finally ready to put everything together into a book of my notes! Hooray! :D Now, it&#39;s just the work of printing out booklet versions and binding them all into a book. This I can do more slowly. But, the major part of my Thanksgiving procrastination work is complete. Uh, I should probably get back to research now. Party&#39;s over. :P</p>
+
+<p>&nbsp;</p>
+
+<h2>Sunday, Nov 30, 2014</h2>
+
+<h3>Log 4:15p</h3>
+
+<p>Spending the day with K in his new office. It&#39;s pretty swank. I also procrastinated pretty catastrophically again. I&#39;ve now got printable PDFs of all the bits and pieces that I&#39;m going to bind into the books. :D</p>
+
+<h3 class="item_body_heading_3">Log 6:20p</h3>
+
+<p>Ok, I went and grabbed Wendy&#39;s, and put together the Signature and Booklet PDFs. Only thing left is to head to BEACON and print. :) Now, I should spend some time analyzing my new data. I&#39;m going to apply the same methods that I used for 118/119.</p>
+
+<ul>
+	<li>120_LongRuns_HardAndSoftMatch
+	<ul>
+		<li>Ratio of Total Initial Matings Plot (11_17 analysis)
+		<ul>
+			<li>Similar to 118 and 119</li>
+		</ul>
+		</li>
+		<li>Forced Matings (11_22 analysis)
+		<ul>
+			<li>Viability
+			<ul>
+				<li>Similar to 118 and 119</li>
+			</ul>
+			</li>
+			<li>Fitness
+			<ul>
+				<li>Similar to 118 and 119</li>
+			</ul>
+			</li>
+			<li>Unique Task Ct
+			<ul>
+				<li>Similar to 118 and 119</li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>121_NonFixedLength_HardAndSoftMatch
+	<ul>
+		<li>Ratio of Total Initial Matings Plot (11_17 analysis)
+		<ul>
+			<li>Fewer matings than 118 and 119</li>
+		</ul>
+		</li>
+		<li>Forced Matings (11_22 analysis)
+		<ul>
+			<li>Viability
+			<ul>
+				<li>http://127.0.0.1:5000/14.328.__-_Notes_-_Week_of_November_24_2014Dramatically less than 118/119</li>
+			</ul>
+			</li>
+			<li>Fitness
+			<ul>
+				<li>Dramatically less than 118/119</li>
+			</ul>
+			</li>
+			<li>Unique Task Ct
+			<ul>
+				<li>Dramatically less than 118/119</li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>122_NonFixedLength_HardAndSoftMatch_InDels
+	<ul>
+		<li>Ratio of Total Initial Matings Plot (11_17 analysis)
+		<ul>
+			<li>even fewer matings than 121</li>
+		</ul>
+		</li>
+		<li>Forced Matings (11_22 analysis)
+		<ul>
+			<li>Viability
+			<ul>
+				<li>worse than 121</li>
+			</ul>
+			</li>
+			<li>Fitness
+			<ul>
+				<li>worse than 121</li>
+			</ul>
+			</li>
+			<li>Unique Task Ct
+			<ul>
+				<li>worse than 121</li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<h3 class="item_body_heading_3">Later</h3>
+
+<p>I screwed up 120 (long run) Ctrl by forgetting to change events_V.cfg to end at 1m rather than 300k updates, so the rest of the runs failed. The Drift treatments were correct, but they don&#39;t mean much if I can&#39;t compare against a control. :/ Resubmitted the control runs.</p>
+
+<p>I also slighly screwed up 121 by using seeds in 120xxx, but that&#39;s not a big deal. The science is still good. I also updated the 11_17 script to reference Ctrl_HM, Ctrl_SM, Drift_HM, and Drift_SM rather than the old set of varied roots.</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong>:<strong><span style="color:#0000FF">~/mate_discrimination/output/121_NonFixedLength_HardAndSoftMatch</span></strong>$&nbsp; ../../scripts/11_17_analysis.sh &quot;121 - VarLength&quot; 121
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong>:<strong><span style="color:#0000FF">~/mate_discrimination/output/121_NonFixedLength_HardAndSoftMatch</span></strong>$&nbsp; ../../scripts/11_22_analysis.sh &quot;121 - VarLength&quot; 121</pre>
+
+<p><img src="./14.328.__-_Notes_-_Week_of_November_24_2014/121_ratio_sum_matings_gen1.png" style="height:300px; width:400px" /><img src="./14.328.__-_Notes_-_Week_of_November_24_2014/121_forcedmatingviability_filtered.png" style="height:300px; width:400px" /></p>
+
+<p><img src="./14.328.__-_Notes_-_Week_of_November_24_2014/121_forcedmatingfitness_filtered.png" style="height:300px; width:400px" /><img src="./14.328.__-_Notes_-_Week_of_November_24_2014/121_forcedmatingnumdifftasks_filtered.png" style="height:300px; width:400px" /></p>
+
+<p><img src="./14.328.__-_Notes_-_Week_of_November_24_2014/121_female_preference_data.png" style="height:300px; width:400px" /></p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong>:<strong><span style="color:#0000FF">~/mate_discrimination/output/122_NonFixedLength_HardAndSoftMatch_InDels</span></strong>$../../scripts/11_17_analysis.sh &quot;122 - VarLengthInDel&quot; 122
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong>:<strong><span style="color:#0000FF">~/mate_discrimination/output/122_NonFixedLength_HardAndSoftMatch_InDels</span></strong>$../../scripts/11_22_analysis.sh &quot;122 - VarLengthInDel&quot; 122</pre>
+
+<p><img src="./14.328.__-_Notes_-_Week_of_November_24_2014/122_ratio_sum_matings_gen1.png" style="height:300px; width:400px" /><img src="./14.328.__-_Notes_-_Week_of_November_24_2014/122_forcedmatingviability_filtered.png" style="height:300px; width:400px" /></p>
+
+<p><img src="./14.328.__-_Notes_-_Week_of_November_24_2014/122_forcedmatingfitness_filtered.png" style="height:300px; width:400px" /><img src="./14.328.__-_Notes_-_Week_of_November_24_2014/122_forcedmatingnumdifftasks_filtered.png" style="height:300px; width:400px" /></p>
+
+<p><img src="./14.328.__-_Notes_-_Week_of_November_24_2014/122_female_preference_data.png" style="height:300px; width:400px" /></p>
+
+<p>So, I don&#39;t know what to think there. My original mutation rates for INDELs was DIV_INS_PROB 0.016 and DIV_DEL_PROB 0.016, which adds up to an average equivalent 0.00016 copy insertion and deletion rate, bringing the total mutation rate per site to 0.00266. This seems like a mild addition. :/ But, maybe it was still too much? I moved the rates over to the COPY mut section, which makes more sense to me... So, the new rates are 0.0005 COPY_INS_PROB and COPY_DEL_PROB, and I scaled down the point mutation rate to 0.0015, which should be an equivalent mutation rate to the original expeiremtn (0.0025).</p>
+
+<p>I submitted run 123 to test this.</p>
+
+<p>In any case, the INDELs seem to be pretty disruptive to the selection of mates. I bet these are pushing to the edges (0 and 255) way more than you would expect, in addition.</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

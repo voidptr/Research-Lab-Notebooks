@@ -1,0 +1,64 @@
+<h1>Week of April 06, 2015</h1>
+
+<h2>Monday, Apr 06, 2015</h2>
+
+<h3>Log 10:40PM</h3>
+
+<p><em><strong>I was working on my comps, and I had some thoughts while fussing with the methods section of the sexual selection work:</strong></em></p>
+
+<p><span style="background-color:rgb(255, 255, 0)">Ok, the loghorhea&nbsp;method.</span></p>
+
+<p>&nbsp;</p>
+
+<p>What did I do:</p>
+
+<ul>
+	<li>General Experimental Structure:&nbsp;
+	<ul>
+		<li>sexual selection by the females.&nbsp;</li>
+		<li>mate choice made based on an integer (trait) that the males display</li>
+		<li>tasks structures vary
+		<ul>
+			<li>a subset of a set of tasks are rewarded.</li>
+			<li>sometimes the tasks have prerequisites</li>
+		</ul>
+		</li>
+		<li>allow to evolve in environment with a set of rewarded tasks</li>
+		<li>in treatments, split populations into two. allow to evolve in separate environments with different task sets.</li>
+		<li>put back together, measure hybridization rate. measure offspring viability. measure offspring&nbsp;fitness.</li>
+	</ul>
+	</li>
+	<li>Limitations
+	<ul>
+		<li><strong>fitness differential is negligible because of task reward structure</strong>. need to redo experiments because the gradient of selection may be too weak, resulting in randomness in who survives to reproduce.
+		<ul>
+			<li><strong>How do I compare the hybrid fitness of offspring whose parents have vastly different fitnesses?</strong>&nbsp;<strong>Average the parent log-fitness (thus adjusting for power-based task reward) and if child log-fitness is below the average</strong>, well, there you go? Does that make sense?</li>
+		</ul>
+		</li>
+		<li>better way to test is to&nbsp;<strong>allow them to evolve in the normal way, with normal exponential rewards</strong>. then&nbsp;<strong>calculate the hybridization rate via static analysis</strong>.&nbsp;
+		<ul>
+			<li>I did some work on this by trying to model the statistical overlap of the traits in R/python (pandas) via iPythonNotebook. I think it was left hanging. I was trying to fit the hybridization rate against the predicted rate based on the trait overlap. If this fitting shows a high correlation, then I can apply the fit to predict hybridization when it&#39;s otherwise impractical to do so because of (above bullet) vastly different fitnesses result in some weird effects when it comes time to mate.</li>
+			<li>Or is it just better to&nbsp;<strong>mate everybody with everybody else, and measure the offspring fitness</strong>&nbsp;(as per above averaging method)?</li>
+		</ul>
+		</li>
+		<li><strong>Is it hard to quick run the above experiments?</strong>&nbsp;Um? Not hard? Maybe? I know I got stuck with the work because I went in to R. So, I&#39;m going to avoid that for now. Just do the experiments and see what comes out.&nbsp;<strong>Experiments should be easy, take no more than a couple days.&nbsp;</strong></li>
+		<li><strong>Um, I need to figure out which task regime to tweak (see which one was most representative).</strong>&nbsp;One thing fish guy was excited about was that the result (better hybridizing) didn&#39;t seem to vary based on task reward structure. That drift was just as effective. I&#39;m not sure that&#39;s still the case if I bring the task rewards back into the real world, but if it&#39;s still true, then it would be an interesting result, wouldn&#39;t it? So, as a separate experiment, run the assays using the regular reward structure in all the old experimental environments A-E.
+		<ul>
+			<li><strong>Ok, just drift for now.</strong></li>
+		</ul>
+		</li>
+		<li><strong>Simulate hybridization using static analysis model</strong>
+		<ul>
+			<li>I need to find the script to do this. It&#39;s in my notebook somewhere.</li>
+		</ul>
+		</li>
+		<li><strong>Do forced hybrid matings and measure average log-fitness of offspring</strong>
+		<ul>
+			<li>Compare against in-group forced matings to see if hybridizing is bad. (post zygotic effect)</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>

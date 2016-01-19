@@ -1,0 +1,258 @@
+<h1>Week of March 26, 2012</h1>
+
+<p>GENERAL NOTES:</p>
+
+<ul>
+	<li>I changed the colors of the various terminal prompts I frequently use. <span style="color:#008000"><strong>MALP is still green</strong></span>, but <strong><span style="color:#40E0D0"><strong>Atlantis is now blue</strong></span></strong>, the <strong><span style="color:#FF0000"><strong>HPCC is red</strong></span></strong>, <strong><span style="color:#FFD700"><strong>Loki is yellow</strong></span></strong>, and <strong>George Hammond is pink</strong>. This convention is shown when pasting from the terminals.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Monday 3/26/12</h2>
+
+<h3>3:05 PM</h3>
+
+<p>DEVOLAB MTG NOTES:</p>
+
+<ul>
+	<li>Art&rsquo;s meeting
+	<ul>
+		<li>.25 genomic mutation rate&hellip; How the fuck does that relate.
+		<ul>
+			<li>&nbsp;</li>
+		</ul>
+		</li>
+		<li>Makes a point about single starting organisms being boring. Don&rsquo;t know if this is true.</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Tuesday 3/27/12</h2>
+
+<h3>4:16 PM</h3>
+
+<p>Michael Laessig Talk NOTES:</p>
+
+<ul>
+	<li>Measuring selective sweeps
+	<ul>
+		<li>Measure sequence diversity &ndash; there should be a dip in diversity
+		<ul>
+			<li>Hartl 2000 ch. 3</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Read Lenski&rsquo;s clonal interference paper</li>
+</ul>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+
+<h2>Thursday 3/29/12</h2>
+
+<h3>12:23 AM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Downloading job 079.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Friday 3/30/12</h2>
+
+<h3>9:08 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>After discovering that I forgot to include files from updates &gt; 99999</li>
+</ul>
+
+<p style="margin-left:.5in">(-?????.dat*), I had to submit job 080 to reanalyze the content. Also, I figured out a solution to getting my files in order. You prepend the following command before the command you will be using it in. It will work if the file list is supposed to go at the end of the command (which makes sense, I think). I modified analyze_single_run.bash on the HPCC.</p>
+
+<pre>
+ls physical_modularity_stats__organisms/control*sep*01/task_physical*-*.dat* | sort -n -t &quot;-&quot; -k 2 | xargs
+
+:<strong><span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/079/INTERTWINED/control_intertwined_790001/data/phenotype</span></strong>$ ls tasksites.org-*.dat | sort -n -t &quot;-&quot; -k 2 | xargs python ../../../../../../../scripts/common_modules_and_helper_scripts/extract_single_column_to_csv.py -s &quot; &quot; -c 1 &gt;&gt; bleh.csv; cat bleh.csv
+</pre>
+
+<p>&nbsp;</p>
+
+<h2>Saturday 3/31/12</h2>
+
+<h3>10:01 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Got reanalysis (Job 080) down and generated graphs. Annoying.</li>
+	<li>Set the lineage maps building.</li>
+</ul>
+
+<pre>
+../../../../scripts/evolution_of_modularity_pipelines/makegraphs.py -p &quot;p*_????4?&quot; -l ../../../../scripts/ map_task_all; ../../../../scripts/evolution_of_modularity_pipelines/makegraphs.py -p &quot;p*_????5?&quot; -l ../../../../scripts/ map_task_all
+
+for i in p*_????4?; do echo $i ; if [ -e $i/data ] ; then cd $i/data/;&nbsp; python ../../../../../../scripts//evolution_of_modularity_pipelines/draw_map_task__using_lineage_and_alignment.py --aligned_lineage_map --lineage_map --task_map --mutation_map --aligned_task_map --show_mutations --title &quot;$i&quot; -v -a ../$TREATMENT.png 5 6 8 lineage.dat ./phenotype/; cd ../../ ; else echo &quot;Data dir not found.&quot; ; fi ; done ;for i in p*_????5?; do echo $i ; if [ -e $i/data ] ; then cd $i/data/;&nbsp; python ../../../../../../scripts//evolution_of_modularity_pipelines/draw_map_task__using_lineage_and_alignment.py --aligned_lineage_map --lineage_map --task_map --mutation_map --aligned_task_map --show_mutations --title &quot;$i&quot; -v -a ../$TREATMENT.png 5 6 8 lineage.dat ./phenotype/; cd ../../ ; else echo &quot;Data dir not found.&quot; ; fi ; done ;</pre>
+
+<ul>
+	<li>Need to analyze the difference in mutational effect, pulling from the draw_map_task__... derivative script.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>11:29 PM</h3>
+
+<p>THOUGHTS:</p>
+
+<ul>
+	<li>Thinking about how to analyze mutational effects. For each ancestor in the lineage, store:
+	<ul>
+		<li># of mutations
+		<ul>
+			<li># of mutations in coding regions</li>
+			<li># of mutations in non-coding regions
+			<ul>
+				<li># of mutations in non-coding degenerate regions</li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+		<li>fitness effect
+		<ul>
+			<li>Deletereous/beneficial</li>
+		</ul>
+		</li>
+		<li>Functional effect
+		<ul>
+			<li>Restores/Removes function
+			<ul>
+				<li>Which function</li>
+			</ul>
+			</li>
+			<li>Net # of sites with functional change</li>
+			<li>Vector of sites with functional change (matrix of possibilities)
+			<ul>
+				<li>Coding Fluct (Cf)</li>
+				<li>Coding Backbone (Cb)</li>
+				<li>Coding Both (Cbf)</li>
+				<li>Degenerate Fluct (Df)</li>
+				<li>Degenerate Backbone (Db)</li>
+				<li>Degenerate Both (Dbf) (vector only from Cbf)</li>
+				<li>Non-coding (only via direct mutation)</li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+		<li>Phase background in which mutation occurred.</li>
+	</ul>
+	</li>
+	<li>Working out the functional change matrix
+	<ul>
+		<li>A1 &ndash; P1 = 0</li>
+		<li>A0 &ndash; P0 = 0</li>
+		<li>A0 &ndash; P1 = -1</li>
+		<li>A1 &ndash; P0 = 1</li>
+	</ul>
+	</li>
+	<li>Working out the fitness effect
+	<ul>
+		<li>A5 &ndash; P10 = -5</li>
+		<li>A10 &ndash; P5 = 5</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Sunday 4/1/12</h2>
+
+<h3>1:02 PM</h3>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Finished first stab at &ldquo;calculate_mutation_metrics.py&rdquo;. Running it to see what the fuck. Below will be added to analyze_single_run.py on HPCC.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/078/INTERTWINED/control_intertwined_780001/data</span></strong>$ python ../../../../../../scripts//evolution_of_modularity_pipelines/calculate_mutation_metrics.py -v 5 6 8 lineage.dat ./phenotype/</pre>
+
+<ul>
+	<li>Running the thing in every directory (may take some time).</li>
+	<li>Updating extract_single_column_from_csv.py to be more sane about dimensionality. Essentially, dimensionality will now only refer to the output format. Input format will <strong>always</strong> be dealt with as one value array per file. So, multiple files get a 2-d array. Then, if for whatever reason we want to print out 1-d, you say --dimensionality 1, which will take our 2D array and flatten it. This paradigm makes sense in two contexts:
+	<ul>
+		<li>Aggregation (where each file&rsquo;s chosen column content is to be aggregated using sum, mean, median, etc., so the output of a file will be a single value anyway.)</li>
+		<li>Single-line input files (where the stack of input files are a single line and we want to put the value of the column together in a larger file, with each source line as a value in the output line). This makes sense if the output is for a single run, and we&rsquo;re putting together the content update by update from individual files.</li>
+	</ul>
+	</li>
+	<li>Created &ldquo;aggregate_file.py&rdquo; to take a file and just sum every column (or get an average, or whatever). (below will be added to the analyze_single_run.py script on HPCC.)</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@atlantis</span></strong>:<strong><span style="color:#0000FF"><strong>~/research/devolab_research/evolution_of_modularity/raw_data/079/INTERTWINED/control_intertwined_790001</strong></span></strong>$ python ~/research/devolab_research/scripts/common_modules_and_helper_scripts/aggregate_file.py --header -s &quot;,&quot; --sum mutation_metrics.csv</pre>
+
+<ul>
+	<li>Updating analyze.py to &ldquo;aggregate_mutation_metrics&rdquo;, which will just stack up the summed mutation metrics into a single file per treatment. Then I can do single-column bar charts of the &hellip; TAKING BREAK</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>11:54 PM</h3>
+
+<p>STATUS</p>
+
+<ul>
+	<li>Holy lots of work batman.</li>
+	<li>Added &ldquo;aggregate mutation metrics&rdquo; to analyze.py, which creates sum_dominant_leange_mutation_metrics and mean_dominant_lineage_mutation_metrics for each treatment. Also, performed it.</li>
+	<li>Created &ldquo;bar_chart_from_csv.py&rdquo;, which I used to put together the mutational profile for the dominant lineages</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/079/INTERTWINED</strong></span></strong>$ cd ../INTERTWINED/; python ../../../../scripts/generate_graphs_from_raw_data/bar_chart_from_csv.py --legend --title &quot;Dominant Lineage Mutation Profile - Intertwined Ancestor&quot; -y &quot;Mean Mutations per Generation&quot; -x &quot;Treatment&quot; --column_labels &quot;Degenerate Mutations, Coding Mutations&quot; &quot;3,1&quot; mean_mutations_per_generation.png control___mean_dominant_lineage_mutation_metrics.csv noreward___mean_dominant_lineage_mutation_metrics.csv punish___mean_dominant_lineage_mutation_metrics.csv
+
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/079/SEPARATED</strong></span></strong>$ cd ../SEPARATED; python ../../../../scripts/generate_graphs_from_raw_data/bar_chart_from_csv.py --legend --title &quot;Dominant Lineage Mutation Profile - Separated Ancestor&quot; -y &quot;Mean Mutations per Generation&quot; -x &quot;Treatment&quot; --column_labels &quot;Degenerate Mutations, Coding Mutations&quot; &quot;3,1&quot; mean_mutations_per_generation.png control___mean_dominant_lineage_mutation_metrics.csv noreward___mean_dominant_lineage_mutation_metrics.csv punish___mean_dominant_lineage_mutation_metrics.csv</pre>
+
+<p><img src="./12.086.__-_Notes_-_Week_of_March_26_2012/image001.png" style="height:157px; width:209px" /><img src="./12.086.__-_Notes_-_Week_of_March_26_2012/image003.png" style="height:157px; width:209px" /></p>
+
+<ul>
+	<li>Modified both &ldquo;plot_from_csv.py&rdquo; and &ldquo;bar_chart_from_csv.py&rdquo; to use bootstrap confidence intervals to generate the error bars for these things, since it&rsquo;s pretty clear that this data at least is not normal distributed. To figure this out, I made &ldquo;distribution_from_csv&rdquo; which just generates histograms.</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/079/SEPARATED</strong></span></strong>$ python ../../../../scripts/generate_graphs_from_raw_data/distribution_from_csv.py 1 histogram__control__mean_coding_mutations.png c*___mean_dominant_lineage_mutation_metrics.csv</pre>
+
+<p><img src="./12.086.__-_Notes_-_Week_of_March_26_2012/image005.png" style="height:103px; width:137px" />&nbsp;<img src="./12.086.__-_Notes_-_Week_of_March_26_2012/image007.png" style="height:103px; width:137px" />&nbsp;<img src="./12.086.__-_Notes_-_Week_of_March_26_2012/image009.png" style="height:103px; width:137px" /></p>
+
+<ul>
+	<li>An unfortunate effect of using bootstrap is that it takes a BUTT LONG time to generate plots with CI. Also, it looks like my CI are bigger than they were. :(</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/079/SEPARATED</strong></span></strong>$ ../../../../scripts/evolution_of_modularity_pipelines/makegraphs.py -e -l ../../../../scripts/ tasks fitness phys_mod_gapmean phys_mod_gapstd funct_mod</pre>
+
+<p><img src="./12.086.__-_Notes_-_Week_of_March_26_2012/image011.png" style="height:157px; width:209px" />&nbsp;<img src="./12.086.__-_Notes_-_Week_of_March_26_2012/image013.png" style="height:157px; width:209px" /></p>
+
+<ul>
+	<li>Finally, set &ldquo;draw_map_task__using_lineage_and_alignment.py&rdquo; going, with phases turned on so we can see where things are.</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/079/SEPARATED</span></strong>$ for i in *_??????; do if [ -e $i/data ] ; then cd $i/data/;&nbsp; python ../../../../../../scripts/evolution_of_modularity_pipelines/draw_map_task__using_lineage_and_alignment.py --lineage_map --show_mutations --show_phase --title &quot;$i&quot; -v -a ../.png 5 6 8 lineage.dat ./phenotype/; cd ../../ ; fi ; done ;
+<span style="color:#008000">
+<strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/079/INTERTWINED</strong></span></strong>$ for i in *_??????; do if [ -e $i/data ] ; then cd $i/data/;&nbsp; python ../../../../../../scripts/evolution_of_modularity_pipelines/draw_map_task__using_lineage_and_alignment.py --lineage_map --show_mutations --show_phase --title &quot;$i&quot; -v -a ../.png 5 6 8 lineage.dat ./phenotype/; cd ../../ ; fi ; done ;</pre>
+
+<ul>
+	<li>TODO: Put together devolab presentation. Sigh. Bed Now.</li>
+</ul>
+
+<p style="margin-left:1.0in">&nbsp;</p>
+
+<p style="margin-left:1.0in">&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p style="margin-left:.5in">&nbsp;</p>

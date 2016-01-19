@@ -1,0 +1,368 @@
+<h1>Week of April 16, 2012</h1>
+
+<h2 class="item_body_heading_2">Monday 4/16/12</h2>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Ok, I need to figure out a couple things:
+	<ul>
+		<li>The diversity of the population at different points.
+		<ul>
+			<li>Extracted through the population diversity via the population entropy.</li>
+		</ul>
+		</li>
+		<li>The last common ancestor at the end.
+		<ul>
+			<li>I can look at stats for that, I think.</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>6:17 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Ok, I generated some graphs with entropy and genotype count. Aaaand, there just doesn&rsquo;t seem to be anything interesting going on. In fact, genotype count AND genotypic entropy is greater (not significantly), in the noreward treatment than punishment. So, that hypothesis is wrong wrong wrong.</li>
+</ul>
+
+<p><img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image001.png" style="height:162px; width:216px" />&nbsp;<img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image003.png" style="height:165px; width:219px" /></p>
+
+<ul>
+	<li>Still, I need to have a look at the places where mutations happen in the genomes.
+	<ul>
+		<li>So, one of the suggestions earlier was to look at the last common ancestor of the final dominant. This can be discovered by looking at the last line of stats.dat, column 10 (depth of most recent coalescence). This item is a tree depth. In lineage.dat (which I generate), column 4 is the tree depth, which number corresponds to the stats.dat:10. So, there&rsquo;s the final ancestor that I should be looking at. <u>Even</u><u> so,</u><u> it</u><u> shouldn</u><u>&rsquo;t</u><u> make</u><u> that</u><u> much</u><u> different</u><u> to</u><u> my</u><u> lineage</u><u> map,</u><u> since</u><u> is</u><u> really</u><u> close</u><u> to</u><u> the</u><u> end</u><u> of</u><u> the</u><u> run</u><u> anyway</u>.</li>
+		<li>This above also makes me re-think my coalescence maps. Specifically, I&rsquo;ve been graphing stats.dat:10, which is tree-depth. For punishment, this line is steeper, which implies that 1) the tree of life here is taller (more mutations, more branchings), whereas in no-reward, the tree is shorter.
+		<ul>
+			<li>This is just another way of looking at <strong>the</strong><strong> number</strong><strong> of</strong><strong> accepted</strong><strong> mutations</strong>.
+			<ul>
+				<li>Lineage map height (# of ancestors)</li>
+				<li>Steepness of depth of most recent coalescence</li>
+				<li>Flame graph.</li>
+			</ul>
+			</li>
+			<li>Further, noreward has a long time between sweeps, whereas punish sweeps much more frequently.</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>So, I&rsquo;m going to make some flame graphs and see what there is to see here.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FF0000"><strong>caninoko@dev-intel07</strong></span></strong>:<strong><span style="color:#0000FF">/mnt/scratch/caninoko/082/populations</span></strong>$ tar -zcvf control_intertwined_820001_populations.tar.gz control_intertwined_820001/</pre>
+
+<ul>
+	<li>Stuff is tarring up (takes forever), so I&rsquo;m going to finish up my homework. :/</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Tuesday 4/17/12</h2>
+
+<h3>11:57 AM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Last night, I set run 083 going (same as 082, but captures all the stats every update), so that I could look at the entropy measure.</li>
+	<li>Chatting with matt, he let me know that the avida entropy measure is not per-site, but based on genotype ID. SIGH. So, it&rsquo;s useless for what I&rsquo;m looking for. BUT, he&rsquo;s sending me some scripts that visualize sweeps. They are matlab, but I can transliterate them. :D</li>
+	<li>The zipping up is done.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>3:23 PM</h3>
+
+<p>Lab Mtg Notes:</p>
+
+<ul>
+	<li>Presented fitness over time graphs and fitness bar-charts for ChangeEnv.</li>
+	<li>Suggestions:
+	<ul>
+		<li>HEATHER: add mutually exclusive flag to see what happens if you can only do one or the other task</li>
+		<li>LUIS: add allowing to do the task multiple times and see how that changes things.</li>
+		<li>LUIS: do the things that Mark suggested, with mapping relative fitness compared to ancestor using tournaments, in order to make it more valid.</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>8:53 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Finished first stab at transliterating the script that calculates the site entropy.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@atlantis</span></strong>:<strong><span style="color:#0000FF"><strong>~/research/devolab_research/evolution_of_modularity/raw_data/082/populations/control_intertwined_820001</strong></span></strong>$ ls detail-*.spop* | sort -n -t &quot;-&quot; -k 2 | xargs python ../../../../../scripts/analysis/population_entropy_over_time.py -v -o by_site_entropy.csv</pre>
+
+<ul>
+	<li>Now, to write the rest of the thing. :/</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Wednesday 4/18/12</h2>
+
+<h3>12:12 AM</h3>
+
+<p>STATUS</p>
+
+<ul>
+	<li>Finished the plotter too.</li>
+	<li>The site entropy calculator takes longer than I&rsquo;d hoped to run, so when I realized that I wasn&rsquo;t normalizing by organism, I face palmed. So, that&rsquo;s running again. It will also need to be integrated into the set of scripts that run on the HPCC after a run is complete.</li>
+	<li>So, here are the non-normalized results. Promising!</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/populations/control_separated_820001</strong></span></strong>$ python ../../../../../scripts/graph_generation/plot_by_site_entropy.py by_site_entropy.png by_site_entropy.csv</pre>
+
+<p><img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image005.png" style="height:165px; width:219px" />(control intertwined)</p>
+
+<p><img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image007.png" style="height:165px; width:219px" />(noreward separated)</p>
+
+<p><img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image009.png" style="height:165px; width:219px" />&nbsp;<img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image011.png" style="height:165px; width:219px" /></p>
+
+<p>(punish intertwined, punish separated)</p>
+
+<ul>
+	<li>I might also add the last coalescent generations to the graph, so as to see how it matches up with what the by-site entropy measure says about the population.</li>
+	<li>Also, I want to add the task map of the final dominant lineage, and see how it lines up. It may not mean anything in specific, but it might still give some insight.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<ul>
+	<li>For flame graphs, quantify sweep by doing flamegraph, and then underneath (separate graph), mark where the coalescent ancestor is born, and then mark where it became the coalescent ancestor (born, and became king). This will KILL THE QUESTION OF SWEEPS and clarify what flamegraphs actually represent.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>1:38 PM</h3>
+
+<p><strong>The</strong><strong> Story</strong><strong> So</strong><strong> Far</strong></p>
+
+<p>Squishness &ndash; Compaction of tasks</p>
+
+<ul>
+	<li>Do genomes evolve toward squishness?
+	<ul style="list-style-type:circle">
+		<li>Yes. Separated tasks evovlve to overlap as much as possible. This happens regardless of environment. The &ldquo;possible&rdquo; overlap is less under punishment regime.</li>
+		<li>Further Experiments to confirm:</li>
+		<li>Other Experiments:
+		<ul>
+			<li>Try starting different tasks combinations as separated and measure their squishing.</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>In hostile changing environments, do genomes limit their squishness?
+	<ul style="list-style-type:circle">
+		<li>Yes. The &ldquo;modularity basement&rdquo; is higher in hostile changing environments.</li>
+		<li>Further Experiments to confirm:
+		<ul>
+			<li>Measure this specifically, and compare means.</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Is there a difference between the overlapping sections and the non-overlapping? Do those sections behave differently (are the related to functional change)?</li>
+	<li>Is there a difference between the level of preservation of overlapping regions vs. not?
+	<ul style="list-style-type:circle">
+		<li>Unknown, Hypothesize&nbsp; yes.</li>
+		<li>Experiment to test: something to do with entropy measuring.</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>Evolvability</p>
+
+<ul>
+	<li>Is there a difference between mutational landscape of hostile-evolved genomes, vs. others? Is it &ldquo;flatter&rdquo; or more &ldquo;peaked&rdquo;
+	<ul style="list-style-type:circle">
+		<li>Unknown &ndash; Hypothesize yes.</li>
+		<li>Experiments to test:
+		<ul>
+			<li>Landscape possible mutations and calculate the fitness effects. **there may be an avida thing for this**
+			<ul>
+				<li>Do analyses on last common ancestor of final population.</li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Is there a difference in evolvability between hostile-evolved genomes vs. others.
+	<ul style="list-style-type:circle">
+		<li>Unknown &ndash; Hypothesize yes.</li>
+		<li>Experiments to test:
+		<ul>
+			<li>Landscape possible mutations and calculate the fraction which change function. **there may be an avida thing for this**
+			<ul>
+				<li>Do analyses on last common ancestor of final population.</li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Are hostile-evolved genomes more evolvable in general? Do they adapt to new tasks faster than control or no-reward genomes?
+	<ul style="list-style-type:circle">
+		<li>Unknown &ndash; Hypothesize no.</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>Fluctuating Landscapes</p>
+
+<ul>
+	<li>Do fluctuating landscapes allow more rapid crossing of fitness valleys?</li>
+</ul>
+
+<p style="margin-left:.5in">&nbsp;</p>
+
+<p style="margin-left:.5in">PopulationDynamics</p>
+
+<ul>
+	<li>Are there multiple coexisting populations, or is it a single population evolving the task back and forth?
+	<ul style="list-style-type:circle">
+		<li>Single Population.</li>
+		<li>Further to confirm:
+		<ul>
+			<li>Flamegraph with coalescence data (see above) underneath.</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p style="margin-left:.5in">&nbsp;</p>
+
+<h3>2:54 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>The organism-normalized by-site entropy calculations are done. Generating the graphs.</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/populations</strong></span></strong>$ or i in *_??????; do echo $i; cd $i; python ../../../../../scripts/graph_generation/plot_by_site_entropy.py --title $i by_site_entropy__organisms__divider.png by_site_entropy.csv ; cd ../ ;done</pre>
+
+<p><img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image013.png" style="height:165px; width:219px" />&nbsp;<img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image015.png" style="height:165px; width:219px" /></p>
+
+<p><img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image017.png" style="height:165px; width:219px" />&nbsp;<img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image019.png" style="height:165px; width:219px" /></p>
+
+<p><img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image021.png" style="height:165px; width:219px" />&nbsp;<img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image023.png" style="height:165px; width:219px" /></p>
+
+<ul>
+	<li>Right, so those look very different (especially the punishment) from the genotype site-based entropy measure. So, there for punishment, this would indicate that there are a small number of genotypes with LARGE proportions of the population, with a smattering of stragglers with small proportions of the population. It&rsquo;s a very different population profile than we&rsquo;ve seen. So&hellip; what kind of figure would display this?
+	<ul>
+		<li>My initial thought was a flame graph-style histogram, with the y being the fraction of the population in that group, and the color being the number of genotypes in that category.</li>
+		<li>Alternatively, think about that graph in one of Charles&rsquo;s papers, where the population fractions colored in a bar chart.</li>
+		<li>Finally, consider a set of colored bar-charts with the genotype population fractions colored differently.</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>4:15 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>ZOMG flamegraph.py is really fucking slow, for no good reason. So, I fixed it. It seems to be a bit zippier now, <s>though</s><s> the</s><s> graphing</s><s> part</s><s> still</s><s> seems</s><s> to</s><s> take</s><s> a</s><s> long</s><s> time</s><s> :/</s> Not after I replaced pcolor with imshow. :D</li>
+	<li>Split flamegraph data munging into a separate script, similar to how by-site entropy plotting works. Running the script to pull out the data now.</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/populations</strong></span></strong>$ for i in *_??????; do echo $i; cd $i; ls detail-*.spop* | sort -n -t &quot;-&quot; -k 2 | xargs python ../../../../../scripts/analysis/population_phylogenetic_distance_over_time.py -v -o phylo_depth_abundances_over_time.csv; cd ../; done
+
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/populations</strong></span></strong>$ for i in *_??????; do echo $i; cd $i; python ../../../../../scripts/graph_generation/plot_phylogenetic_depth_abundances_over_time.py --title $i phylo_depth_abundance_over_time.png phylo_depth_abundances_over_time.csv ; cd ../ ;done</pre>
+
+<p><img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image025.png" style="height:165px; width:219px" />&nbsp;<img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image027.png" style="height:165px; width:219px" /></p>
+
+<p><img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image029.png" style="height:165px; width:219px" />&nbsp;<img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image031.png" style="height:165px; width:219px" /></p>
+
+<p><img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image033.png" style="height:165px; width:219px" />&nbsp;<img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image035.png" style="height:165px; width:219px" /></p>
+
+<ul>
+	<li>Now that I&rsquo;ve separated the data extraction from the plotting, I can apply it to all the population sets I&rsquo;ve got sitting up in the HPCC.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Thursday 4/19/12</h2>
+
+<h3>1:59 PM</h3>
+
+<p>STATUS</p>
+
+<ul>
+	<li>Last night, I set data generating for flamegraphs on the HPCC. It&rsquo;s taking a really long time. L So far, about &frac34; of control_intertwined is done, and there are six of them. Maybe I should have screened them separately. I could still do that. Ok, I will. Also, for whatever reason, the regular method using xargs seems to be fucking up on the HPCC. :/</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FF0000"><strong>caninoko@dev-intel07</strong></span></strong>:<strong><span style="color:#0000FF">/mnt/scratch/caninoko/082/populations</span></strong>$ for i in c*_i*_??????; do echo $i; if [ ! -e $i/phylo_depth_abundances_over_time.csv ] ; then cd $i; python ~/scripts/population_phylogenetic_distance_over_time.py -v -o phylo_depth_abundances_over_time.csv detail-?.spop* detail-??.spop* detail-???.spop* detail-????.spop* detail-?????.spop* detail-??????.spop* ; cd ../; else ; echo &quot;Skipping.&quot; ; fi ; done</pre>
+
+<ul>
+	<li>Also, I&rsquo;m going to create a separate flamegraph script to add a marker (line underneath), wherever the depth of the last phylogeny changed. Essentially, mark a point in white where the coalescent phylogenetic depth is for every update. It should form a series of horizontal lines that run along underneath the flamegraph. This will be cool to show. :D</li>
+	<li>LATER: Ok, this is done.</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/populations</strong></span></strong>$ for i in *_s*_??????; do echo $i; cd $i; python ../../../../../scripts/graph_generation/plot_phylogenetic_depth_abundances_over_time.py --title $i --most_recent_coalescence=&quot;../../SEPARATED/$i/data/stats.dat,10&quot; phylo_depth_abundance_over_time__coalescence.png phylo_depth_abundances_over_time.csv ; cd ../; done
+
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/populations</strong></span></strong>$ for i in *_i*_??????; do echo $i; cd $i; python ../../../../../scripts/graph_generation/plot_phylogenetic_depth_abundances_over_time.py --title $i --most_recent_coalescence=&quot;../../INTERTWINED/$i/data/stats.dat,10&quot; phylo_depth_abundance_over_time__coalescence.png phylo_depth_abundances_over_time.csv ; cd ../; done</pre>
+
+<p><img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image037.png" style="height:165px; width:219px" /><img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image039.png" style="height:165px; width:219px" /></p>
+
+<p><img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image041.png" style="height:165px; width:219px" /><img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image043.png" style="height:165px; width:219px" /></p>
+
+<p><img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image045.png" style="height:165px; width:219px" /><img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image047.png" style="height:165px; width:219px" /></p>
+
+<ul>
+	<li>So, one thing I&rsquo;m interested in is how the sites that we&rsquo;ve identified as being critical for a task correspond with the population&rsquo;s consensus of what that site should be. If there isn&rsquo;t a consensus about a site that we&rsquo;ve identified as critical, there&rsquo;s something wrong. And if there is a non-critical site which has significant consensus, those are probably hitchhikers, but we should seem them diverge over time.
+	<ul>
+		<li>So, to this end, I&rsquo;ve modified &ldquo;population_entropy_over_time.py&rdquo; to allow you to output the probabilities by site. Then I can import this file, and match it up to the data that I generate from &ldquo;draw_map_task__using_lineage_and_alignment.py&rdquo;.
+		<ul>
+			<li>I should split this up into a data-generation and then plotting phase.</li>
+			<li>Oh! And I should apply the lesson about imshow aspect=&rdquo;auto&rdquo; (or whatever it was) that I learned by doing the entropy plotting to the task-map plotting.</li>
+		</ul>
+		</li>
+		<li>I envision taking this data and combining it with the per-site, per-letter probabilities and overlay the info depending on the background in which the dominant lineage was born. Currently in map-task, everything is based on the ancestor, and there is no real expression of what update things were born in. So, the new version should reflect some kind of knowledge of what the background was (what timespan this thing lived in).</li>
+	</ul>
+	</li>
+	<li>Ok, I&rsquo;ve updated &ldquo;draw_map_task__using_lineage_and_alignment.py&rdquo; to use aspect=&rdquo;auto&rdquo;. Let&rsquo;s see how it looks.</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/control_intertwined_820001/data</strong></span></strong>$ python ../../../../../../scripts/graph_generation/draw_map_task__using_lineage_and_alignment.py --lineage_map --show_mutations --show_phase --title &quot;control_intertwined_820001&quot; -v -a ../__aspect_auto.png 5 6 8 lineage.dat ./phenotype/</pre>
+
+<p>* So, hey, it works, sortof. If you look at the graph below, everything looks fine (degenerates ending in mutations). But if you look at the punishment graph, you see that is not the case. There are no bugs in my script. The problem is that there are simply not enough pixels to go around. Argh. L</p>
+
+<p><img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image049.png" style="height:354px; width:471px" /></p>
+
+<p><img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image051.png" style="height:354px; width:471px" /></p>
+
+<ul>
+	<li>Ok, I raised the DPI of my figures to 300, and now all the lines show. Sigh.</li>
+</ul>
+
+<p><img src="./12.107.__-_Notes_-_Week_of_April_16_2012/image053.png" style="height:353px; width:471px" /></p>
+
+<p style="margin-left:.5in">&nbsp;</p>

@@ -1,0 +1,69 @@
+<h1>Week of October 27, 2014</h1>
+
+<h2>Monday, Oct 27, 2014</h2>
+
+<h3>Log 02:03PM</h3>
+
+<p>Ok, so It&#39;s Monday. :/ Going to have a meeting with Charles in a minute. Finished up the first big push on dist_qsub. It does what I want, mostly, I think.</p>
+
+<h3>&nbsp;</h3>
+
+<h3>Meeting w/ Charles 3:00p</h3>
+
+<p>Write own organism with own mate selection options, run them with mate selection options.</p>
+
+<p>Make deadly ranges. two separate runs with different deadly ranges.</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Tuesday, Oct 28, 2014</h2>
+
+<h3>Log 12:51a</h3>
+
+<p>Added the config options. Running the deadly ranges runs. Range 1 (0-150) 50% no-reproduce.</p>
+
+<p>TODO</p>
+
+<p>- add more crossover points, to make mating with the wrong type more disruptive.</p>
+
+<h3>&nbsp;</h3>
+
+<h3>Stickleback Meeting - Log 11:29a</h3>
+
+<p>- Stickleback dude feedback: display ratio of matings OTW vs total in population.</p>
+
+<h3>&nbsp;</h3>
+
+<h3>Log 2:06p</h3>
+
+<p>Ok, so I&#39;ve managed to write a little script to take the pre-counted display_c values and print out a histogram. I ended up using the bar function rather than hist because hist expects your raw data, and pre-bins it for you. This isn&#39;t useful for me.</p>
+
+<p>These are 50% deadly from display trait C 0-150.</p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/deadly_range/</span>$</strong> ./avida -set ENVIRONMENT_FILE environment_braidedresources.cfg -set MODULE_NUM 10 -set DISPLAY_C_DEADLY_RANGE_BEGIN 0 -set DISPLAY_C_DEADLY_RANGE_BEGIN 150 -set DATA_DIR data__wide0-150deadly_10ptCO_braided2
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/deadly_range/data__wide0-150deadly_10ptCO_braided2</span>$</strong> tail -1 mating_display_c_histogram-50000.dat | cut -d &quot; &quot; -f 6- &gt; choosy_female_only-50000.dat
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/deadly_range/data__wide0-150deadly_10ptCO_braided2</span>$</strong> python ~/Dropbox/School_Docs/Research/research_scripts/graph_generation/histogram_from_csv.py -t &quot;Histogram 50% no-repro if display C from 0-150&quot; -x &quot;Display Trait C Value&quot; -y &quot;# of display&quot; -s &quot; &quot; deadly0-150choosy_female_only-50000.png choosy_female_only-50000.dat</pre>
+
+<p>The directory is misnamed. These are deadly from 150-255.</p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/deadly_range/</span>$</strong> ./avida -set ENVIRONMENT_FILE environment_braidedresources.cfg -set MODULE_NUM 10 -set DISPLAY_C_DEADLY_RANGE_BEGIN 150 -set DISPLAY_C_DEADLY_RANGE_BEGIN 255 -set DATA_DIR data__wide0-150deadly_10ptCO_braided3
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/deadly_range/data__wide0-150deadly_10ptCO_braided3</span>$</strong> tail -1 mating_display_c_histogram-50000.dat | cut -d &quot; &quot; -f 6- &gt; choosy_female_only-50000.dat
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/deadly_range/data__wide0-150deadly_10ptCO_braided3</span>$</strong> python ~/Dropbox/School_Docs/Research/research_scripts/graph_generation/histogram_from_csv.py -t &quot;Histogram 50% no-repro if display C from 150-255&quot; -x &quot;Display Trait C Value&quot; -y &quot;# of display&quot; -s &quot; &quot; deadly150-255choosy_female_only-50000.png choosy_female_only-50000.dat</pre>
+
+<p><img alt="" src="./14.300.__-_Notes_-_Week_of_October_27_2014/deadly0-150choosy_female_only-50000.png" style="height:450px; width:600px" /><img alt="" src="./14.300.__-_Notes_-_Week_of_October_27_2014/deadly150-255choosy_female_only-50000.png" style="height:450px; width:600px" /></p>
+
+<p>Aaaand they look identical. SOMETHING IS WRONG.</p>
+
+<p>Oh, christ. I was defining ..._BEGIN twice. Oops. So, this is what it looks like when there&#39;s nothing special happening. I can use them as controls. Heh.</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

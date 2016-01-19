@@ -1,0 +1,49 @@
+<h1 class="item_body_heading_2">Components of Online Evolving Neural Network</h1>
+
+<p>&nbsp;</p>
+
+<h2 class="item_body_heading_2">Overview</h2>
+
+<p>The problem of positional control in environments is one that has a relatively smooth, linearly progressing fitness landscape.</p>
+
+<p>There are two notional dimension of fitness. The first is the flexibility and adaptability of the network, combined with its robustness. The second is the correctness of the network.</p>
+
+<p>For positional control, it may be best to evolve the model, rather than the response to the model. This includes evolving the response of the model to different inputs (positional, movement, and acceleration 1,2,3<sup>rd</sup> derivatives)</p>
+
+<p>So, because the model is what causes variation in the responses to inputs (currents, waves, winds) and actions (thrusts, orientation), and it is what can change over time (varying performance of thrusters, barnacle accumulation, differences in airframe), then that is what should be targeted.</p>
+
+<p>Additionally, you can evolve varying sensitivity to the accuracy of input measurements (water/air speed sensor accuracy, acceleration sensor accuracy).</p>
+
+<p>So, what the network would be expected to do would be to observe how the vessel responds to inputs/outputs, and adjust the outputs to maintain position.</p>
+
+<p>For example, if the ship is receiving pushes on vectors X, Y, and Z, then it would expect to move in A. It does not. But how close is it? If we adjust by adding pushes at vector W, does it move in A? Ah, so, thus we hone in on the right network, which in response to X, Y, and Z, adds W.</p>
+
+<p>&nbsp;</p>
+
+<h2 class="item_body_heading_2">Evolution</h2>
+
+<ul>
+	<li>evolve neural networks</li>
+	<li>evolve weights</li>
+	<li>train weights against linear inputs/non-linear inputs
+	<ul style="list-style-type:circle">
+		<li>always require linear outputs, not non-linear</li>
+	</ul>
+	</li>
+</ul>
+
+<h2 class="item_body_heading_2">Evaluation</h2>
+
+<ul>
+	<li>compare against written heuristic</li>
+	<li>compare against best in show</li>
+	<li>simulation (???)</li>
+</ul>
+
+<h2 class="item_body_heading_2">Implementation</h2>
+
+<ul>
+	<li>best in show runs the show</li>
+</ul>
+
+<p>&nbsp;</p>

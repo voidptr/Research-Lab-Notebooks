@@ -1,0 +1,186 @@
+<h1>Week of February 27, 2012</h1>
+
+<h2>Monday 2/27/12</h2>
+
+<h3>9:28 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Met w/ Matt for a while. Thoughts from our conversations
+	<ul style="list-style-type:circle">
+		<li>The strong-overlapping with the scattered bits may reflect a kind of evolvable regulatory section hanging off the front or the back of the evolved genomes which is easier to interact with evolutionarily.</li>
+		<li>This may be reflected in high functional modularity, low unity, but low scatter.</li>
+	</ul>
+	</li>
+	<li>Made some flame graphs to try to go with the cladeograms, and see if they tell me anything about the population structures.</li>
+</ul>
+
+<p><img src="./12.058.__-_Notes_-_Week_of_Feb_27_2012/image001.png" style="height:170px; width:226px" /><img src="./12.058.__-_Notes_-_Week_of_Feb_27_2012/image003.png" style="height:170px; width:226px" /></p>
+
+<p>Figure 1 &ndash; Control and No Reward - Separated Ancestor</p>
+
+<p>&nbsp;</p>
+
+<p><img src="./12.058.__-_Notes_-_Week_of_Feb_27_2012/image005.png" style="height:170px; width:226px" /></p>
+
+<p>Figure 2 - Punish - Separated Ancestor</p>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Graphing out the re-vamped physical modularity measures (unity and scatter) for run 065, which should have the correct stuff in it.
+	<ul style="list-style-type:circle">
+		<li>Ok, it turns out I&rsquo;m a dummy, and never tested whether my &ldquo;calculate_physical_modularity.py&rdquo; script actually worked after I modified it to do unity and scatter. Sigh. Fixed it, and running it again. Sadly this part takes FOR-E-VER.</li>
+		<li>On the bright side, I modified the plot_from_csv.py script to handle up to five sources for up to four treatments, and it handles it semi-gracefully, by passing in a --data_sources parameter, which clues it in where the treatments start and end.</li>
+	</ul>
+	</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF">/Volumes/rosiec-1/research/Devolab Research/evolution_of_modularity/raw_data/065</span></strong>$ python ../../../scripts/generate_graphs_from_raw_data/plot_from_csv.py -o --data_sources 5 -t &quot;Separated Task Ancestor&quot; -x &quot;Updates x50&quot; -y &quot;Modularity&quot; physical_modularity_by_task__separated__two_task.png control_s*__functional_modularity.csv control_s*__backbone_task_unity.csv control_s*__backbone_task_scatter.csv control_s*__fluct_task_unity.csv control_s*__fluct_task_scatter.csv noreward_first_s*__functional_modularity.csv noreward_first_s*__backbone_task_unity.csv noreward_first_s*__backbone_task_scatter.csv noreward_first_s*__fluct_task_unity.csv noreward_first_s*__fluct_task_scatter.csv punish_first_s*__functional_modularity.csv punish_first_s*__backbone_task_unity.csv punish_first_s*__backbone_task_scatter.csv punish_first_s*__fluct_task_unity.csv punish_first_s*__fluct_task_scatter.csv</pre>
+
+<p style="margin-left:.5in"><img src="./12.058.__-_Notes_-_Week_of_Feb_27_2012/image007.png" style="height:257px; width:344px" /></p>
+
+<ul style="list-style-type:circle">
+	<li>It looks more or less like this, though there will be lines not in the bottom when I get the proper physical modularity stats. Sigh.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Tuesday 2/28/12</h2>
+
+<h3>11:43 AM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Still waiting for the re-running to finish. It&rsquo;s 50% done with Stage 3, so, maybe a couple more hours. :(</li>
+</ul>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Ok yay! It finished!</li>
+	<li>A legend:</li>
+</ul>
+
+<p><img src="./12.058.__-_Notes_-_Week_of_Feb_27_2012/image009.png" style="height:280px; width:384px" /></p>
+
+<p>&nbsp;</p>
+
+<ul>
+	<li>Ugh. Ok, I think I&rsquo;m going to focus on intertwined for the variation in unity and scatter, etc.</li>
+</ul>
+
+<p><img src="./12.058.__-_Notes_-_Week_of_Feb_27_2012/image011.png" style="height:170px; width:226px" /><img src="./12.058.__-_Notes_-_Week_of_Feb_27_2012/image013.png" style="height:170px; width:226px" /></p>
+
+<p><img src="./12.058.__-_Notes_-_Week_of_Feb_27_2012/image015.png" style="height:170px; width:226px" /><img src="./12.058.__-_Notes_-_Week_of_Feb_27_2012/image017.png" style="height:170px; width:226px" /></p>
+
+<p><img src="./12.058.__-_Notes_-_Week_of_Feb_27_2012/image019.png" style="height:170px; width:226px" /><img src="./12.058.__-_Notes_-_Week_of_Feb_27_2012/image021.png" style="height:170px; width:226px" /></p>
+
+<p><img src="./12.058.__-_Notes_-_Week_of_Feb_27_2012/image023.png" style="height:176px; width:234px" /><img src="./12.058.__-_Notes_-_Week_of_Feb_27_2012/image025.png" style="height:176px; width:234px" /></p>
+
+<p><img src="./12.058.__-_Notes_-_Week_of_Feb_27_2012/image027.png" style="height:176px; width:234px" /><img src="./12.058.__-_Notes_-_Week_of_Feb_27_2012/image029.png" style="height:176px; width:234px" /></p>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Lab mtg notes
+	<ul style="list-style-type:circle">
+		<li>Showed flame graphs asked for suggestions
+		<ul>
+			<li>Flame graph, but each point is colored by what task they do, and intensity by abundance.</li>
+			<li>Do bars of clades, every genome when born in the clade gets a color for what task they do.
+			<ul>
+				<li>Or draw phylogeny for all members of a clade, each phylogeny line is colored by the task it does. Each phylogeny line/bar gets thicker by abundance</li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<h2>Wednesday 2/29/12</h2>
+
+<h3>11:17 AM</h3>
+
+<p>TODO:</p>
+
+<ul>
+	<li>Evolve efficient equals ancestor - DONE</li>
+	<li>Evolve efficient or ancestor - DONE</li>
+	<li>Do short runs with reduced mutation rate &ndash; DONE
+	<ul style="list-style-type:circle">
+		<li>066_Mutation_Rate_Sweep__Evolved_Separated_Ancestor</li>
+	</ul>
+	</li>
+	<li>Do short runs with evolved or and equ ancestor separated &ndash; DONE
+	<ul style="list-style-type:circle">
+		<li>Also 066</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3 class="item_body_heading_3">1:58 PM</h3>
+
+<p>TODO:</p>
+
+<ul>
+	<li>Determine whether differences are significant</li>
+</ul>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Submitted Alife title and abstract. :/</li>
+	<li>Moving around and pulling down job 064 (really long)</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Thursday 3/1/12</h2>
+
+<h3>11:26 AM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Moving around, zipping, and pulling down job 066_Mutation_Rate_Sweep__Evolved_Separated_Ancestor. Looks like some of the jobs were walltime killed. Hopefully not too many.</li>
+	<li>Submitted jobs that were killed. 30 Total :/</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Friday 3/2/12</h2>
+
+<h3>3:52 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Downloading the 30 extra runs and set them analyzing.</li>
+	<li>Set the rest of the non-killed runs analyzing. Hopefully not too long.</li>
+</ul>
+
+<p style="margin-left:.5in">&nbsp;</p>
+
+<p style="margin-left:.5in">&nbsp;</p>
+
+<p style="margin-left:.75in">&nbsp;</p>
+
+<p style="margin-left:.75in"><br />
+&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+
+<p>&nbsp;</p>

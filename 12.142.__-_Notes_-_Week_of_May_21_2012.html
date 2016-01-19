@@ -1,0 +1,258 @@
+<h1>Week of May 21, 2012</h1>
+
+<h2>Monday 5/21/12</h2>
+
+<h3>8:09 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Did virtually nothing last week. So, back on track this week.</li>
+	<li>Late last night, I created a couple of bar charts comparing the number of active task sites for the Alife paper. Below is the figure creation. Will prepend with data extraction later.</li>
+</ul>
+
+<pre>
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span>:<span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes</strong></span>$ python ../../../../../scripts/graph_generation/bar_chart_from_csv.py --groups 3 --xticks &quot;Control,No Reward,Punish&quot; --columns &quot;1,2,3,4&quot; --legend &quot;Fluct Only,Backbone Only,Overlapping,Total&quot; --pair --title &quot;Active Sites - Intertwined Ancestor&quot; --ylabel &quot;Active Sites&quot; --xlabel &quot;Treatment&quot; --separator &quot;,&quot; active_sites.png c*_active_site_count.csv n*_active_site_count.csv p*_active_site_count.csv</pre>
+
+<p><img src="./12.142.__-_Notes_-_Week_of_May_21_2012/1.png" style="height:326px; width:434px" /></p>
+
+<ul>
+	<li>In preparation for my evolvability experiments, I&#39;m going to extract the last common ancestor sequences.</li>
+</ul>
+
+<pre>
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span>:<span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED</strong></span>$ for i in *_8200??; do cd $i; cut -d &quot; &quot; -f13 last_common_ancestor.dat &gt; last_common_ancestor.org ; cd ../; done
+
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span>:<span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED</strong></span>$ for i in *_8200??; do cp $i/last_common_ancestor.org ../../../runs_staging_area/086_Testing_Evolvability/organisms/$i&quot;__last_common_ancestor.org&quot; ; done</pre>
+
+<h3>&nbsp;</h3>
+
+<h3>10:51 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Submitted jobs for testing the evolvability characteristics of the punish-evolved organisms against the control organisms.
+	<ul>
+		<li>Job 086 &ndash; Testing Evolvability
+		<ul>
+			<li>Low mutation rate (0.00075) fixed length</li>
+			<li>7 tournaments (nand-nor) between punishment last common ancestor (LCA), and control LCA.</li>
+			<li>Constant environment, rewarding only the single task.</li>
+		</ul>
+		</li>
+		<li>To check results, look at the next to last field (lineage id) in average.dat. This should tell you who won the tournament. :D</li>
+	</ul>
+	</li>
+	<li>Figured out how to populate the grid with an organism. InjectAll (for all, duh), InjectRange &lt;file&gt; &lt;start&gt; &lt;stop&gt;, or InjectSequence &lt;seq&gt; &lt;start&gt; &lt;stop&gt;.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Tuesday 5/22/12</h2>
+
+<h3>4:05 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Had a chat w/ Matt about my research. Showed him my latest results. He suggested the following things:
+	<ul>
+		<li>Looking at Site/Mutants graphs. To better quantify locations of related mutants&hellip;Do correlation between sites that lost vs sites that regained. If 1to1, they are reversions.</li>
+		<li>Document the count of mutants that are mere reversions in the graph (different color at the bottom of the bar chart). This should be a fixed number of mutants depending on how many mutants were landscaped. The bar chart is a fractional one, so I&rsquo;ll need to turn that count in the context of the fraction. THIS COULD BE VERY REVEALING.</li>
+		<li>Rename degenerate sites as vestigial&hellip;?</li>
+		<li>Look at normalizing my degenerate sites count based on my active sites count. I want to see what the excess of degen sites is once the total source site count is accounted for. Normalize based on the ratio of the noreward-control and punish-control (multiply by that ratio to normalize).</li>
+		<li>Evolutionary Capacitance &ndash; HSP90 protein (heatshock protein in drosophila) &ndash; Read papers on this. This is related to the pile of sites that exist and are ready to step in as needed.</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>10:46 PM</h3>
+
+<p>STATUS</p>
+
+<ul>
+	<li>Separated the runs into the categories (tasks). Extracting the tournament winners from my runs.</li>
+</ul>
+
+<pre>
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span><strong>:<span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/086/and</span></strong>$ for i in *_??????; do tail -1 $i/data/average.dat | cut -d &quot; &quot; -f15 ; done &gt; tournament_winners.dat
+
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span><strong>:<span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/086</span></strong>$ echo &quot;#not,nand,and,orn,or,andn,nor&quot; &gt; overall_tournament_winners.csv; paste -d &quot;,&quot; not/tournament_winners.dat nand/tournament_winners.dat and/tournament_winners.dat orn/tournament_winners.dat or/tournament_winners.dat andn/tournament_winners.dat nor/tournament_winners.dat &gt;&gt; overall_tournament_winners.csv</pre>
+
+<ul>
+	<li>and Plotting</li>
+</ul>
+
+<pre>
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span>:<span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/086</strong></span>$ python ../../../scripts/graph_generation/bar_chart_from_csv.py --xlabel &quot;task tournaments&quot; --ylabel &quot;average lineage label&quot; --title &quot;Average Winner of Tournaments 0-control 1-punishment&quot; --xticks &quot;not,nand,and,orn,or,andn,nor&quot; overall_tournament_winners.png overall_tournament_winners.csv</pre>
+
+<p><img src="./12.142.__-_Notes_-_Week_of_May_21_2012/2.png" style="height:326px; width:434px" /></p>
+
+<ul>
+	<li>Right, so that looks really strange. Why should they be all across the board virtually the same? Let&#39;s look at the raw data file.</li>
+</ul>
+
+<pre>
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span><strong>:<span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/086</span></strong>$ cat overall_tournament_winners.csv
+
+#not,nand,and,orn,or,andn,nor
+1,1,1,1,1,1,0
+0,0,0,0,0,0,0
+0,0,0,0,1,0,0
+0,0,0,0,0,1,0
+0,0,0,0,1,0,0
+0,0,0,0,0,0,1
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+1,1,1,1,1,1,1
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,0,1,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+1,1,1,1,1,1,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,0,1,0,1
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,1
+1,1,1,1,1,1,0
+1,1,1,1,1,1,1
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,1
+0,0,0,0,0,0,0
+1,1,1,1,1,1,1
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0
+0,0,0,0,0,0,0</pre>
+
+<ul>
+	<li>Oh. Well, because they are the SAME PAIR OF ORGANISMS along the X axis, regardless of the task being tested. So, that there is so much consistency shows that the seed organism (its starting fitness, etc.) much more strongly determines the outcome than the task being tested. And I bet that the control seeds have virtually all better starting fitness than the punishment seeds, EXCEPT for in where the punishment ones wins the whole rounds. <strong>I can probably confirm this by looking at the fitnesses of the seeds.</strong></li>
+	<li>However, there is some faint bucking of the trend in the higher/more difficult tasks. So, maybe when things are a little closer to start with, then the tasks can shift the balance.</li>
+	<li>Ok, let&#39;s look at what the fitnesses were. Copy the last common ancestors to a directory in 086/, then extract the fitnesses, and then paste it together with the overall whatevers.</li>
+</ul>
+
+<pre>
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span><strong>:<span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED</span></strong>$ for i in *_8200??; do cp $i/last_common_ancestor.dat ../../086/organisms/$i&quot;__last_common_ancestor.dat&quot; ; done
+
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span><strong>:<span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/086/organisms</span></strong>$ for i in control_intertwined_8200*.dat; do cut -d &quot; &quot; -f8 $i; done &gt; control_fitnesses.dat
+
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span><strong>:<span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/086/organisms</span></strong>$ for i in punish_intertwined_8200*.dat; do cut -d &quot; &quot; -f8 $i; done &gt; punish_fitnesses.dat
+
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span><strong>:<span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/086</span></strong>$ for line in `cat overall_tournament_winners__plus_fitnesses.csv`; do bit1=`echo $line | cut -d &quot;,&quot; -f8`; bit2=`echo $line | cut -d &quot;,&quot; -f9`; result=`echo &quot;$bit1 &lt; $bit2&quot; | bc`; echo $result  ; done &gt; fitness_comparison_result.dat
+
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span><strong>:<span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/086</span></strong>$ paste -d &quot;,&quot; overall_tournament_winners.csv organisms/control_fitnesses.dat organisms/punish_fitnesses.dat fitness_comparison_result.dat &gt; overall_tournament_winners__plus_fitnesses__with_comparison.csv</pre>
+
+<ul>
+	<li>Graphing this reveals:</li>
+</ul>
+
+<pre>
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span>:<span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/086</strong></span>$ python ../../../scripts/graph_generation/bar_chart_from_csv.py --ignorenan --xlabel &quot;task tournaments&quot; --ylabel &quot;average lineage label&quot; --title &quot;Average Winner of Tournaments 0-control 1-punishment&quot; --xticks &quot;not,nand,and,orn,or,andn,nor,fitness_winner&quot; --columns &quot;1,2,3,4,5,6,7,10&quot; overall_tournament_winners.png overall_tournament_winners__plus_fitnesses__with_comparison.csv</pre>
+
+<p><img src="./12.142.__-_Notes_-_Week_of_May_21_2012/3.png" style="height:326px; width:434px" /></p>
+
+<ul>
+	<li>Yes yes, that&#39;s an exact match. Sigh. Looking at the raw data confirms the same fucking thing. Sigh.</li>
+</ul>
+
+<pre>
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span><strong>:<span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/086</span></strong>$ paste -d &quot;,&quot; overall_tournament_winners.csv organisms/control_fitnesses.dat organisms/punish_fitnesses.dat fitness_comparison_result.dat
+
+#not,nand,and,orn,or,andn,nor,control_fitness,punish_fitness,0
+1,1,1,1,1,1,0,94.6087,109.978,1
+0,0,0,0,0,0,0,108.413,90.0306,0
+0,0,0,0,1,0,0,118.078,109.054,0
+0,0,0,0,0,1,0,108.522,90.7636,0
+0,0,0,0,1,0,0,123.373,82.0603,0
+0,0,0,0,0,0,1,115.489,65.9911,0
+0,0,0,0,0,0,0,113.992,86.6224,0
+0,0,0,0,0,0,0,101.886,87.9036,0
+1,1,1,1,1,1,1,92.9477,96.932,1
+0,0,0,0,0,0,0,106.366,88.9756,0
+0,0,0,0,0,0,0,95.8984,1.99558,0
+0,0,0,0,0,0,0,119.399,75.52,0
+0,0,0,0,1,0,0,107.355,65.4097,0
+0,0,0,0,0,0,0,119,63.0407,0
+0,0,0,0,0,0,0,94.6959,66.2857,0
+0,0,0,0,0,0,0,113.564,75.4872,0
+0,0,0,0,0,0,0,108.38,67.2146,0
+0,0,0,0,0,0,0,119.467,65.582,0
+0,0,0,0,0,0,0,110.652,2.08145,0
+0,0,0,0,0,0,0,122.39,100.136,0
+0,0,0,0,0,0,0,119.07,66.3063,0
+0,0,0,0,0,0,0,115.833,66.583,0
+0,0,0,0,0,0,0,106.891,64,0
+1,1,1,1,1,1,0,94.3158,109.978,1
+0,0,0,0,0,0,0,112.83,66.1769,0
+0,0,0,0,0,0,0,110.377,67.5229,0
+0,0,0,0,0,0,0,120.832,88.9102,0
+0,0,0,0,0,0,0,122.797,3.44526,0
+0,0,0,0,0,0,0,126.42,65.7143,0
+0,0,0,0,1,0,1,120.471,87.8806,0
+0,0,0,0,0,0,0,116.185,86.6224,0
+0,0,0,0,0,0,0,121.905,67.0067,0
+0,0,0,0,0,0,0,95.8984,78.3957,0
+0,0,0,0,0,0,0,114.958,73.5248,0
+0,0,0,0,0,0,1,124.343,90.9159,0
+1,1,1,1,1,1,0,95.0184,106.366,1
+1,1,1,1,1,1,1,,65.1429,
+0,0,0,0,0,0,0,108.662,100.983,0
+0,0,0,0,0,0,0,117.541,67.4595,0
+0,0,0,0,0,0,1,119.873,98.5263,0
+0,0,0,0,0,0,0,97.7605,87.1164,0
+1,1,1,1,1,1,1,98.589,106.971,1
+0,0,0,0,0,0,0,111.182,85.0909,0
+0,0,0,0,0,0,0,118.61,65.2772,0
+0,0,0,0,0,0,0,123.336,66.7826,0
+0,0,0,0,0,0,0,119.937,96.7296,0
+0,0,0,0,0,0,0,110.652,66.3486,0</pre>
+
+<ul>
+	<li>So this result is utterly predictable and profoundly useless. How can I go about comparing things that have fundamentally different fitnesses? I&#39;m most interested in which one can achieve the task first. <s>So, maybe if I make the merit be constant (since the organisms are fixed length anyway)&hellip;? Will try that. Don&#39;t know if it is what I want, but it may be worth a try</s>.
+
+	<ul>
+		<li>I read more about what merit is, and it&#39;s merely a way of normalizing fitness based on length (so longer genomes are not penalized merely for being long.) So, no go.</li>
+	</ul>
+	</li>
+	<li>Submitting job 087_Testing_Evolvability__Three_Input, which is the same as 086, but it uses 11 evenly spaced three-input instructions. Ostensibly, these will be more complex than equals or xor, so the genomes will be required to stretch to get these, which, if the punishment genomes are indeed more evolvable, more of the punishment ones should win the contests. :/ 1:13 AM</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Wednesday 5/23/12</h2>
+
+<h3>4:20 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Analyzed the output of 087 in the same way as 086.</li>
+</ul>
+
+<p><img src="./12.142.__-_Notes_-_Week_of_May_21_2012/4.png" style="height:326px; width:434px" /></p>
+
+<ul>
+	<li>Same deal, though these lean a slight bit more toward the punishment ancestor. :/</li>
+</ul>

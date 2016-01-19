@@ -1,0 +1,72 @@
+<h1>Week of September 15, 2014</h1>
+
+<h2>Monday, Sep 15, 2014</h2>
+
+<h3>Log 02:21PM</h3>
+
+<p>Ok, I really didn&#39;t do anything last week, but I thought about it a bit. Charles suggested the resource punishment for switching tasks, exactly the way I&#39;d tried it before, but which had failed. But, he suggested using mult instead of add. :/ Trying it.</p>
+
+<p>I have actually generated a ton of flame graphs. I&#39;ll add them to the previous weeks.</p>
+
+<p>Ok, had a short meeting with Charles. Explained that the punishment for switching tasks seems to be working, and that we&#39;re getting what seem to be stable branches in the flame graph. I think the next step is to figure out what is actually going on, and who is actually using the thingies. I can create an output file that reads the population dumps into analyze mode and prints out what tasks each thingy is doing... maybe. I&#39;ll have to see if that&#39;s something analyze mode can do. :/</p>
+
+<p>Disallow zero after some time in the run?</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Tuesday, Sept 16, 2014</h2>
+
+<h3>Lab Meeting 3:16p</h3>
+
+<p>Did a series of runs with the working switching punishment (via environment file)</p>
+
+<pre>
+python ../../../../research_scripts/quickplot.py \
+mating_preference_punish_switching \
+female_mate_preference_data.dat 11 ../data1_allow_zero_punish_switching/ 0ok_infl_9 \
+female_mate_preference_data.dat 11 ../data1_allow_zero_punish_switching_hardmatch/ 0ok_infl_9_hardmatch \
+female_mate_preference_data.dat 11 ../data1_no_zero_punish_switching/ no0_infl_9 \
+female_mate_preference_data.dat 11 ../data1_no_zero_punish_switching_hardmatch/ no0_infl_9_hardmatch
+
+python ../../../../research_scripts/quickplot.py \
+phenotype_diversity_punish_switching \
+phenotype_count.dat 3 ../data1_allow_zero_punish_switching/ 0ok_infl_9 \
+phenotype_count.dat 3 ../data1_allow_zero_punish_switching_hardmatch/ 0ok_infl_9_hardmatch \
+phenotype_count.dat 3 ../data1_no_zero_punish_switching/ no0_infl_9 \
+phenotype_count.dat 3 ../data1_no_zero_punish_switching_hardmatch/ no0_infl_9_hardmatch
+
+python ../../../../research_scripts/quickplot.py \
+average_task_count_punish_switching \
+phenotype_count.dat 6 ../data1_allow_zero_punish_switching/ 0ok_infl_9 \
+phenotype_count.dat 6 ../data1_allow_zero_punish_switching_hardmatch/ 0ok_infl_9_hardmatch \
+phenotype_count.dat 6 ../data1_no_zero_punish_switching/ no0_infl_9 \
+phenotype_count.dat 6 ../data1_no_zero_punish_switching_hardmatch/ no0_infl_9_hardmatch</pre>
+
+<p><img alt="" src="./14.258.__-_Notes_-_Week_of_September_15_2014/mating_preference_punish_switching.png" style="height:300px; width:400px" /><img alt="" src="./14.258.__-_Notes_-_Week_of_September_15_2014/phenotype_diversity_punish_switching.png" style="height:300px; width:400px" /><img alt="" src="./14.258.__-_Notes_-_Week_of_September_15_2014/average_task_count_punish_switching.png" style="height:300px; width:400px" /></p>
+
+<p><img alt="" src="./14.258.__-_Notes_-_Week_of_September_15_2014/0ok_flamegraph.png" style="height:450px; width:600px" /><img alt="" src="./14.258.__-_Notes_-_Week_of_September_15_2014/no0_flamegraph.png" style="height:450px; width:600px" /></p>
+
+<p>Right, so there are obviously stable branches evolving, but it&#39;s still not using them in a useful fashion... maybe. I need to figure out how</p>
+
+<ul>
+	<li>Cliff has been doing:
+	<ul>
+		<li>link tasks to the display.</li>
+		<li>female can be choosy independently.</li>
+	</ul>
+	</li>
+	<li>Other options or possibilities
+	<ul>
+		<li>add several little display traits A,B,C,D,E,F,G and have them use those.
+		<ul>
+			<li>remove display trait C, or rename it. :/</li>
+		</ul>
+		</li>
+		<li>there is a bug? Because my hard_match runs were IDENTICAL (fuck!) to my non-hard-match.</li>
+		<li>do bit string environments.</li>
+	</ul>
+	</li>
+	<li>Email Art about how he keeps track of the complete parental lineage. Does he dump it to disk?</li>
+</ul>
+
+<p>&nbsp;</p>

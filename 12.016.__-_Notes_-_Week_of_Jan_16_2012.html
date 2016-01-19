@@ -1,0 +1,194 @@
+<h1>Week of January 16, 2012</h1>
+
+<h2>Monday 1/16/12</h2>
+
+<h3>1:07 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>After some serious and significant tweaking, I finally have data from experiment 056. Analyzing as before.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Performing analysis of experiment 056 per 1/13/12-LOG.</li>
+	<li>Modified plot_from_csv.py to included legend, x/y axis labels, and title if desired. Generated graph from control, noreward, and punish.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#008000">rosiec@malp</span>:<span style="color:#0000FF">/Volumes/rosiec/research/Devolab Research/evolution_of_modularity/raw_data/056</span>$</strong> python ../../../scripts/generate_graphs_from_raw_data/plot_from_csv.py -m -t &quot;Modularity over Time&quot; -x &quot;Updates x25&quot; -y &quot;Modularity&quot; comparitive_modularity.png control_modularity.csv noreward_modularity.csv punish_modularity.csv</pre>
+
+<p><img src="./12.016.__-_Notes_-_Week_of_Jan_16_2012/image001.png" style="height:320px; width:434px" /></p>
+
+<ul>
+	<li>Submitted experiment 057, which is the same setup as 056, except using XOR_EQU_interwined.org, from experiment 048.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>STATUS EMAIL TO CHARLES:</p>
+
+<blockquote>
+<p>RESULTS!<br />
+<br />
+I started with an XOR/EQU seed organism, with the tasks separated, and measured average population modularity over time in the three treatments (control, no reward, and punishment). Both no reward and punishment approach the basement modularity level faster than the control. Punishment doing this was initially a surprise, but it makes sense if you think of it in terms of what evolutionary pressures are at play at what times. I will be presenting this tomorrow.<br />
+<br />
+Also, I&#39;ll be asking for advice about how to measure evolvability and robustness by looking at fitness landscapes, and whether that even makes sense. Specifically, I&#39;m not sure it makes sense to think about evolvability as straight fitness landscapes at all, especially on a site_by_site basis, because any mutation at a site is uniformly one step away. I&#39;ll give it some thought and present a preliminary framework about measuring evolvability and robustness and see where that goes.</p>
+
+<p>Anyway, a picture is worth a thousand words: &lt;attached above graph&gt;</p>
+</blockquote>
+
+<p>&nbsp;</p>
+
+<h2>Tuesday 1/17/12</h2>
+
+<p><img src="./12.016.__-_Notes_-_Week_of_Jan_16_2012/12.017.1 - Notes - Jan 17, 2012_cropped.png" style="height:1345px; width:987px" /></p>
+
+<h2>Wednesday 1/18/12</h2>
+
+<h3>3:15 PM</h3>
+
+<p>PLAN:</p>
+
+<ul>
+	<li>Per notes from Ofria Lab meeting, do the following:
+	<ul style="list-style-type:circle">
+		<li>Run with extended cycle length to allow punishment recoveries to play out.</li>
+		<li>Reanalyze modularity measurement, dropping those organisms that aren&rsquo;t doing both tasks.</li>
+		<li>Look at dominant lineage modularity (don&rsquo;t know what this will tell me :/)</li>
+		<li>Look at generating graphs/stats based on every individual in the population&rsquo;s modularity. Will be a cloud of points. This should tell me if we are looking at</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>STATUS</p>
+
+<ul>
+	<li>Analyzing 057 data as before. Seems to virtually the same pattern.</li>
+</ul>
+
+<p><img src="./12.016.__-_Notes_-_Week_of_Jan_16_2012/image003.png" style="height:344px; width:458px" /></p>
+
+<ul>
+	<li>Submitting 058 (longer cycle)</li>
+	<li>Developing scripts to reanalyze populations in 057 and 056 per above plan.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Thursday 1/19/12</h2>
+
+<h3>12:52 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Job 058 is still running. :/</li>
+	<li>Putting together the scripts to reanalyze the data from 056, 057, and 058:
+	<ul style="list-style-type:circle">
+		<li>Modularity figures, having filtered out the organisms that aren&rsquo;t doing both tasks.</li>
+		<li>Modularity for all organisms individually.
+		<ul>
+			<li>This requires making a script splitting up the detail population file into individual organism files. Sigh.</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Todo:
+	<ul style="list-style-type:circle">
+		<li>Submit 059 with first task from above.</li>
+		<li>Prepare 060:
+		<ul>
+			<li>Figure out how to split the files. Modify the script (split_avida_detail_file_into_organisms.py on hpcc) so that it puts the results files in the correct places when you define a path. Maybe do this via a cd command?</li>
+			<li>Modify the various analyze.cfg files to do a nested forrange and load each split up organism file individually and calculate its modularity. What an asspain.</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>10:30 PM (approximate)</h3>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Prepared and submitted 059 (reanalysis). Looks like it will go pretty fast.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Friday 1/20/12</h2>
+
+<h3>1:19 PM</h3>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Copying 058 and 059 analysis data.</li>
+</ul>
+
+<pre>
+<strong>[<span style="color:#FF0000">caninoko@gateway</span>]:[6]:[<span style="color:#0000FF">/mnt/scratch/caninoko/058</span>]:$</strong> mkdir populations; for i in *_*; do mkdir $i/data/populations/; mv $i/data/detail* $i/data/populations/; mv $i/data/populations/ ./populations/$i; tar -zcvf $i.tar.gz $i; done
+
+<strong>[<span style="color:#FF0000">caninoko@gateway</span>]:[6]:[<span style="color:#0000FF">/mnt/scratch/caninoko/059</span>]:$</strong> mkdir populations; for i in *_*; do mkdir $i/data/populations/; mv $i/data/detail* $i/data/populations/; mv $i/data/populations/ ./populations/$i; tar -zcvf $i.tar.gz $i; done
+
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/058</span>$</strong> scp  caninoko@gateway.hpcc.msu.edu:/mnt/scratch/caninoko/058/*.tar.gz ./; for i in *.tar.gz; do tar -zxvf $i; done; rm *.tar.gz
+
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/059</span>$</strong> scp  caninoko@gateway.hpcc.msu.edu:/mnt/scratch/caninoko/059/*.tar.gz ./; for i in *.tar.gz; do tar -zxvf $i; done; rm *.tar.gz</pre>
+
+<ul>
+	<li>Performing analysis</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/058</span>$</strong> rm control_modularity.csv; for i in control_*; do cd $i/data/analyze/; python ../../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 8 modularity-???.dat* modularity-????.dat* modularity-?????.dat* &gt;&gt; ../../../control_modularity.csv; cd ../../../; done
+
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/058</span>$</strong> rm noreward_modularity.csv; for i in noreward_*; do cd $i/data/analyze/; python ../../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 8 modularity-???.dat* modularity-????.dat* modularity-?????.dat* &gt;&gt; ../../../noreward_modularity.csv; cd ../../../; done
+
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/058</span>$</strong> rm punish_modularity.csv; for i in punish_*; do cd $i/data/analyze/; python ../../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 8 modularity-???.dat* modularity-????.dat* modularity-?????.dat* &gt;&gt; ../../../punish_modularity.csv; cd ../../../; done
+
+<strong><span style="color:#008000">rosiec@malp</span>:<span style="color:#0000FF">/Volumes/rosiec/research/Devolab Research/evolution_of_modularity/raw_data/058</span>$</strong> python ../../../scripts/generate_graphs_from_raw_data/plot_from_csv.py -m -t &quot;Modularity over Time - 2000u Cycle&quot; -x &quot;Updates x50&quot; -y &quot;Modularity&quot; comparitive_modularity.png control_modularity.csv noreward_modularity.csv punish_modularity.csv</pre>
+
+<p><img src="./12.016.__-_Notes_-_Week_of_Jan_16_2012/image005.png" style="height:278px; width:370px" /></p>
+
+<ul>
+	<li>There does seem to be a different basement for punishment, but it&rsquo;s still possible that the front of the cycle (the off period) is now too long. So, I&rsquo;ll prepare a run (060), to allow a longer recovery time (of 1000u), but a short off period (500u) to make sure that the basement is in fact different. I&rsquo;ll also do it with the intertwined organism to verify the difference.</li>
+	<li>Prepared and submitted 060 to verify this hypothesis. Additionally, includes filtering of organisms that don&rsquo;t do both tasks modularity data (like 059).</li>
+	<li>Generating graphs from 059 reanalysis:</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/059</span>$</strong> rm control_modularity_056.csv; for i in *056_control_*; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 8 modularity*-??.dat* modularity*-???.dat* modularity*-????.dat*  &gt;&gt; ../../control_modularity_056.csv; cd ../../; done
+
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/059</span>$</strong> rm noreward_modularity_056.csv; for i in *056_noreward_*; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 8 modularity*-??.dat* modularity*-???.dat* modularity*-????.dat*  &gt;&gt; ../../noreward_modularity_056.csv; cd ../../; done
+
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/059</span>$</strong> rm punish_modularity_056.csv; for i in *056_punish_*; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 8 modularity*-??.dat* modularity*-???.dat* modularity*-????.dat*  &gt;&gt; ../../punish_modularity_056.csv; cd ../../; done
+
+<strong><span style="color:#008000">rosiec@malp</span>:<span style="color:#0000FF">/Volumes/rosiec/research/Devolab Research/evolution_of_modularity/raw_data/059</span>$</strong> python ../../../scripts/generate_graphs_from_raw_data/plot_from_csv.py -m -t &quot;Modularity over Time &ndash; 2 Tasks Only&quot; -x &quot;Updates x25&quot; -y &quot;Modularity&quot; comparitive_modularity.png control_modularity.csv noreward_modularity.csv punish_modularity.csv</pre>
+
+<ul>
+	<li>Crap, looks like my analyze mode script DID NOT WORK. The filter must have been overzealous, or something, and just failed quietly. :/ Hopefully 060 will still output something useful. I&rsquo;ll have to investigate the failure and see what the hell happened. Sigh.</li>
+	<li>LATER: Oooookay, 060 &ldquo;ought&rdquo; to work, assuming &hellip; well, something. But there&rsquo;s definitely something fucked with FILTER or the combination of FILTER and AVERAGE_MODULARITY, that makes AVERAGE_MODULARITY fail to work, and output only zeroes. When you run AVERAGE_MODULARITY, then FILTER, and then AVERAGE_MODULARITY again, they both output values, and the second (filtered) set look different from the first, but who knows what is actually going on. I&rsquo;m not optimistic. So, I&rsquo;m going to re-run 059 with the additional AVERAGE_MODULARITY before the filter and see what that does. :/</li>
+	<li>Submitted job 059__Try_2. I&rsquo;ll need to do it in batches. :/</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Sunday 1/22/12</h2>
+
+<h3>7:30 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>After some stupid fucking with, I&rsquo;ve somewhat given up on job 059 for now, since it won&rsquo;t queue. Fucking HPC. :(</li>
+	<li>Job 060 finished finally. Copying and analyzing.</li>
+</ul>

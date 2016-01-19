@@ -1,0 +1,174 @@
+<h1>Week of October 06, 2014</h1>
+
+<h2>Tuesday, Oct 07, 2014</h2>
+
+<h3>Log 10:41AM</h3>
+
+<p>Hooray! It&#39;s Tuesday!</p>
+
+<p>&nbsp;</p>
+
+<h3>Lab Meeting 4:03p</h3>
+
+<p><strong>Earlier...</strong></p>
+
+<p>I generated the data to look at successful matings from my runs on the HPCC (Runs 112c). The following is a sad story.</p>
+
+<p><strong>[ED: <em>Step 4 - yes, I realize it&#39;s confusing - (before allopatry) -- 10/8 1:52am]</em></strong></p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/112c_ExperimentalPipeline</span>$</strong> 
+
+for k in *; do if [ -e $k&quot;/&quot;*_step4/mates ]; then echo $k; cd $k/*_step4/mates/; pwd; rm matings_timeseries.dat; for i in {0..999}; do echo $i; awk -v i=&quot;$i&quot; &#39;{if (($13 == i) &amp;&amp; ($16 &gt; 0) &amp;&amp; (($11 &gt; 1799 &amp;&amp; $22 &lt; 1800) || ($11 &lt; 1800 &amp;&amp; $22 &gt; 1799))) print $2,$3,$4,$5,$8,$11,&quot;---&gt;&quot;,$13,$14,$15, $16,$19,$22}&#39; &lt;(gzip -dc mates-$i&quot;.dat.gz&quot;) | wc -l &gt;&gt; matings_timeseries.dat ; done;&nbsp; cd ../../../; fi ; done
+
+python ../../../research_scripts/quickplot.py --error --end_at 50 matings_50u matings_timeseries.dat 1 &quot;Control_*/*_step4/mates/&quot; Control matings_timeseries.dat 1 &quot;ScenarioD_*/*_step4/mates/&quot; ScenarioD matings_timeseries.dat 1 &quot;ScenarioA_*/*_step4/mates/&quot; ScenarioA matings_timeseries.dat 1 &quot;ScenarioB_*/*_step4/mates/&quot; ScenarioB matings_timeseries.dat 1 &quot;ScenarioC_*/*_step4/mates/&quot; ScenarioC</pre>
+
+<p><img alt="" src="./14.279.__-_Notes_-_Week_of_October_06_2014/112c_matings_50u.png" style="height:600px; width:800px" /></p>
+
+<p>So there is no discernible difference between the scenarios and the control.<strong> [ED: <em>this is wrong. This figure only reflects the before allopatry state. of course there is no difference. see below -- 10/8 1:52am]</em></strong></p>
+
+<p>I did a run in Scenario A, dumping out the population files every 10 updates for the mating trials (the outputs of step 3). What this illustrates is post-zygotic isolation.</p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/experimental_setup/ScenarioA/data__A_step3_debugmatings</span>$</strong>
+
+for i in {25..1}; do tail -n +26 detail-$i&quot;0&quot;.spop &gt;&gt; detail-total.spop; done
+sort -u -k1,1  detail-total.spop &gt; detail-uniq.spop
+
+rm gen1_total.dat; for i in {1..25}; do awk -v i=&quot;$i&quot; &#39;{if ($11 == 1) print &quot;parents:&quot;,$4,&quot;merit,gest,fit:&quot;,$8,$9,$10,&quot;-- generation,update:&quot;,$11,$12}&#39; detail-$i&quot;0&quot;.spop | wc -l &gt;&gt; gen1_total.dat; done
+rm gen1_meritnonzero.dat; for i in {1..25}; do awk -v i=&quot;$i&quot; &#39;{if ($11 == 1 &amp;&amp; $8 == 0) print &quot;parents:&quot;,$4,&quot;merit,gest,fit:&quot;,$8,$9,$10,&quot;-- generation,update:&quot;,$11,$12}&#39; detail-$i&quot;0&quot;.spop | wc -l &gt;&gt; gen1_meritnonzero.dat; done
+rm gen1_meritnonzero_overthewall.dat; for i in {1..25}; do awk -v i=&quot;$i&quot; &#39;{split($4, array, /,/); if ($11 == 1 &amp;&amp; $8 &gt; 0 &amp;&amp; ((array[1] &gt; 1799 &amp;&amp; array[2] &lt; 1800) || (array[1] &lt; 1800 &amp;&amp; array[2] &gt; 1799)) ) print &quot;parents:&quot;,$4,&quot;merit,gest,fit:&quot;,$8,$9,$10,&quot;-- generation,update:&quot;,$11,$12}&#39; detail-$i&quot;0&quot;.spop | wc -l &gt;&gt; gen1_meritnonzero_overthewall.dat ; done
+rm gen1_overthewall.dat; for i in {1..25}; do awk -v i=&quot;$i&quot; &#39;{split($4, array, /,/); if ($11 == 1 &amp;&amp; ((array[1] &gt; 1799 &amp;&amp; array[2] &lt; 1800) || (array[1] &lt; 1800 &amp;&amp; array[2] &gt; 1799)) ) print &quot;parents:&quot;,$4,&quot;merit,gest,fit:&quot;,$8,$9,$10,&quot;-- generation,update:&quot;,$11,$12}&#39; detail-$i&quot;0&quot;.spop | wc -l &gt;&gt; gen1_overthewall.dat ; done
+rm gen1_live_nonhybrid.dat; for i in {1..25}; do awk -v i=&quot;$i&quot; &#39;{split($4, array, /,/); if ($11 == 1 &amp;&amp; $8 &gt; 0 &amp;&amp; ((array[1] &lt; 1800 &amp;&amp; array[2] &lt; 1800) || (array[1] &gt; 1799 &amp;&amp; array[2] &gt; 1799)) ) print &quot;parents:&quot;,$4,&quot;merit,gest,fit:&quot;,$8,$9,$10,&quot;-- generation,update:&quot;,$11,$12}&#39; detail-$i&quot;0&quot;.spop | wc -l &gt;&gt; gen1_live_nonhybrid.dat ; done
+rm gen1_nonhybrid.dat; for i in {1..25}; do awk -v i=&quot;$i&quot; &#39;{split($4, array, /,/); if ($11 == 1 &amp;&amp; ((array[1] &lt; 1800 &amp;&amp; array[2] &lt; 1800) || (array[1] &gt; 1799 &amp;&amp; array[2] &gt; 1799)) ) print &quot;parents:&quot;,$4,&quot;merit,gest,fit:&quot;,$8,$9,$10,&quot;-- generation,update:&quot;,$11,$12}&#39; detail-$i&quot;0&quot;.spop | wc -l &gt;&gt; gen1_nonhybrid.dat ; done
+
+echo &quot;#update     gen1_total,      gen1_merit&gt;0,   gen1_merit&gt;0_OTW,   gen1_OTW, gen1_Live_NonHybrid, gen1_nonHybrid&quot; &gt; offspring.dat; paste updates.dat gen1_total.dat gen1_meritnonzero.dat gen1_meritnonzero_overthewall.dat gen1_overthewall.dat gen1_live_nonhybrid.dat gen1_nonhybrid.dat &gt;&gt; offspring.dat
+
+awk &#39;{$1=$1}1&#39; OFS=&quot; &quot; offspring.dat &gt; offspring.cleaned.dat
+
+python ../../../../../research_scripts/quickplot.py -t &quot;Generation 1 Offspring&quot; offspring offspring.cleaned.dat 2 ./ Total offspring.cleaned.dat 5 ./ Hybrid offspring.cleaned.dat 7 ./ NonHybrid offspring.cleaned.dat 3 ./ Total_Live offspring.cleaned.dat 4 ./ Live_Hybrids offspring.cleaned.dat 6 ./ Live_NonHybrid</pre>
+
+<p><img alt="" src="./14.279.__-_Notes_-_Week_of_October_06_2014/offspring.png" style="height:600px; width:800px" /></p>
+
+<p>So, I&#39;ve expanded the mating preference display C bits to 8 to give more space for the organisms to expand their phenotypes into different areas.</p>
+
+<p>Separately, per conversation with Charles yesterday, I&#39;m doing some runs that don&#39;t use mating preferences. Rather they use mate preference random, but everything else is the same. This will show whether there is any difference in achieving allopatric speciation with sexual selection vs not.</p>
+
+<p>&nbsp;</p>
+
+<h2>Wed Oct 8, 2014</h2>
+
+<h3>Log 1:18AM</h3>
+
+<p>Spent a fair bit of time re-running the end parts of the 112c runs to gather the data for the offspring analysis. I copied in the config files from the 112 config directory, and modified event_III.cfg to include the every 10 updates dump of the population, and limiting the run to 250 updates.</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/112c_ExperimentalPipeline</span>$</strong> for seed in {112001..112030}; do if [ -e ScenarioD_Drift_$seed ]; then cd ScenarioD_Drift_$seed ; zcat data__ScenarioD_Drift_step2a/detail-300000.spop* &gt; detail-combined.spop; zcat data__ScenarioD_Drift_step2b/detail-300000.spop* | tail -n +24 &gt;&gt; detail-combined.spop; ../avida -s $seed -set EVENT_FILE ../events_III.cfg -set ENVIRONMENT_FILE ../environment_I_*.cfg -set DATA_DIR data__ScenarioD_Drift_step3_detail; rm detail-combined.spop; cd ../; fi; done
+
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/112c_ExperimentalPipeline</span>$</strong> for seed in {112001..112030}; do if [ -e ScenarioB*_$seed ]; then cd ScenarioB*_$seed ; zcat data__B_step2a/detail-300000.spop* &gt; detail-combined.spop; zcat data__B_step2b/detail-300000.spop* | tail -n +24 &gt;&gt; detail-combined.spop; ../avida -s $seed -set EVENT_FILE ../events_III.cfg -set ENVIRONMENT_FILE ../environment_IV_*.cfg -set DATA_DIR data__ScenarioB_step3_detail; rm detail-combined.spop; cd ../; fi; done
+
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/112c_ExperimentalPipeline</span>$</strong> for seed in {112001..112030}; do if [ -e ScenarioA*_$seed ]; then cd ScenarioA*_$seed ; zcat data__A_step2a/detail-300000.spop* &gt; detail-combined.spop; zcat data__A_step2b/detail-300000.spop* | tail -n +24 &gt;&gt; detail-combined.spop; ../avida -s $seed -set EVENT_FILE ../events_III.cfg -set ENVIRONMENT_FILE ../environment_I_*.cfg -set DATA_DIR data__ScenarioA_step3_detail; rm detail-combined.spop; cd ../; fi; done
+
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/112c_ExperimentalPipeline</span>$</strong> for seed in {112001..112030}; do if [ -e ScenarioC*_$seed ]; then cd ScenarioC*_$seed ; zcat data__C_step2a/detail-300000.spop* &gt; detail-combined.spop; zcat data__C_step2b/detail-300000.spop* | tail -n +24 &gt;&gt; detail-combined.spop; ../avida -s $seed -set EVENT_FILE ../events_III.cfg -set ENVIRONMENT_FILE ../environment_I_*.cfg -set DATA_DIR data__ScenarioC_step3_detail; rm detail-combined.spop; cd ../; fi; done
+
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/112c_ExperimentalPipeline</span>$</strong> for seed in {112001..112030}; do if [ -e Control*_$seed ]; then cd Control*_$seed ; zcat data__Control3_step2/detail-300000.spop* &gt; detail-combined.spop; ../avida -s $seed -set EVENT_FILE ../events_III.cfg -set ENVIRONMENT_FILE ../environment_I_*.cfg -set DATA_DIR data__Control3_step3_detail; rm detail-combined.spop; cd ../; fi; done</pre>
+
+<p>Discovered that my control runs didn&#39;t run the full length, thus weren&#39;t a good comparison of the step 3. Um, it&#39;s possible that the controlw wasn&#39;t actually buried in the middle there at all! Rather, it wasn&#39;t there at all! So, we&#39;ll see what comes up when the control actually runs. <strong>[ED: Nope, they&#39;re in there, but it&#39;s the same because, duh, this is pre-allopatry. see below. -- 10/8 1:58am]</strong></p>
+
+<p>The following runs are queued.</p>
+
+<ul>
+	<li>113 - 8 bits all same conditions as 112, except step3 only goes to 250 updates, and dumps a detail every 10.</li>
+	<li>113b - fixed control to go 300k length</li>
+	<li>114 - No choosy, otherwise same as 113</li>
+	<li>114b - fixed control to go 300k length</li>
+	<li>112d - fixed control to go 300k length</li>
+</ul>
+
+<p>Once 112d finishes, then I&#39;ll be able to re-run the last command above, and then generate a new graph, with error bars, showing the hybrid organisms stuff (last graph above). <strong><em>Separately, do I want to just total the number of hybrids? Do I care about it as a timeseries? Timeseries are only interesting if I care about fecundity vs survivability</em></strong>. An interesting question, but not what I&#39;m pursuing right now.</p>
+
+<p><em><strong>Um, also, oops. Before, I was only looking at step 4, and acting as if it was step 3. STUPID.</strong></em> I made some notes above to reflect this. Now, I&#39;ll run the same analysis on step 3. THere&#39;s no control, because of the broken thing mentioned above. Will re-run when I have all the data.</p>
+
+<p>Step 3 (after 300k of allopatry):</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/112c_ExperimentalPipeline</span>$</strong> 
+
+for k in *; do if [ -e $k&quot;/&quot;*_step3/mates ]; then echo $k; cd $k/*_step3/mates/; pwd; rm matings_timeseries.dat; for i in {0..999}; do echo $i; awk -v i=&quot;$i&quot; &#39;{if (($13 == i) &amp;&amp; ($16 &gt; 0) &amp;&amp; (($11 &gt; 1799 &amp;&amp; $22 &lt; 1800) || ($11 &lt; 1800 &amp;&amp; $22 &gt; 1799))) print $2,$3,$4,$5,$8,$11,&quot;---&gt;&quot;,$13,$14,$15, $16,$19,$22}&#39; &lt;(gzip -dc mates-$i&quot;.dat.gz&quot;) | wc -l &gt;&gt; matings_timeseries.dat ; done;&nbsp; cd ../../../; fi ; done
+
+python ../../../research_scripts/quickplot.py --error --end_at 100 matings_100u_postallopatry matings_timeseries.dat 1 &quot;Control_*/*_step3/mates/&quot; Control matings_timeseries.dat 1 &quot;ScenarioD_*/*_step3/mates/&quot; ScenarioD matings_timeseries.dat 1 &quot;ScenarioA_*/*_step3/mates/&quot; ScenarioA matings_timeseries.dat 1 &quot;ScenarioB_*/*_step3/mates/&quot; ScenarioB matings_timeseries.dat 1 &quot;ScenarioC_*/*_step3/mates/&quot; ScenarioC</pre>
+
+<p><img alt="" src="./14.279.__-_Notes_-_Week_of_October_06_2014/112c_matings_50u.png" style="height:375px; width:500px" /><img alt="" src="./14.279.__-_Notes_-_Week_of_October_06_2014/matings_50u_postallopatry.png" style="height:375px; width:500px" /><img alt="" src="./14.279.__-_Notes_-_Week_of_October_06_2014/matings_100u_postallopatry.png" style="height:375px; width:500px" /></p>
+
+<p>I ommited the Control above, since we don&#39;t have data for it yet, but it does look pretty different. Previous graph (matings_50u pre-allopatry) included for comparison.</p>
+
+<h2>&nbsp;</h2>
+
+<h3>Log 11:26p</h3>
+
+<p>This run is only half done, but 15 of the replicates are in, so I can use it.</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/114b_ExperimentalPipeline_NoSexualSelection$</span></strong>
+for k in *; do if [ -e $k&quot;/&quot;*_step3/mates ]; then echo $k; cd $k/*_step3/mates/; pwd; rm matings_timeseries.dat; for i in {0..250}; do echo $i; awk -v i=&quot;$i&quot; &#39;{if ((($11 &gt; 1799 &amp;&amp; $22 &lt; 1800) || ($11 &lt; 1800 &amp;&amp; $22 &gt; 1799))) print $2,$3,$4,$5,$8,$11,&quot;---&gt;&quot;,$13,$14,$15, $16,$19,$22}&#39; &lt;(gzip -dc mates-$i&quot;.dat.gz&quot;) | wc -l &gt;&gt; matings_timeseries.dat ; done;&nbsp; cd ../../../; fi ; done
+
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/114_ExperimentalPipeline_NoSexualSelection$</span></strong> 
+for k in *; do if [ -e $k&quot;/&quot;*_step3/mates ]; then echo $k; cd $k/*_step3/mates/; pwd; rm matings_timeseries.dat; for i in {0..250}; do echo $i; awk -v i=&quot;$i&quot; &#39;{if ((($11 &gt; 1799 &amp;&amp; $22 &lt; 1800) || ($11 &lt; 1800 &amp;&amp; $22 &gt; 1799))) print $2,$3,$4,$5,$8,$11,&quot;---&gt;&quot;,$13,$14,$15, $16,$19,$22}&#39; &lt;(gzip -dc mates-$i&quot;.dat.gz&quot;) | wc -l &gt;&gt; matings_timeseries.dat ; done;&nbsp; cd ../../../; fi ; done
+
+python ../../../research_scripts/quickplot.py --error --end_at 100 -x Updates -y Matings -t &quot;Post-Allopatry Matings - 114 No Sexual Selection&quot; 114_matings_100u_postallopatry matings_timeseries.dat 1 &quot;../114b_ExperimentalPipeline_NoSexualSelection/Control_*/*_step3/mates/&quot; Control matings_timeseries.dat 1 &quot;ScenarioD_*/*_step3/mates/&quot; ScenarioD matings_timeseries.dat 1 &quot;ScenarioA_*/*_step3/mates/&quot; ScenarioA matings_timeseries.dat 1 &quot;ScenarioB_*/*_step3/mates/&quot; ScenarioB matings_timeseries.dat 1 &quot;ScenarioC_*/*_step3/mates/&quot; ScenarioC</pre>
+
+<p><img alt="" src="./14.279.__-_Notes_-_Week_of_October_06_2014/114_matings_100u_postallopatry.png" style="height:600px; width:800px" /></p>
+
+<h2>Thu Oct 9, 2014</h2>
+
+<h3>Log 10:13a</h3>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113b_ExperimentalPipeline_8Bits$</span></strong>
+for k in *; do if [ -e $k&quot;/&quot;*_step3/mates ]; then echo $k; cd $k/*_step3/mates/; pwd; rm matings_timeseries.dat; for i in {0..250}; do echo $i; awk -v i=&quot;$i&quot; &#39;{if ((($11 &gt; 1799 &amp;&amp; $22 &lt; 1800) || ($11 &lt; 1800 &amp;&amp; $22 &gt; 1799))) print $2,$3,$4,$5,$8,$11,&quot;---&gt;&quot;,$13,$14,$15, $16,$19,$22}&#39; &lt;(gzip -dc mates-$i&quot;.dat.gz&quot;) | wc -l &gt;&gt; matings_timeseries.dat ; done;&nbsp; cd ../../../; fi ; done
+
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113_ExperimentalPipeline_8Bits$</span></strong> 
+for k in *; do if [ -e $k&quot;/&quot;*_step3/mates ]; then echo $k; cd $k/*_step3/mates/; pwd; rm matings_timeseries.dat; for i in {0..250}; do echo $i; awk -v i=&quot;$i&quot; &#39;{if ((($11 &gt; 1799 &amp;&amp; $22 &lt; 1800) || ($11 &lt; 1800 &amp;&amp; $22 &gt; 1799))) print $2,$3,$4,$5,$8,$11,&quot;---&gt;&quot;,$13,$14,$15, $16,$19,$22}&#39; &lt;(gzip -dc mates-$i&quot;.dat.gz&quot;) | wc -l &gt;&gt; matings_timeseries.dat ; done;&nbsp; cd ../../../; fi ; done
+
+python ../../../research_scripts/quickplot.py --error --end_at 100 -x Updates -y Matings -t &quot;Post-Allopatry Matings - 113 Sexual Selection&quot; 113_matings_100u_postallopatry matings_timeseries.dat 1 &quot;../113b*/Control_*/*_step3/mates/&quot; Control matings_timeseries.dat 1 &quot;ScenarioD_*/*_step3/mates/&quot; ScenarioD matings_timeseries.dat 1 &quot;ScenarioA_*/*_step3/mates/&quot; ScenarioA matings_timeseries.dat 1 &quot;ScenarioB_*/*_step3/mates/&quot; ScenarioB matings_timeseries.dat 1 &quot;ScenarioC_*/*_step3/mates/&quot; ScenarioC</pre>
+
+<p>Finally some good news! :D Sexual selection is doing it! :D</p>
+
+<p><img alt="" src="./14.279.__-_Notes_-_Week_of_October_06_2014/113_matings_100u_postallopatry.png" style="height:600px; width:800px" /></p>
+
+<pre>
+for k in *; do if [ -e $k&quot;/&quot;*_step3/ ]; then echo $k; cd $k/*_step3/; \
+for i in {25..1}; do zcat detail-$i&quot;0&quot;.spop* | tail -n +26 &gt;&gt; detail-total.spop; done; \
+sort -u -k1,1  detail-total.spop &gt; detail-uniq.spop; \
+rm gen1_total.dat; for i in {1..25}; do awk -v i=&quot;$i&quot; &#39;{if ($11 == 1) print &quot;parents:&quot;,$4,&quot;merit,gest,fit:&quot;,$8,$9,$10,&quot;-- generation,update:&quot;,$11,$12}&#39; &lt;(gzip -dc detail-$i&quot;0&quot;.spop*) | wc -l &gt;&gt; gen1_total.dat; done; \
+rm gen1_meritnonzero.dat; for i in {1..25}; do awk -v i=&quot;$i&quot; &#39;{if ($11 == 1 &amp;&amp; $8 == 0) print &quot;parents:&quot;,$4,&quot;merit,gest,fit:&quot;,$8,$9,$10,&quot;-- generation,update:&quot;,$11,$12}&#39; &lt;(gzip -dc detail-$i&quot;0&quot;.spop*) | wc -l &gt;&gt; gen1_meritnonzero.dat; done; \
+rm gen1_meritnonzero_overthewall.dat; for i in {1..25}; do awk -v i=&quot;$i&quot; &#39;{split($4, array, /,/); if ($11 == 1 &amp;&amp; $8 &gt; 0 &amp;&amp; ((array[1] &gt; 1799 &amp;&amp; array[2] &lt; 1800) || (array[1] &lt; 1800 &amp;&amp; array[2] &gt; 1799))) print &quot;parents:&quot;,$4,&quot;merit,gest,fit:&quot;,$8,$9,$10,&quot;-- generation,update:&quot;,$11,$12}&#39; &lt;(gzip -dc detail-$i&quot;0&quot;.spop*) | wc -l &gt;&gt; gen1_meritnonzero_overthewall.dat ; done; \
+rm gen1_overthewall.dat; for i in {1..25}; do awk -v i=&quot;$i&quot; &#39;{split($4, array, /,/); if ($11 == 1 &amp;&amp; ((array[1] &gt; 1799 &amp;&amp; array[2] &lt; 1800) || (array[1] &lt; 1800 &amp;&amp; array[2] &gt; 1799)) ) print &quot;parents:&quot;,$4,&quot;merit,gest,fit:&quot;,$8,$9,$10,&quot;-- generation,update:&quot;,$11,$12}&#39; &lt;(gzip -dc detail-$i&quot;0&quot;.spop*) | wc -l &gt;&gt; gen1_overthewall.dat ; done; \
+rm gen1_live_nonhybrid.dat; for i in {1..25}; do awk -v i=&quot;$i&quot; &#39;{split($4, array, /,/); if ($11 == 1 &amp;&amp; $8 &gt; 0 &amp;&amp; ((array[1] &lt; 1800 &amp;&amp; array[2] &lt; 1800) || (array[1] &gt; 1799 &amp;&amp; array[2] &gt; 1799)) ) print &quot;parents:&quot;,$4,&quot;merit,gest,fit:&quot;,$8,$9,$10,&quot;-- generation,update:&quot;,$11,$12}&#39; &lt;(gzip -dc detail-$i&quot;0&quot;.spop*) | wc -l &gt;&gt; gen1_live_nonhybrid.dat ; done; \
+rm gen1_nonhybrid.dat; for i in {1..25}; do awk -v i=&quot;$i&quot; &#39;{split($4, array, /,/); if ($11 == 1 &amp;&amp; ((array[1] &lt; 1800 &amp;&amp; array[2] &lt; 1800) || (array[1] &gt; 1799 &amp;&amp; array[2] &gt; 1799)) ) print &quot;parents:&quot;,$4,&quot;merit,gest,fit:&quot;,$8,$9,$10,&quot;-- generation,update:&quot;,$11,$12}&#39; &lt;(gzip -dc detail-$i&quot;0&quot;.spop*) | wc -l &gt;&gt; gen1_nonhybrid.dat ; done; \
+rm updates.dat; for i in {1..25} ; do echo $i&quot;0&quot; &gt;&gt; updates.dat; done; \
+echo &quot;#update     gen1_total,      gen1_merit&gt;0,   gen1_merit&gt;0_OTW,   gen1_OTW, gen1_Live_NonHybrid, gen1_nonHybrid&quot; &gt; offspring.dat; paste updates.dat gen1_total.dat gen1_meritnonzero.dat gen1_meritnonzero_overthewall.dat gen1_overthewall.dat gen1_live_nonhybrid.dat gen1_nonhybrid.dat &gt;&gt; offspring.dat; \
+awk &#39;{$1=$1}1&#39; OFS=&quot; &quot; offspring.dat &gt; offspring.cleaned.dat; \
+cd ../../; fi ; done;
+
+python ../../../research_scripts/quickplot.py --error -t &quot;Generation 1 Offspring - 113 ScenarioD Drift&quot; 113_offspring_scenarioD offspring.cleaned.dat 2 &quot;./ScenarioD*/*step3/&quot; Total offspring.cleaned.dat 5 &quot;./ScenarioD*/*step3/&quot; Hybrid offspring.cleaned.dat 7 &quot;./ScenarioD*/*step3/&quot; NonHybrid offspring.cleaned.dat 3 &quot;./ScenarioD*/*step3/&quot; Total_Live offspring.cleaned.dat 4 &quot;./ScenarioD*/*step3/&quot; Live_Hybrids offspring.cleaned.dat 6 &quot;./ScenarioD*/*step3/&quot; Live_NonHybrid;
+
+python ../../../research_scripts/quickplot.py --error -t &quot;Generation 1 Offspring - 113 ScenarioC&quot; 113_offspring_scenarioC offspring.cleaned.dat 2 &quot;./ScenarioC*/*step3/&quot; Total offspring.cleaned.dat 5 &quot;./ScenarioC*/*step3/&quot; Hybrid offspring.cleaned.dat 7 &quot;./ScenarioC*/*step3/&quot; NonHybrid offspring.cleaned.dat 3 &quot;./ScenarioC*/*step3/&quot; Total_Live offspring.cleaned.dat 4 &quot;./ScenarioC*/*step3/&quot; Live_Hybrids offspring.cleaned.dat 6 &quot;./ScenarioC*/*step3/&quot; Live_NonHybrid;
+
+python ../../../research_scripts/quickplot.py --error -t &quot;Generation 1 Offspring - 113 ScenarioB&quot; 113_offspring_scenarioB offspring.cleaned.dat 2 &quot;./ScenarioB*/*step3/&quot; Total offspring.cleaned.dat 5 &quot;./ScenarioB*/*step3/&quot; Hybrid offspring.cleaned.dat 7 &quot;./ScenarioB*/*step3/&quot; NonHybrid offspring.cleaned.dat 3 &quot;./ScenarioB*/*step3/&quot; Total_Live offspring.cleaned.dat 4 &quot;./ScenarioB*/*step3/&quot; Live_Hybrids offspring.cleaned.dat 6 &quot;./ScenarioB*/*step3/&quot; Live_NonHybrid;
+
+python ../../../research_scripts/quickplot.py --error -t &quot;Generation 1 Offspring - 113 ScenarioA&quot; 113_offspring_scenarioA offspring.cleaned.dat 2 &quot;./ScenarioA*/*step3/&quot; Total offspring.cleaned.dat 5 &quot;./ScenarioA*/*step3/&quot; Hybrid offspring.cleaned.dat 7 &quot;./ScenarioA*/*step3/&quot; NonHybrid offspring.cleaned.dat 3 &quot;./ScenarioA*/*step3/&quot; Total_Live offspring.cleaned.dat 4 &quot;./ScenarioA*/*step3/&quot; Live_Hybrids offspring.cleaned.dat 6 &quot;./ScenarioA*/*step3/&quot; Live_NonHybrid;
+
+python ../../../research_scripts/quickplot.py --error -t &quot;Generation 1 Offspring - 113 Control&quot; 113_offspring_control offspring.cleaned.dat 2 &quot;./Control*/*step3/&quot; Total offspring.cleaned.dat 5 &quot;./Control*/*step3/&quot; Hybrid offspring.cleaned.dat 7 &quot;./Control*/*step3/&quot; NonHybrid offspring.cleaned.dat 3 &quot;./Control*/*step3/&quot; Total_Live offspring.cleaned.dat 4 &quot;./Control*/*step3/&quot; Live_Hybrids offspring.cleaned.dat 6 &quot;./Control*/*step3/&quot; Live_NonHybrid;</pre>
+
+<p><img alt="" src="./14.279.__-_Notes_-_Week_of_October_06_2014/113_offspring_control.png" style="height:300px; width:400px" /></p>
+
+<p><img alt="" src="./14.279.__-_Notes_-_Week_of_October_06_2014/113_offspring_scenarioA.png" style="height:300px; width:400px" /><img alt="" src="./14.279.__-_Notes_-_Week_of_October_06_2014/113_offspring_scenarioB.png" style="height:300px; width:400px" /><img alt="" src="./14.279.__-_Notes_-_Week_of_October_06_2014/113_offspring_scenarioC.png" style="height:300px; width:400px" /><img alt="" src="./14.279.__-_Notes_-_Week_of_October_06_2014/113_offspring_scenarioD.png" style="height:300px; width:400px" /></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

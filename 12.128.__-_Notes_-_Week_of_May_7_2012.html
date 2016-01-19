@@ -1,0 +1,514 @@
+<h1>&shy;Week of May 7, 2012</h1>
+
+<h2>Tuesday 5/8/12</h2>
+
+<h3>7:00 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>So, turns out the HPCC scratch disk can&rsquo;t really manage the huge pile of little files that I&rsquo;ve been using on it, so they want me to clean it up. &nbsp;Doing it.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>11:28 PM</h3>
+
+<ul>
+	<li>Gathering together the results of the landscaping runs is intensely annoying. The Bash scripts take FOREVER. L Also, many of my runs are fucked in some way. So, I wrote a script to test the content of each of the outputs, and only zip it up if it was right. Grrr.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Friday 5/11/12</h2>
+
+<h3>2:36 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Not really done a lot the last couple days. SW Carpentry going on, and inode issue, as well as kinda taking it easy.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Going to see about the inode issue and see where my screens are now.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>3:20 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Looked at the screens. Cleaned up and performed the required next steps. Still have about 20 processes left.</li>
+	<li>Submitted revamped jobs to the HPCC for the landscaping work. They&rsquo;re running pretty fast, and the run_analyze.bash script was modified to cat the tiny files together, so that the post-run zipping stage doesn&rsquo;t take too long. Further, since my quota on my home directory is now 1Tb, I can do all my analysis work straight on my home directory. So, whee!</li>
+	<li>Right, so the Intertwined data IS available, so I&rsquo;m going to pull that down to atlantis, and perform the analyses.</li>
+	<li>Ok, since the filenames have a prefix, and I WANT TO USE IT, you can split it up using bash, like so:</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0"><strong><span style="color:#40E0D0">rosiec@atlantis</span></strong></span></strong>:<strong><span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/085</span></strong>$ for i in *.tar.gz; do vals=(`echo $i | tr &quot;.&quot; &quot;\n&quot;`); echo ${vals[0]}; done
+
+c_i_0
+c_i_10
+c_i_11
+c_i_12
+c_i_13
+c_i_14
+...</pre>
+
+<ul>
+	<li>Untarred the data. Sadly it falls into a weird directory structure, because that&rsquo;s how I did it. :( So, cleaning it up.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/085</span></strong>$ for i in *.tar.gz; do vals=(`echo $i | tr &quot;.&quot; &quot;\n&quot;`); prepre=(`echo ${vals[0]} | tr &quot;_&quot; &quot;\n&quot;`); dirname=${prepre[0]}_${prepre[1]}; echo $dirname; mkdir $dirname ; cd $dirname ; tar -zxvf ../$i ; cd ../  ;  done
+
+<strong><span style="color:#40E0D0">rosiec@atlantis</span></strong>:<strong><span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/085/c_i/results/c_i</span></strong>$ dirn=`pwd`; prefix=`basename $dirn`; for i in *; do echo $i; cd $i; cat *.txt &gt; ../../../$prefix&quot;_&quot;$i&quot;_mutants.dat&quot; ;  cd ../; done</pre>
+
+<ul>
+	<li>Now that I have them catted together by replicate source, I can now do some fractional analyses.</li>
+	<li>The script I was using before (&ldquo;extract_mutation_landscape_metrics.py&rdquo;) used to require the ancestor. Since I know what the ancestor does here (didn&rsquo;t do a task), and I don&rsquo;t really care a whole lot about fitnesses of the ancestor, I&rsquo;m going to add a simplified flag for the analysis.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@atlantis</span></strong>:<strong><span style="color:#0000FF"><strong>~/research/devolab_research/evolution_of_modularity/raw_data/085/c_i</strong></span></strong>$ rm mutation_landscape_metrics.csv ; for i in *mutants.dat; do echo $i; python ../../../../scripts/analysis/extract_mutation_landscape_metrics.py --ancestor_task1 $i  &gt;&gt; mutation_landscape_metrics.csv ; done</pre>
+
+<ul>
+	<li>Ok, now generate the graphs</li>
+</ul>
+
+<pre>
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span>:<strong><span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes</span></strong>$ python ../../../../../scripts/graph_generation/bar_chart_from_csv.py --groups 3 --xticks &quot;Control,No Reward,Punish&quot; --columns &quot;3&quot; --legend &quot;frac_does_task2&quot; --pair --title &quot;Mutation Landscape - 1-step - Lost Fluctuating Task&quot; --ylabel &quot;Fraction&quot; --xlabel &quot;Treatment&quot; --separator &quot;,&quot; mut_metrics__does_task2.png c*_*/mutation_landscape_metrics.csv n*_*/mutation_landscape_metrics.csv p*_*/mutation_landscape_metrics.csv
+<strong><span style="color:#FFD700"><strong>rosiec@Loki</strong></span></strong>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/085</strong></span></strong>$ python ../../../scripts/graph_generation/bar_chart_from_csv.py --groups 3 --xticks &quot;Control,No Reward,Punish&quot; --columns &quot;3&quot; --legend &quot;frac_does_task2&quot; --pair --title &quot;Mutation Landscape - 2-step - Regained Fluctuating Task&quot; --ylabel &quot;Fraction&quot; --xlabel &quot;Treatment&quot; --separator &quot;,&quot; mut_metrics__does_task2.png c*_*/mutation_landscape_metrics.csv n*_*/mutation_landscape_metrics.csv p*_*/mutation_landscape_metrics.csv</pre>
+
+<p><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/1.png" style="height:350px; width:468px" /> <img src="./12.128.__-_Notes_-_Week_of_May_7_2012/2.png" style="height:177px; width:236px" /></p>
+
+<ul>
+	<li><strong>SUCCESS ZOMG. HOLY SHIT. The above (left) shows that a single mutational step is more likely to result in the loss of a task in NoReward and Punish than in Control. The above(right) shows that of those that lost the task in step 1, a single mutational step further is more likely to result in the regaining of a task in NoReward and Punish than in Control. WOOHOO.</strong></li>
+	<li>The next thing I want to test is *where* these mutations that return function are taking place. I have all the fitness results &hellip;</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>9:00 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>I wrote a script &ldquo;identify_positions_of_mutational_effects_from_landscaping.py&rdquo;, which takes a landscape output file (all the sequences that result from one-step landscaping a given ancestor), deduces the sequence of the ancestor (since, Christ, it&rsquo;s annoying otherwise), and creates a position histogram for different functional effects, like losing a task, gaining a task, etc. This kind of thing should allow me to draw a heat-map on where function changing mutations cluster.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FFD700"><strong>rosiec@Loki</strong></span></strong>:<strong><span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/085/c_i/results/c_i</span></strong>$ for j in *; do echo $j; cd $j ; for i in *.txt; do python ../../../../../../../scripts/analysis/identify_positions_of_mutational_effect_from_landscaping.py --ancestor_task1 $i &gt; $i&quot;__position_histogram.csv&quot;; done; cd ../ ; done</pre>
+
+<ul>
+	<li>It makes sense to combine the histograms of the landscapes of the second-step mutants, since they are all based on a single-step mutant of a single ancestor. In that sense, they are only two steps removed from a single ancestor. This is useful.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@atlantis</span></strong>:<strong><span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/085/c_i/results/c_i</span></strong>$ for j in *; do cd $j; rm combined_position_histograms__does_task2.csv; for i in *position_histogram.csv; do head -2 $i | tail -1 &gt;&gt; combined_position_histograms__does_task2.csv ; done; cd ../; done</pre>
+
+<ul>
+	<li>I modified &quot;draw_map_task__using_lineage_and_alignment.py&quot;, adding an option to just save the color values, and not bother drawing a figure. This is useful for importing the task map to a different figure.</li>
+	<li>Unfortunately, I was an idiot when I extracted mutants from the last common ancestors, and the numbers don&#39;t match up any more. So, I need to figure that out. In the mean time, here&#39;s the basic invocation to generate the task map color for the last common ancestor.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FFD700">rosiec@Loki</span></strong>:<strong><span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED</span></strong>$ for i in *_*_8200*; do echo $i; cd $i; python ../../../../../scripts/graph_generation/draw_map_task__using_lineage_and_alignment.py --output_values_only --task_map --title &quot;na&quot; -v -a map_task 5 6 8 last_common_ancestor.dat data/phenotype/; cd ../; done</pre>
+
+<ul>
+	<li>Ok, how I did it before was that I trolled through the files, and pulled out the ones that had content. So, this time I&#39;ll do something similar, but use it to link the map task files to the numbered ancestors.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED</span></strong>$ for i in control_*_?????? ; do val=`wc -l $i/last_common_ancestor.dat | cut -f1 -d&#39; &#39;`; if [ $val -gt 0 ] ; then echo $i ; fi ; done | xargs
+
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED</span></strong>$ files=( <strong><em>...whatever the output of the prev command was ...</em></strong>)
+
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF"><strong>~/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED</strong></span></strong>$ len=${#files[@]}; for (( i=0; i&lt;${len}; i++)) ; do cp ${files[i]}/task_map__map_task__values_only.csv last_common_ancestor_mutation_landscapes/control_intertwined/ancestor_$i&quot;__task_map.csv&quot; ; done</pre>
+
+<ul>
+	<li>Finally, I need to aggregate my combined histograms. &quot;aggregate_file.py&quot; should be appropriate for the task.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF"><strong>~/research/devolab_research/evolution_of_modularity/raw_data/085/c_i/results/c_i</strong></span></strong>$ for i in *; do cd $i; python ../../../../../../../scripts/common/aggregate_file.py --sum -s &quot;,&quot; combined_position_histograms__does_task2.csv &gt; summed_position_histograms__does_task2.csv ; cd ../; done</pre>
+
+<ul>
+	<li>Now that I have them there, and everything is matched up, I can start building the graphic that shows the histogram paired with the task map. Yeesh. On the face of it, it should be pretty straightforward. Even so, nervous. :/</li>
+	<li>Ok, I created &quot;plot_by_site_functional_landscape.py&quot; to plot a histogram of mutations that caused a functional change, and a task map underneath to underscore the point.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FFD700">rosiec@Loki</span></strong>:<strong><span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/085/c_i/results/c_i</span></strong>$ for i in *; do echo $i; cd $i; python ../../../../../../../scripts/graph_generation/plot_by_site_functional_landscape.py --title &quot;2-Step Mutations Regaining Lost Task2 - control_intertwined $i&quot; functional_landscape.png summed_position_histograms__does_task2.csv ../../../../../082/INTERTWINED/last_common_ancestor_mutation_landscapes/control_intertwined/ancestor_$i&quot;__task_map.csv&quot; ; cd ../; done</pre>
+
+<p><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/3.png" style="height:127px; width:461px" /></p>
+
+<p><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/4.png" style="height:128px; width:462px" /></p>
+
+<p><strong><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/5.png" style="height:127px; width:464px" /></strong></p>
+
+<ul>
+	<li>Clearly, there are some obvious qualitative differences between Control and NoReward/Punish. Look in particular at the Y-axis AND at the spread of the mutants. This pattern holds for ALL the organisms surveyed.</li>
+	<li>Hypothesis: The characteristic pattern is caused by the building up of neutral libraries of &quot;spare parts&quot; from previously active regions (degenerate regions). Because of this build-up of &quot;spare parts&quot; it is EASY for the task to be reactivated.</li>
+	<li>Test this hypothesis by comparing the proportion of degenerate sites in the treatments.
+	<ul>
+		<li><strong><u>Just count the number of degenerate sites in the last common ancestor and plot that as a bar chart.</u></strong></li>
+		<li>Polish the above plot by doing the whole lineage map and saving the output, and extract the output of the common ancestor (awkward, but whatever.) This way I can show the degenerate sites in the bottom task map bar. <strong>(DONE 5/13/12 12:16 AM)</strong>
+		<ul>
+			<li>Also, consider making the colors in the above bar-chart be meaningful. Could they include some categorization of the meaning of the mutations? Eh.</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<h2>Saturday 5/12/12</h2>
+
+<h3>5:57 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>The separated landscaping runs (which I had to redo because they were FUCKED for some reason) are done on the HPCC, and I&#39;m pulling them down.</li>
+	<li>Will now gather and plot the number of degenerate sites in the last common ancestor.
+	<ul>
+		<li>When generating the task maps for the individual last common ancestors, it outputs a file with the name of the knockouts file (tasksites.org-*) for that organism. I captured it along with the run it went with in a file. I then generated the task map for the entire lineages, saving each of the values so that I could pluck out the lineage-map enhanced task maps for the last common ancestor. Finally, I trolled the output to extract the color values for each of them, and copied them to the last_common_ancestor_mutation_landscapes directory.</li>
+	</ul>
+	</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FFD700">rosiec@Loki</span></strong>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/SEPARATED</strong></span></strong>$ for i in *_*_8200*; do echo $i; cd $i; python ../../../../../scripts/graph_generation/draw_map_task__using_lineage_and_alignment.py --output_values_only --task_map --title &quot;na&quot; -v -a ../deleteme 5 6 8 last_common_ancestor.dat data/phenotype/; cd ../; done &gt; last_common_ancestors.txt
+
+<strong><span style="color:#FFD700"><strong>rosiec@Loki</strong></span></strong>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/SEPARATED</strong></span></strong>$ head last_common_ancestors.txt
+
+control_separated_820001
+data/phenotype/tasksites.org-2890544.dat
+control_separated_820002
+data/phenotype/tasksites.org-1523674.dat
+control_separated_820003
+data/phenotype/tasksites.org-3826793.dat
+control_separated_820004
+data/phenotype/tasksites.org-2499214.dat
+control_separated_820005
+data/phenotype/tasksites.org-2239533.dat
+
+<strong><span style="color:#FFD700"><strong>rosiec@Loki</strong></span></strong>:<strong><span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/SEPARATED</span></strong>$ for i in *_*_8200*; do echo $i; cd $i; python ../../../../../scripts/graph_generation/draw_map_task__using_lineage_and_alignment.py --output_values_only --lineage_map --title &quot;na&quot; -v 5 6 8 data/lineage.dat data/phenotype/; cd ../; done
+
+<strong><span style="color:#FFD700"><strong>rosiec@Loki</strong></span></strong>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/SEPARATED</strong></span></strong>$ values=(`cat last_common_ancestors.txt`)
+
+<strong><span style="color:#FFD700"><strong>rosiec@Loki</strong></span></strong>:<strong><span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/SEPARATED</span></strong>$ for line in ${values[@]}; do echo; testbit=`echo $line | cut -d &quot;_&quot; -f2`; echo $testbit; if [ $testbit = &quot;separated&quot; ]; then parentdir=$line; else testbit=`echo $line | cut -d &quot;-&quot; -f2`; testbit=`echo $testbit | cut -d &quot;.&quot; -f1`; filename=lineage_map__tasksites.org-$testbit.dat.png__values_only.csv; cp $parentdir/$filename last_common_ancestor_mutation_landscapes/$parentdir&quot;_&quot;$filename; fi; done</pre>
+
+<ul>
+	<li>Finally, rename the copied files so they match up with the ancestors.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FFD700"><strong>rosiec@Loki</strong></span></strong>:<strong><span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/SEPARATED/last_common_ancestor_mutation_landscapes/control_separated</span></strong>$ val=0; for i in *8200*; do echo $i; echo $val; mv $i ancestor_$val&quot;__lineage_map.csv&quot;; let &quot;val=$val+1&quot;; done</pre>
+
+<p>&nbsp;</p>
+
+<h3>9:02 PM</h3>
+
+<ul>
+	<li>The separated ancestor landscaping results have finished, so I&#39;m repeating the analysis on them.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FFD700"><strong>rosiec@Loki</strong></span></strong>:<strong><span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/SEPARATED/last_common_ancestor_mutation_landscapes</span></strong>$ python ../../../../../scripts/graph_generation/bar_chart_from_csv.py --groups 3 --xticks &quot;Control,No Reward,Punish&quot; --columns &quot;3&quot; --legend &quot;frac_does_task2&quot; --pair --title &quot;Mutation Landscape - Separated Ancestor
+
+1-step - Lost Fluctuating Task&quot; --ylabel &quot;Fraction&quot; --xlabel &quot;Treatment&quot; --separator &quot;,&quot; mut_metrics__does_task2.png c*_*/mutation_landscape_metrics.csv n*_*/mutation_landscape_metrics.csv p*_*/mutation_landscape_metrics.csv
+
+<strong><span style="color:#FFD700"><strong>rosiec@Loki</strong></span></strong>:<strong><span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/085</span></strong>$ python ../../../scripts/graph_generation/bar_chart_from_csv.py --groups 3 --xticks &quot;Control,No Reward,Punish&quot; --columns &quot;3&quot; --legend &quot;frac_does_task2&quot; --pair --title &quot;Mutation Landscape - Separated Ancestor
+
+2nd-step - Regained Fluctuating Task&quot; --ylabel &quot;Fraction&quot; --xlabel &quot;Treatment&quot; --separator &quot;,&quot; mut_metrics__does_task2__separated_ancestor.png c_s/mutation_landscape_metrics.csv n_s/mutation_landscape_metrics.csv p_s/mutation_landscape_metrics.csv</pre>
+
+<p><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/6.png" style="height:177px; width:236px" /> <img src="./12.128.__-_Notes_-_Week_of_May_7_2012/7.png" style="height:177px; width:236px" /></p>
+
+<ul>
+	<li>The same principle still applies to the separated ancestor as the intertwined.</li>
+	<li>Regenerating the other graphs to take advantage of the lineage maps I made.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FFD700"><strong>rosiec@Loki</strong></span></strong>:<strong><span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/085/c_i/results/c_i</span></strong>$ for i in *; do echo $i; cd $i; python ../../../../../../../scripts/graph_generation/plot_by_site_functional_landscape.py --title &quot;2-Step Mutations Regaining Lost Task2 - control_intertwined $i&quot; functional_landscape.png summed_position_histograms__does_task2.csv ../../../../../082/INTERTWINED/last_common_ancestor_mutation_landscapes/control_intertwined/ancestor_$i&quot;__lineage_map.csv&quot; ; cd ../; done</pre>
+
+<ul>
+	<li>And here are the results! Notice the degenerate sites. The colors are pretty faint. :/</li>
+</ul>
+
+<p><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/8.png" style="height:127px; width:470px" /></p>
+
+<p><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/9.png" style="height:127px; width:470px" /></p>
+
+<p><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/10.png" style="height:127px; width:470px" /></p>
+
+<p><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/11.png" style="height:127px; width:470px" /></p>
+
+<p><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/12.png" style="height:129px; width:470px" /></p>
+
+<p><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/13.png" style="height:127px; width:470px" /></p>
+
+<ul>
+	<li>So, woohoo. One unsurprising bit is how many more degenerate sites NR and P have vs Control.
+	<ul>
+		<li><u>I can quantify this, as above, by pulling out the number of degenerate sites in the last common ancestor and comparing that across the board.</u></li>
+		<li>HYPOTHESIS: Number of degenerate sites correlates with/predicts fraction of mutants that regain task in second step.
+		<ul>
+			<li>Extract data.</li>
+			<li>Build model in R</li>
+			<li>Check model fit.</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Sunday 5/13/12</h2>
+
+<h3>6:24 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Not the most productive day. :(</li>
+	<li>Will be extracting the degenerate site count. To this end, I&#39;m splitting up draw_map_task....py.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@atlantis</span></strong>:<strong><span style="color:#0000FF"><strong>~/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED</strong></span></strong>$ for i in *_*_8200*; do echo $i; cd $i; mkdir task_mappings; cd task_mappings; python ../../../../../../scripts/analysis/extract_task_mappings.py --lineage_map -v 5 6 8 ../data/lineage.dat ../data/phenotype/; cd ../../; done</pre>
+
+<ul>
+	<li>
+	<p>Now to extract the last common ancestors.</p>
+	</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FFD700"><strong>rosiec@Loki</strong></span></strong>:<strong><span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED</span></strong>$ values=(`cat last_common_ancestors.txt`)
+
+<strong><span style="color:#FFD700"><strong>rosiec@Loki</strong></span></strong>:<strong><span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED</span></strong>$ for line in ${values[@]}; do echo; testbit=`echo $line | cut -d &quot;_&quot; -f2`; echo $testbit; if [ $testbit = &quot;intertwined&quot; ]; then parentdir=$line; else testbit=`echo $line | cut -d &quot;-&quot; -f2`; testbit=`echo $testbit | cut -d &quot;.&quot; -f1`; filename=lineage_map__tasksites.org-$testbit.dat__values_only.csv; ls $parentdir/task_mappings/$filename ; cp $parentdir/task_mappings/$filename last_common_ancestor_mutation_landscapes/$parentdir&quot;_&quot;$filename; fi; done</pre>
+
+<ul>
+	<li>And pull out the degenerate sites</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@atlantis</span></strong>:<strong><span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes</span></strong>$ type=&quot;noreward_intertwined&quot;; for i in $type&quot;_&quot;82*; do fln=`cat $i | grep -o &quot;12&quot; | wc -l`; bbn=`cat $i | grep -o &quot;13&quot; | wc -l`; flbbn=`cat $i | grep -o &quot;14&quot; | wc -l`; tot=`expr $fln + $bbn + $flbbn`; echo $fln&quot;,&quot;$bbn&quot;,&quot;$flbbn&quot;,&quot;$tot ; done &gt; $type&quot;_degenerate_site_count.csv&quot;</pre>
+
+<ul>
+	<li>And generate the bar chart.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FFD700"><strong>rosiec@Loki</strong></span></strong>:<strong><span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED/last_common_ancestor_mutation_landscapes</span></strong>$ python ../../../../../scripts/graph_generation/bar_chart_from_csv.py --ylim_max 12 --groups 3 --xticks &quot;Control,No Reward,Punish&quot; --columns &quot;1,2,3,4&quot; --legend &quot;Degen Fluct,Degen Backbone,Degen Both,Total&quot; --pair --title &quot;Degenerate Sites - Intertwined Ancestor&quot; --ylabel &quot;Degenerate Sites&quot; --xlabel &quot;Treatment&quot; --separator &quot;,&quot; degenerate_sites.png c*_degenerate_site_count.csv n*_degenerate_site_count.csv p*_degenerate_site_count.csv</pre>
+
+<p>&nbsp;</p>
+
+<p><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/14.png" style="height:165px; width:219px" /> <img src="./12.128.__-_Notes_-_Week_of_May_7_2012/15.png" style="height:163px; width:217px" /></p>
+
+<ul>
+	<li>So, yeah! That&#39;s pretty dramatic. Now, I need to make a model, probably in R, so I can evaluate the fit.
+	<ul>
+		<li>Put together the degenerate site count files in a CSV with the mutation landscape metrics.</li>
+		<li>Read the data into R and model it. Should be pretty straightforward.</li>
+	</ul>
+	</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FFD700"><strong>rosiec@Loki</strong></span></strong>:<strong><span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/SEPARATED/last_common_ancestor_mutation_landscapes</span></strong>$ type=&quot;control_separated&quot;; paste -d &quot;,&quot; $type&quot;_&quot;degenerate_site_count.csv $type/mutation_landscape_metrics.csv &gt; $type&quot;__&quot;combined_degenerate_site_and_mutation_landscape_metrics.csv</pre>
+
+<ul>
+	<li>Then glued them together, prepending the treatment name, so I can read them into R.</li>
+</ul>
+
+<p><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/16.png" style="height:492px; width:469px" /></p>
+
+<ul>
+	<li>Now, I plotted the relationship between the degenerate sites and the fraction of mutants.</li>
+</ul>
+
+<p><strong><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/17.png" style="height:414px; width:470px" /></strong></p>
+
+<pre>
+&gt; summary(ancova.lm.fullmodel.sep.1step.bytreatment)
+
+Call:
+lm(formula = does_fluct_1step ~ treatment * fluct_degen_sites,
+    data = separated.data)
+
+Residuals:
+     Min       1Q   Median       3Q      Max
+-0.52630 -0.03531  0.01374  0.04812  0.18066
+
+Coefficients:
+                                      Estimate Std. Error t value Pr(&gt;|t|)   
+(Intercept)                          0.6528703  0.0156129  41.816  &lt; 2e-16 ***
+treatmentnoreward                   -0.0140984  0.0223225  -0.632  0.52878   
+treatmentpunish                     -0.0824104  0.0300988  -2.738  0.00706 **
+fluct_degen_sites                   -0.0099786  0.0187892  -0.531  0.59628   
+treatmentnoreward:fluct_degen_sites  0.0009349  0.0201038   0.047  0.96298   
+treatmentpunish:fluct_degen_sites    0.0036693  0.0190597   0.193  0.84764   
+---
+Signif. codes:  0 &lsquo;***&rsquo; 0.001 &lsquo;**&rsquo; 0.01 &lsquo;*&rsquo; 0.05 &lsquo;.&rsquo; 0.1 &lsquo; &rsquo; 1
+
+Residual standard error: 0.0939 on 129 degrees of freedom
+Multiple R-squared: 0.2789,   Adjusted R-squared: 0.251
+F-statistic:  9.98 on 5 and 129 DF,  p-value: 4.33e-08</pre>
+
+<p><strong><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/18.png" style="height:413px; width:470px" /></strong></p>
+
+<pre>
+&gt; summary(ancova.lm.fullmodel.sep.2step.bytreatment)
+
+Call:
+lm(formula = does_fluct_2step ~ treatment * fluct_degen_sites,
+    data = separated.data)
+
+Residuals:
+      Min        1Q    Median        3Q       Max
+-0.010248 -0.004318 -0.001146  0.001898  0.081224
+
+Coefficients:
+                                      Estimate Std. Error t value Pr(&gt;|t|)  
+(Intercept)                          0.0037012  0.0016130   2.295  0.02341 *
+treatmentnoreward                    0.0036794  0.0023062   1.595  0.11311  
+treatmentpunish                      0.0097010  0.0031960   3.035  0.00292 **
+fluct_degen_sites                   -0.0003333  0.0019411  -0.172  0.86395  
+treatmentnoreward:fluct_degen_sites  0.0012808  0.0020770   0.617  0.53858  
+treatmentpunish:fluct_degen_sites    0.0004877  0.0019699   0.248  0.80486  
+---
+Signif. codes:  0 &lsquo;***&rsquo; 0.001 &lsquo;**&rsquo; 0.01 &lsquo;*&rsquo; 0.05 &lsquo;.&rsquo; 0.1 &lsquo; &rsquo; 1
+
+Residual standard error: 0.009701 on 126 degrees of freedom
+  (3 observations deleted due to missingness)
+Multiple R-squared: 0.1876,   Adjusted R-squared: 0.1553
+F-statistic: 5.819 on 5 and 126 DF,  p-value: 7.198e-05</pre>
+
+<p><strong><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/19.png" style="height:414px; width:470px" /></strong></p>
+
+<pre>
+&gt; summary(ancova.lm.fullmodel.int.1step.bytreatment)
+
+Call:
+lm(formula = does_fluct_1step ~ treatment * fluct_degen_sites,
+    data = intertwined.data)
+
+Residuals:
+     Min       1Q   Median       3Q      Max
+-0.57409 -0.03049  0.01221  0.04154  0.21531
+
+Coefficients:
+                                     Estimate Std. Error t value Pr(&gt;|t|)   
+(Intercept)                          0.687592   0.013649  50.377   &lt;2e-16 ***
+treatmentnoreward                   -0.028955   0.022184  -1.305    0.194   
+treatmentpunish                     -0.036181   0.026664  -1.357    0.177   
+fluct_degen_sites                    0.004791   0.027911   0.172    0.864   
+treatmentnoreward:fluct_degen_sites -0.012431   0.028335  -0.439    0.662   
+treatmentpunish:fluct_degen_sites   -0.017072   0.028020  -0.609    0.543   
+---
+Signif. codes:  0 &lsquo;***&rsquo; 0.001 &lsquo;**&rsquo; 0.01 &lsquo;*&rsquo; 0.05 &lsquo;.&rsquo; 0.1 &lsquo; &rsquo; 1
+
+Residual standard error: 0.09026 on 129 degrees of freedom
+Multiple R-squared: 0.3744,   Adjusted R-squared: 0.3501
+F-statistic: 15.44 on 5 and 129 DF,  p-value: 6.964e-12</pre>
+
+<p><strong><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/20.png" style="height:414px; width:470px" /></strong></p>
+
+<pre>
+&gt; summary(ancova.lm.fullmodel.int.2step.bytreatment)
+
+Call:
+lm(formula = does_fluct_2step ~ treatment * fluct_degen_sites,
+    data = intertwined.data)
+
+Residuals:
+      Min        1Q    Median        3Q       Max
+-0.012440 -0.004327 -0.001184  0.003074  0.032851
+
+Coefficients:
+                                      Estimate Std. Error t value Pr(&gt;|t|)   
+(Intercept)                          0.0035730  0.0011136   3.208 0.001693 **
+treatmentnoreward                    0.0093612  0.0018100   5.172 8.86e-07 ***
+treatmentpunish                      0.0081006  0.0022525   3.596 0.000462 ***
+fluct_degen_sites                    0.0001927  0.0022773   0.085 0.932696   
+treatmentnoreward:fluct_degen_sites -0.0003275  0.0023119  -0.142 0.887571   
+treatmentpunish:fluct_degen_sites    0.0002756  0.0022868   0.121 0.904258   
+---
+Signif. codes:  0 &lsquo;***&rsquo; 0.001 &lsquo;**&rsquo; 0.01 &lsquo;*&rsquo; 0.05 &lsquo;.&rsquo; 0.1 &lsquo; &rsquo; 1
+
+Residual standard error: 0.007364 on 126 degrees of freedom
+  (3 observations deleted due to missingness)
+Multiple R-squared: 0.3501,   Adjusted R-squared: 0.3243
+F-statistic: 13.58 on 5 and 126 DF,  p-value: 1.356e-10</pre>
+
+<p>* So, doesn&#39;t seem like there is a strong relationship. The R2rs top out at .35 for the 2<sup>nd</sup> step.</p>
+
+<p>&nbsp;</p>
+
+<p><strong>Weekly Status</strong></p>
+
+<p style="margin-left:.5in">&nbsp;</p>
+
+<blockquote>
+<p>Last week:</p>
+
+<ul>
+	<li>Previously, I had taken the last common ancestor each of my replicates for each treatment (control, no-reward, and punish), and surveyed the single-step mutation landscapes. I calculated the fraction of mutants that LOST the fluctuating task.</li>
+</ul>
+
+<p style="margin-left:.5in"><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/21.png" style="height:243px; width:324px" /></p>
+
+<p style="margin-left:.5in">Last week, I took each of those mutants, and landscaped those, and calculated what fraction of the second-step mutants REGAINED the fluctuating task.</p>
+
+<p><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/22.png" style="height:246px; width:325px" /></p>
+
+<p style="margin-left:.5in">Clearly, you can see that there are significantly more second-step mutants in no-reward and punish treatments that regain the fluctuating task than in the control.</p>
+
+<ul>
+	<li>Then, I looked at what sites were responsible for regaining the fluctuating task in those mutants that regained the tasks in all treatments.</li>
+</ul>
+
+<p><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/23.png" style="height:211px; width:470px" /></p>
+
+<p><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/24.png" style="height:211px; width:470px" /></p>
+
+<p><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/25.png" style="height:211px; width:470px" /></p>
+
+<p style="margin-left:.5in">The pattern is pretty clear. Mutations that regain the task mostly cluster nearby to existing non-overlapping instructions (red, blue) or degenerate sites (light red, light blue, light purple), and avoid overlapping sites. The above figures are for a single replicate, but the pattern holds for most of the replicates.</p>
+
+<ul>
+	<li>Finally, I looked at whether there was a relationship between the number of degenerate sites and the fraction of mutants that regained the task.</li>
+</ul>
+
+<p><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/26.png" style="height:299px; width:399px" /></p>
+
+<p style="margin-left:.5in">Clearly, punish and no-reward have many more fluctuating task degenerate sites than the control. So, I modeled the correlation in R. ( num_regained_fluct_task ~ treatment * num_fluctuating_degenerate_sites)</p>
+
+<p><strong><img src="./12.128.__-_Notes_-_Week_of_May_7_2012/27.png" style="height:359px; width:407px" /></strong></p>
+
+<p style="margin-left:.5in">The model coefficients are only significant for the intercepts (the mean differences between treatments), but not for the slopes (a relationship between the degenerate sites and the number of mutants). The model has an R-squared of .35, so not really great.</p>
+
+<p>&nbsp;</p>
+
+<p>This Week:</p>
+
+<ul>
+	<li>In Alberta helping with the Software Carpentry workshop.</li>
+	<li>Model some other relationships, including straight correlation between number of degenerate sites and mutants that regained the task (to see if the relationship is independent of treatment).</li>
+	<li>From Last Week: Formulate a set of definitive experiments to test evolvability of organisms evolved in the landscape.</li>
+	<li>From Last Week: Run Fitness in Changing Environments tournaments to extract relative fitness information.</li>
+</ul>
+</blockquote>
+
+<p>&nbsp;</p>

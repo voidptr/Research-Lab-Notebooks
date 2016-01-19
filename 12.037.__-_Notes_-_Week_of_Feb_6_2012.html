@@ -1,0 +1,153 @@
+<h1>Week of February 6, 2012</h1>
+
+<h2>Monday 2/6/12</h2>
+
+<h3>11:47 AM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Began writing &ldquo;calculate_physical_modularity.py&rdquo; to pull out the appropriate columns, average them together, and them dump them out as a single column to stdout. This output can then be read by extract_single_column_to_csv.py in the usual way.</li>
+</ul>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Calculating physical modularity. I have zero idea whether this will work or not.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>6:00 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Extracting the physical modularity measures. Takes fucking forever.</li>
+</ul>
+
+<pre>
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span>:<span style="color:#0000FF"><strong>~/research/Devolab Research/evolution_of_modularity/raw_data/062</strong></span>$ for i in *_??????; do echo $i; cd $i/data/; for j in two_task*.dat*; do python ../../../../../scripts/evolution_of_modularity_pipelines/calculate_physical_modularity.py 11 12 16 17 $j &gt; physical_modularity__$j; done; cd ../../; done;</pre>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Trying to figure out how to graph things on a separate axis.
+	<ul style="list-style-type:circle">
+		<li>Ok, it looks like you do it by using twinx().</li>
+	</ul>
+	</li>
+	<li>Modified plot_from_csv.py to allow an option to set whether you want the last of whatever cycle (every-other or every-third datafile) to use an alternative axis. Also, I added every-third, along with an addition linestyle (dotted). Generating the data so I can try it out.</li>
+	<li>Using extract_single_column_to_csv.py to pull out and calculate the stats on physical modularity. Also takes a long fucking time.</li>
+</ul>
+
+<pre>
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span>:<span style="color:#0000FF"><strong>~/research/Devolab Research/evolution_of_modularity/raw_data/062</strong></span>$ for i in *_??????; do echo $i; cd $i/data/; rm two_task_physical_modularity__stats.csv ;python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py -c 1 physical*-?.dat* physical*-??.dat* physical*-
+
+???.dat* physical*-????.dat* physical*-?????.dat* &gt;&gt; two_task_physical_modularity__stats.csv; cd ../../; done</pre>
+
+<ul>
+	<li>Ok, aggregating the physical modularity stats.</li>
+</ul>
+
+<pre>
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span>:<span style="color:#0000FF"><strong>~/research/Devolab Research/evolution_of_modularity/raw_data/062</strong></span>$
+
+rm punish_first_separated__physical_modularity.csv; for i in p*_s*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 two_task_physical_modularity__stats.csv &gt;&gt; ../../punish_first_separated__physical_modularity.csv; cd ../../; done
+
+
+rm noreward_first_separated__physical_modularity.csv; for i in n*_s*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 two_task_physical_modularity__stats.csv &gt;&gt; ../../noreward_first_separated__physical_modularity.csv; cd ../../; done
+
+
+rm control_separated__physical_modularity.csv; for i in c*_s*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 two_task_physical_modularity__stats.csv &gt;&gt; ../../control_separated__physical_modularity.csv; cd ../../; done
+
+
+rm control_intertwined__physical_modularity.csv; for i in c*_i*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 two_task_physical_modularity__stats.csv &gt;&gt; ../../control_intertwined__physical_modularity.csv; cd ../../; done
+
+
+rm noreward_first_intertwined__physical_modularity.csv; for i in n*_i*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 two_task_physical_modularity__stats.csv &gt;&gt; ../../noreward_first_intertwined__physical_modularity.csv; cd ../../; done
+
+
+rm punish_first_intertwined__physical_modularity.csv; for i in p*_i*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 two_task_physical_modularity__stats.csv &gt;&gt; ../../punish_first_intertwined__physical_modularity.csv; cd ../../; done</pre>
+
+<ul>
+	<li>Generating a graph (fingers crossed!)</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<span style="color:#0000FF"><strong>/Volumes/Atlantis/research/Devolab Research/evolution_of_modularity/raw_data/062</strong></span>$ python ../../../scripts/generate_graphs_from_raw_data/plot_from_csv.py -e -o -t &quot;Separated Task Ancestor&quot; -x &quot;Updates x50&quot; -y &quot;Modularity&quot; comparitive_physical_functional_modularity__separated__two_task.png control_s*__functional_modularity.csv control_s*__physical_modularity.csv noreward_first_s*__functional_modularity.csv noreward_first_s*__physical_modularity.csv punish_first_s*__functional_modularity.csv punish_first_s*__physical_modularity.csv
+
+python ../../../scripts/generate_graphs_from_raw_data/plot_from_csv.py -e -o -t &quot;Intertwined Task Ancestor&quot; -x &quot;Updates x50&quot; -y &quot;Modularity&quot; comparitive_physical_functional_modularity__intertwined__two_task.png control_intertwined__functional_modularity.csv control_intertwined__physical_modularity.csv noreward_first_intertwined__functional_modularity.csv noreward_first_intertwined__physical_modularity.csv punish_first_intertwined__functional_modularity.csv punish_first_intertwined__physical_modularity.csv</pre>
+
+<p><img src="./12.037.__-_Notes_-_Week_of_Feb_6_2012/image001.png" style="height:170px; width:226px" /><img src="./12.037.__-_Notes_-_Week_of_Feb_6_2012/image003.png" style="height:176px; width:234px" /></p>
+
+<p>ANALYSIS:</p>
+
+<ul>
+	<li>Solid lines are functional modularity &ndash; 1 means perfect separation. 0 means perfect overlap.</li>
+	<li>Dashed lines are physical modularity, ratio of task instruction count, to task positional length &ndash; 1 means no scatter (count == length). 0 means infinite scatter.</li>
+	<li>Scatter is easy to get, but harder to get rid of.</li>
+	<li>Scatter increases markedly under punishment, but stays pretty steady with the control under noreward. In fact, all modularity measures of no reward (except for the speed increase toward adaptation) seem to track pretty solidly with the control.</li>
+	<li>I think I need more data to see how this plays out.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>STATUS EMAIL TO CHARLES:</p>
+
+<blockquote>
+<p>Last week: I was testing whether the modularity differences per treatment were contingent upon the prior conditions. I performed a set of runs with separated and intertwined task (XOR and EQU) seed organisms, and ran treatments that switched from punish to no-reward half way through the run (and vice versa). From these runs, I collected the functional modularity measure (overlap) and physical modularity (scatter) of those organisms that did both tasks. I hoped that this would show whether the functional modularity &quot;basement&quot; would rise and fall depending on the treatment.<br />
+<br />
+Attached are two graphs which show that the functional modularity basement level definitely rises immediately when exposed to punishment, but doesn&#39;t drop again very quickly when returned to no-reward. This correlates perfectly with the physical modularity measure, which shows a quick increase in scatter (decrease in physical modularity), and that this scatter stays pretty constant or drops slowly when the treatment is switched to no-reward.<br />
+<br />
+No legends are included in the graphs, as they would completely obscure the top part of the graphs.<br />
+Interpreting the graphs:<br />
+- Solid lines are functional modularity &ndash; 1 means perfect separation. 0 means perfect overlap.<br />
+- Dashed lines are physical modularity, ratio of task instruction count to task positional length &ndash; 1 means no scatter (count == length). 0 means infinite scatter.<br />
+- Black is control, blue is no-reward first, switching to punishment, and red is punishment first, switching to no-reward.<br />
+<br />
+I think it&#39;s fairly obvious that once scatter happens, it is hard to get rid of. I want to run some longer runs and see if the measures eventually return to pre-punishment levels if given enough time.<br />
+<br />
+This week:<br />
+<br />
+It&#39;s pretty clear that the scatter initially occurs due to the re-evolution of tasks in the punishment scenario. However, I want to test whether the scatter is hard to get rid of because it is being actively maintained (hypothesis 1), or whether it&#39;s just hard to back out of that type of architecture (hypothesis 2). My first thought for hypothesis 1 was a set of tournament experiments to see whether ancestors with scattered genomes more easily evolve new tasks or not. For hypothesis 2, I wanted to see how long it takes for a scattered genome to compact under control and no-reward conditions. Other ideas for testing these hypotheses are welcome.<br />
+<br />
+Finally, I want to test whether fluctuating environments help adaptations happen more quickly (as hinted at by the faster drop to the functional modularity basement in no-reward and punishment treatments vs control). Specifically, I want to find out whether the enforced fitness valleys of the no-reward and punishment environments help level the playing field when you have to rearrange your genome (which is potentially very costly to fitness).<br />
+<br />
+-rose</p>
+</blockquote>
+
+<p style="margin-left:.5in">&nbsp;</p>
+
+<p>THOUGHTS:</p>
+
+<ul>
+	<li>How would I go about testing whether fluctuating environments are helpful when you have to rearrange your genome?
+	<ul style="list-style-type:circle">
+		<li>First reward if tasks are done in one order, then switch it?</li>
+	</ul>
+	</li>
+	<li>For the tournament experiments, does it make sense to start with an evolved scattered genome, or does it make more sense to start with a scattered separated genome?
+	<ul style="list-style-type:circle">
+		<li>Think about pros and cons.</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Tuesday 2/7/12</h2>
+
+<h3>3:17 PM</h3>
+
+<p>LAB MTG NOTES/THOUGHTS:</p>
+
+<ul>
+	<li>Talk to Bess about her scripts for making boxplots. Yay!</li>
+	<li>Mtg about papers &ndash; Saturday Morning, breakfast first, then paper discussion</li>
+	<li>Go down and get robots ready</li>
+	<li>Put together paper draft for alife &ndash; make sure to have a draft by/before Saturday.</li>
+	<li>Put together code review group stuff</li>
+	<li>Do pairwise mutations to identify tasks &ndash; epistasis code? ANALYZE_EPISTASIS &ndash; only pairs of knockouts</li>
+	<li>Rename INDIVIDUAL_MODULARITY to MODULARITY</li>
+</ul>

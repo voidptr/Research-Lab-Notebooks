@@ -1,0 +1,35 @@
+<h1>Week of May 12, 2014</h1>
+
+<h2>Monday, May 12, 2014</h2>
+
+<h3>Log - 10:37a (MST)</h3>
+
+<p>All the data has been collected for the first proof of concept runs.</p>
+
+<pre>
+<code>rosiec@edi:~/__research/sexual_selection/configs/101_BasicSetup_recompiled/summary$ python ~/__research/scripts/quickplot.py -y &quot;Fitness&quot; -x &quot;Updates x100&quot; --title &quot;Fitness&quot; --error fitnesses average.dat 4 &quot;../output/control_*/data/&quot; control average.dat 4 &quot;../output/treatment_punish_*/data/&quot; treatment_punish average.dat 4 &quot;../output/treatment_noreward_*/data/&quot; treatment_noreward
+</code></pre>
+
+<p><img src="14.132._ - Notes - Week of May 12, 2014.images/mGOH15.jpg" /></p>
+
+<p>Looking pretty abysmal, and my runs all quit part-way through, probably because of memory issues. Annoyed.</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Tuesday, May 13, 2014</h2>
+
+<h3>Log 4:30p (EST)</h3>
+
+<p>Ok, I pulled out the task performance data for my runs and it seems to show exactly what I wanted.</p>
+
+<pre>
+<code>rosiec@edi:~/__research/sexual_selection/configs/101_BasicSetup_recompiled/summary$ python ~/__research/scripts/quickplot.py -y &quot;Task Performance&quot; -x &quot;Updates x100&quot; --title &quot;Tasks - No Reward&quot; --error tasks_treatment_noreward tasks.dat 2 &quot;../output/treatment_noreward_*/data/&quot; noreward_NOT tasks.dat 3 &quot;../output/treatment_noreward_*/data/&quot; noreward_AND tasks.dat 4 &quot;../output/treatment_noreward_*/data/&quot; noreward_OR tasks.dat 5 &quot;../output/treatment_noreward_*/data/&quot; noreward_NOR tasks.dat 6 &quot;../output/treatment_noreward_*/data/&quot; noreward_NAND tasks.dat 7 &quot;../output/treatment_noreward_*/data/&quot; noreward_ORNOT tasks.dat 8 &quot;../output/treatment_noreward_*/data/&quot; noreward_ANDNOT tasks.dat 9 &quot;../output/treatment_noreward_*/data/&quot; noreward_XOR tasks.dat 10 &quot;../output/treatment_noreward_*/data/&quot; noreward_EQU
+</code></pre>
+
+<p><img src="14.132._ - Notes - Week of May 12, 2014.images/xXvNR5.jpg" /></p>
+
+<p><img src="14.132._ - Notes - Week of May 12, 2014.images/R61e4n.jpg" /></p>
+
+<p><img src="14.132._ - Notes - Week of May 12, 2014.images/Fu5ZMA.jpg" /></p>
+
+<p>Notes from Cliff and Jay to not call fitness as fitness, because once you have sexual reproduction that may be misleading, since it doesn&rsquo;t actually represent how much they are reproducing, just how fast they are running. You can just use merit to represent a similar feature as fitness, but to show actual fitness, you can&rsquo;t do it like this. <strong>You might do something with multiplying merit * gestation * offspring produced. Todo: Look at the code for this.</strong></p>

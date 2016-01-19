@@ -1,0 +1,234 @@
+<h1>Week of January 9, 2012</h1>
+
+<h2>Monday 1/9/12</h2>
+
+<h3>9:22 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Started job 053, per 1/8/12-Conclusion2, using modularity measure from 1/8/12-Conclusion1.
+	<ul style="list-style-type:circle">
+		<li>Starting with XOR/EQU separated organism</li>
+		<li>Allow to spread for 2k updates</li>
+		<li>1k cycle of no-reward/reward</li>
+		<li>Mutation Rate .0075</li>
+		<li>XOR bb &ndash; reward 3</li>
+		<li>EQU fl &ndash; reward 5</li>
+		<li>10 cycles (to 12000 updates)</li>
+		<li>Capture whole population every 100 updates</li>
+		<li>Analyze at each population snapshot
+		<ul>
+			<li>average modularity for whole population</li>
+			<li>dominant only modularity</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Per discussion with Matt, storing output data in /mnt/scratch/caninoko/
+	<ul style="list-style-type:circle">
+		<li>Will extract relevant output (modularity-n.dat and modularity_dominant-n.dat) and delete large datafiles.</li>
+	</ul>
+	</li>
+</ul>
+
+<h2>Tuesday 1/10/12</h2>
+
+<h3>10:56 AM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Reviewed output of job 053
+	<ul style="list-style-type:circle">
+		<li>Ran out of walltime. :/</li>
+		<li>Resubmitted jobs that didn&rsquo;t make the cut.</li>
+		<li>Data only seemed to take up 54mb per job for 100u granularity. Extrapolate to 270mb for 20u and 540mb for 10u.</li>
+	</ul>
+	</li>
+	<li>Prepared and submitted 054, which is 053 at 20u granularity, which should clock in at about 16gb for the run. Also significantly extended wall clock time, since we are saving the population 5 as many times, which takes FOREVER. Job is being stored in /mnt/scratch/caninoko/054/</li>
+</ul>
+
+<p>PLAN:</p>
+
+<ul>
+	<li>Write/modify script to extract modularity, and plot it over the course of a run. Will probably be able to use one of my regular plotting scripts.</li>
+</ul>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Preparing scripts and commands to extract the modularity information output by AVERAGE MODULARITY. Below is a dry run using older data that is in the same format.
+	<ul style="list-style-type:circle">
+		<li>Use <span style="color:#0000FF"><span style="font-family:courier new,courier,monospace">extract_single_column_to_csv.py</span></span></li>
+	</ul>
+	</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/051_Selected_Task__Incubator__AlternateSeeds/punish_and_andn_501401/data/analyze</span>$</strong> python ../../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 8 modularity-?.dat* modularity-???.dat* modularity-????.dat*
+
+0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0.8</pre>
+
+<ul style="list-style-type:circle">
+	<li>Output is a single line which concatenates that column from all the files you feed it. Put these together using bash.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/051_Selected_Task__Incubator__AlternateSeeds</span>$</strong> rm bleh.csv; for i in punish*; do cd $i/data/analyze/; python ../../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 8 modularity-?.dat* modularity-???.dat* modularity-????.dat* &gt;&gt; ../../../bleh.csv; cd ../../../; done</pre>
+
+<ul style="list-style-type:circle">
+	<li>Plot the output using plot_from_csv.py.</li>
+</ul>
+
+<pre>
+<strong>[<span style="color:#EE82EE">rosiec@caninoko-2</span>]:[18]:<span style="color:#0000FF">[/Volumes/Atlantis/research/Devolab Research/evolution_of_modularity/raw_data/051_Selected_Task__Incubator__AlternateSeeds]</span>:$</strong> python ../../../scripts/generate_graphs_from_raw_data/plot_from_csv.py -m bleh.csv ~/Desktop/poop.png</pre>
+
+<p><img alt="" src="./12.009.__-_Notes_-_Week_of_Jan_9_2012/051_punish_modularity.png" style="height:268px; width:357px" /></p>
+
+<h3>Ofria Lab Meeting</h3>
+
+<p><img src="./12.009.__-_Notes_-_Week_of_Jan_9_2012/12.010.0 - Ofria Lab Mtg Notes - Jan 10, 2012_cropped.png" style="height:417px; width:961px" /></p>
+
+<h2>Wednesday 1/11/12</h2>
+
+<h3>12:34 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Copied relevant content of 054 (more granular) job to Atlantis
+	<ul style="list-style-type:circle">
+		<li>Discovered that I had my analyze mode script set up incorrectly, so it only analyzed modularity of every 100 updates, rather than the every 20 that I generated. D&rsquo;oh!</li>
+		<li>Submittted new job 055 (new seeds), with fully actualized granularity. Sigh.</li>
+	</ul>
+	</li>
+	<li>Before copying 054, I stripped out the unneeded detailed population files. This was done as follows:</li>
+</ul>
+
+<pre>
+<strong>[<span style="color:#FF0000">caninoko@dev-intel07</span>]:[77]:<span style="color:#0000FF">[/mnt/scratch/caninoko/054]</span>:$</strong> for i in *_53*; do mkdir $i/data/populations/; mv $i/data/detail* $i/data/populations/; done
+
+<strong>[<span style="color:#FF0000">caninoko@dev-intel07</span>]:[79]:<span style="color:#0000FF">[/mnt/scratch/caninoko/054]</span>:$</strong> mkdir populations
+
+<strong>[<span style="color:#FF0000">caninoko@dev-intel07</span>]:[80]:<span style="color:#0000FF">[/mnt/scratch/caninoko/054]</span>:$</strong> for i in *_53*; do mv $i/data/populations/ populations/$i/; done</pre>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Even though I screwed up 054, I can still do some less granular analysis. I will use the procedure described in 1/10/12-LOG.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/054_Modularity_Over_Time__XOR_EQU_more_granular</span>$</strong> rm control_modularity.csv; for i in *_control*; do cd $i/data/analyze/; python ../../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 8 modularity-???.dat* modularity-????.dat* modularity-?????.dat* &gt;&gt; ../../../control_modularity.csv; cd ../../../; done
+<span style="color:#008000">
+</span><strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/054_Modularity_Over_Time__XOR_EQU_more_granular</span>$</strong> rm noreward_modularity.csv; for i in *_noreward*; do cd $i/data/analyze/; python ../../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 8 modularity-???.dat* modularity-????.dat* modularity-?????.dat* &gt;&gt; ../../../noreward_modularity.csv; cd ../../../; done
+
+<strong><span style="color:#008000">rosiec@malp</span>:<span style="color:#0000FF">/Volumes/rosiec/research/Devolab Research/evolution_of_modularity/raw_data/054_Modularity_Over_Time__XOR_EQU_more_granular</span>$</strong> python ../../../scripts/generate_graphs_from_raw_data/plot_from_csv.py -m control_modularity.csv control_modularity.png
+
+<strong><span style="color:#008000">rosiec@malp</span>:<span style="color:#0000FF">/Volumes/rosiec/research/Devolab Research/evolution_of_modularity/raw_data/054_Modularity_Over_Time__XOR_EQU_more_granular</span>$</strong> python ../../../scripts/generate_graphs_from_raw_data/plot_from_csv.py -m noreward_modularity.csv noreward_modularity.png</pre>
+
+<p style="text-align:center"><img alt="" src="./12.009.__-_Notes_-_Week_of_Jan_9_2012/control_modularity.png" style="height:288px; width:384px" />&nbsp;</p>
+
+<p style="text-align:center"><strong>Figure 1 - control_modularity.png</strong></p>
+
+<p style="text-align:center"><img alt="" src="./12.009.__-_Notes_-_Week_of_Jan_9_2012/noreward_modularity.png" style="height:288px; width:384px" />&nbsp;</p>
+
+<p style="text-align:center"><strong>Figure 2 - noreward_modularity.png</strong></p>
+
+<h2>Thursday 1/12/12</h2>
+
+<h3>10:49 AM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Job 055 is still going, 22 hours in.</li>
+</ul>
+
+<p>PLAN:</p>
+
+<ul>
+	<li>I need to integrate the thoughts from Tuesday&rsquo;s Ofria Lab meeting. See &ldquo;Ofria Lab Mtg Notes &ndash; Jan 10, 2012&rdquo;</li>
+</ul>
+
+<h3>Michael E. Palmer Talk</h3>
+
+<p><a href="./12.009.__-_Notes_-_Week_of_Jan_9_2012/12.012.0 - Michael E. Palmer Talk - Notes - Jan 12, 2012.m4a">12.012.0 - Michael E. Palmer Talk - Notes - Jan 12, 2012.m4a</a></p>
+
+<p><img src="./12.009.__-_Notes_-_Week_of_Jan_9_2012/12.012.0 - Michael E. Palmer Talk - Notes - Jan 12, 2012_cropped.png" style="height:916px; width:989px" /></p>
+
+<h2>Friday 1/13/12</h2>
+
+<h3>12:23 PM</h3>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Job 055 finished. Stripping out and copying content now, per procedure 1/11/12-STATUS-b.</li>
+</ul>
+
+<pre>
+<strong>[<span style="color:#FF0000">caninoko@gateway</span>]:[6]:[<span style="color:#0000FF">/mnt/scratch/caninoko/055</span>]:$</strong> for i in *_55*; do mkdir $i/data/populations/; mv $i/data/detail* $i/data/populations/; done
+
+<strong>[<span style="color:#FF0000">caninoko@gateway</span>]:[5]:[<span style="color:#0000FF">/mnt/scratch/caninoko/055</span>]:$</strong> mkdir populations
+
+<strong>[<span style="color:#FF0000">caninoko@gateway</span>]:[9]:[<span style="color:#0000FF">/mnt/scratch/caninoko/055</span>]:$</strong> for i in *_55*; do mv $i/data/populations/ populations/$i/; done
+
+<strong>[<span style="color:#FF0000">caninoko@gateway</span>]:[30]:[<span style="color:#0000FF">/mnt/scratch/caninoko/055</span>]:$</strong> for i in *_55*; do tar -zcvf $i.tar.gz $i; done
+
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~</span>$</strong> scp -r caninoko@gateway.hpcc.msu.edu:/mnt/scratch/caninoko/055/*.tar.gz ./</pre>
+
+<ul>
+	<li>Analyzing 055.&nbsp; Modified plot_from_csv.py to include capability to plot several lines (with separate mean lines) on the same plot.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/055</span>$</strong> rm control_modularity.csv; for i in *_control*; do cd $i/data/analyze/; python ../../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 8 modularity-???.dat* modularity-????.dat* modularity-?????.dat* &gt;&gt; ../../../control_modularity.csv; cd ../../../; done
+
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/055</span>$</strong> rm noreward_modularity.csv; for i in *_noreward*; do cd $i/data/analyze/; python ../../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 8 modularity-???.dat* modularity-????.dat* modularity-?????.dat* &gt;&gt; ../../../noreward_modularity.csv; cd ../../../; done
+
+<strong><span style="color:#008000">rosiec@malp</span>:<span style="color:#0000FF">/Volumes/rosiec/research/Devolab Research/evolution_of_modularity/raw_data/055</span>$</strong> python ../../../scripts/generate_graphs_from_raw_data/plot_from_csv.py -m comparitive_modularity control_modularity.csv noreward_modularity.csv</pre>
+
+<ul>
+	<li>RESULT! Just from eyeballing it, it looks like the experimental treatment is having a visible effect on modularity, prematurely increasing it from where it would be in the control. WOOHOO.</li>
+</ul>
+
+<p style="text-align:center"><img alt="" src="./12.009.__-_Notes_-_Week_of_Jan_9_2012/055_avemod.png" style="height:246px; width:328px" /></p>
+
+<p style="text-align:center"><strong>Figure 3 &ndash; 055 Whole Population Average Modularity over time - Control (black) vs NoReward (blue)</strong></p>
+
+<p style="text-align:center">&nbsp;</p>
+
+<ul>
+	<li>Here is the same analysis performed on the dominant only. It&rsquo;s impossible to see ANYTHING. FUCK THE DOMINANT. From now on, I&rsquo;ll look at the whole population.</li>
+</ul>
+
+<p style="text-align:center"><img alt="" src="./12.009.__-_Notes_-_Week_of_Jan_9_2012/055_dominantmod.png" style="height:246px; width:328px" /></p>
+
+<p style="text-align:center"><strong>Figure 4 &ndash; 055 Dominant Modularity over time - Control (black) vs NoReward (blue)</strong></p>
+
+<p style="text-align:center">&nbsp;</p>
+
+<ul>
+	<li>A similar pair of graphs of the lower-resolution 054 (100u), shows a very similar result. So, I&rsquo;ll be going with a slightly lower resolution.</li>
+</ul>
+
+<p style="text-align:center"><img alt="" src="./12.009.__-_Notes_-_Week_of_Jan_9_2012/054_dominantmod.png" style="height:156px; width:208px" /><img alt="" src="./12.009.__-_Notes_-_Week_of_Jan_9_2012/054_avemod.png" style="height:156px; width:208px" /></p>
+
+<p style="text-align:center"><strong>Figure 5 &amp; 4 - 054 Modularity over time - Dominant (left), Whole Pop (right)</strong></p>
+
+<p style="text-align:center">&nbsp;</p>
+
+<ul>
+	<li>Preparing job 056 based on 055. Slightly lower resolution (25u). Cycles start at 500u. Including punishment as treatment as well.</li>
+</ul>
+
+<p>PLAN:</p>
+
+<ul>
+	<li>Prepare job 057. Mutation rate sweep.</li>
+	<li>Prepare job 058. Cycle length sweep.</li>
+</ul>
+
+<p>&nbsp;</p>

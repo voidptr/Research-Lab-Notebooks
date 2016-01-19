@@ -1,0 +1,143 @@
+<h1>Week of October 28, 2013</h1>
+
+<h2>Monday 10/28/13</h2>
+
+<p>Previous:</p>
+
+<ul>
+	<li>
+	<p>Addressed some issues with ATTiny. Specifically, got programs bigger than 4.5k to load, and got SoftwareSerial working against my Serial to USB adapter.</p>
+
+	<ul>
+		<li>
+		<p>PCREL Patch for GCC &ndash; This fixes the compiler so programs bigger than 4.5 will work on ATTiny.</p>
+
+		<ul>
+			<li>
+			<p><a href="https://github.com/TCWORLD/ATTinyCore/tree/master/PCREL%20Patch%20for%20GCC">https://github.com/TCWORLD/ATTinyCore/tree/master/PCREL%20Patch%20for%20GCC</a></p>
+			</li>
+		</ul>
+		</li>
+		<li>
+		<p>Installed drivers for PL2303 Serial to USB adapter and got it to dump debug information.</p>
+
+		<pre>
+<strong><span style="color:#EE82EE"><strong>rosiec@localhost</strong></span>:<span style="color:#0000FF"><strong>~</strong></span></strong>$ screen /dev/tty.PL2303-0030111D 9600</pre>
+
+		<ul>
+			<li>
+			<p>Hardware</p>
+
+			<ul>
+				<li>
+				<p><a href="http://www.adafruit.com/products/954#Description">http://www.adafruit.com/products/954#Description</a></p>
+				</li>
+			</ul>
+			</li>
+			<li>
+			<p>Driver</p>
+
+			<ul>
+				<li>
+				<p><a href="http://changux.co/osx-installer-to-pl2303-serial-usb-on-osx-lio/">http://changux.co/osx-installer-to-pl2303-serial-usb-on-osx-lio/</a></p>
+				</li>
+			</ul>
+			</li>
+			<li>
+			<p>Setup - TinyDebugSerial</p>
+
+			<ul>
+				<li>
+				<p><a href="http://www.ernstc.dk/arduino/tinycom.html">http://www.ernstc.dk/arduino/tinycom.html</a></p>
+				</li>
+			</ul>
+			</li>
+			<li>
+			<p>Command</p>
+			</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p>Log:</p>
+
+<ul>
+	<li>
+	<p>Up 9:30ish, after an acceptable night of sleep.</p>
+	</li>
+	<li>
+	<p>To school by 10:30. Stopped at Burger King.</p>
+
+	<p>&nbsp;</p>
+	</li>
+</ul>
+
+<p>Plan for the day:</p>
+
+<ul>
+	<li>
+	<p>Figure out and run some experiments.</p>
+
+	<ul>
+		<li>
+		<p>Getting</p>
+		</li>
+	</ul>
+	</li>
+	<li>
+	<p>AvidaEd development</p>
+	</li>
+</ul>
+
+<p style="margin-left:0.5in">&nbsp;</p>
+
+<p>Log:</p>
+
+<ul>
+	<li>
+	<p>Anya asked me to forward the paths for getting dist-run working. So, I did. HPCC has a new weird/fancy login screen at gateway. Found out that my quota is exceeded (which is ridiculous!), but it won&#39;t let me delete files because my quota is exceeded. So, I sent off a ticket via the quota increase form reporting the problem. :S</p>
+	</li>
+	<li>
+	<p>Ok, was able to delete the ~/undelivered/ files. That backed off the issue. Yay! So, now I am cleaning up and tarring up my data.</p>
+	</li>
+	<li>
+	<p>In the mean-time, while that&#39;s going, I&#39;m fussing with i2c to see if I can get it to work now that I have a reliable debugging channel.</p>
+	</li>
+	<li>
+	<p>4:43pm. The answer is no, it doesn&#39;t work. I have ZERO idea why. I&#39;m going to give up on this particular bullshit in favor of a regular software capacitive sensor solution.</p>
+	</li>
+</ul>
+
+<p style="margin-left:0.5in">&nbsp;</p>
+
+<h2>Tuesday 10/29/13</h2>
+
+<p>Log:</p>
+
+<ul>
+	<li>
+	<p>12:00, deleting files from HPCC (thinning down the populations of 064 down to every 100 updates, not every 50). This should reduce the footprint of that run from 506G down to 253G, which should bring me down from the quota.</p>
+	</li>
+	<li>
+	<p>Going to work on AvidaEd for a bit and send a status update.</p>
+
+	<ul>
+		<li>
+		<p>Got AvidaEd viewer compiling in Managed. Hooray! Reading code now.</p>
+		</li>
+	</ul>
+	</li>
+	<li>
+	<p>3:04 &ndash; lab meeting.</p>
+
+	<ul>
+		<li>
+		<p>Thinking about sexual reproduction, and how it evolved. Think about horizontal gene transfer, and whether forcing them to do that encourages some kind of packaging of the integrated gene rather than dumping it in wholesale and willynilly. Write some code to do that work.</p>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>

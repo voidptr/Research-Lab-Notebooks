@@ -1,0 +1,88 @@
+<h1>Week of February 24, 2014</h1>
+
+<h2>Monday, Feb 24, 2014</h2>
+
+<h3>Status</h3>
+
+<p>Saturday and Sunday futzed with the Levenshtein distance stuff, in particular the clustering algorithm. I&rsquo;ve hit a little bit of a hiccup with the clustering, in that it might require a second pass-through to get the distances between clusters. I dunno if it matters. Either way, traditional DP levenshtein is fucking slow as fuck. I don&rsquo;t know if subdividing by phenotypes will be sufficient to save us that particular headache. Further, I don&rsquo;t know if I can do things like Hamming distance in cases where the genomes are the same length. Finally, having genomes be different lengths seems very important, since HGT is about insertions, not point mutations. So, I&rsquo;ll talk about that during lab meeting tomorrow, I guess.</p>
+
+<p>Today, I spent some time getting Avida compiling and debugging under Eclipse, since Xcode is starting to seriously piss me off.</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Tuesday, Feb 25, 2014</h2>
+
+<p>Helped Josh get Avida compiling under Windows.</p>
+
+<h4>Devolab Mtg 3:30:</h4>
+
+<p>Explained about my chasing down the population diversity metrics via phenotype, and my attempt to make edit distance be cheaper to perform, by clustering the genotypes and avoiding comparing every single fucking one against every single other fucking one.<br />
+Luis suggested I look at how Phylogenetic distance is measured, since it should be analogous to edit distances. Good call.</p>
+
+<blockquote>
+<p>Vellend, Mark, et al. &quot;Measuring phylogenetic biodiversity.&quot; <em>Biological diversity: frontiers in measurement and assessment. Oxford University Press, Oxford, UK</em> (2010): 194-207.</p>
+</blockquote>
+
+<h2>&nbsp;</h2>
+
+<h2>Wednesday, Feb 26, 2014</h2>
+
+<h4>STATUS</h4>
+
+<p>Let&rsquo;s get back to it. I need to refocus, and not go down ultimately unproductive bunny-trails:</p>
+
+<ul>
+	<li>
+	<p>Originally, I went down the diversity bunny trail because I wanted to tell the difference between HGT and Translocation. Essentially, HGT should result in different outcomes if diversity is higher, as compared to translocation, which could be considered HGT with zero diversity.</p>
+
+	<ul>
+		<li>
+		<p>I really need to just whip up the diversity measure, and then get back to studying the properties of HGT.</p>
+		</li>
+		<li>
+		<p>Keep in mind, that this diversity measure only needs to be about populations, not about anything else.</p>
+		</li>
+		<li>
+		<p>I&rsquo;ve already got diversity measures by phenotypes. Does this tell me what I want for the above question?</p>
+		</li>
+	</ul>
+	</li>
+	<li>
+	<p>Separately, though, I&rsquo;m intereted in diversity as separated by phenotypes. Why? Why am I interested in this?</p>
+
+	<ul>
+		<li>
+		<p>Does genetic diversity separated, and then combined by phenotype give you the same kinds of curves as diversity measured purely by phenotype? How about whole-population by genotype?</p>
+
+		<ul>
+			<li>
+			<p>I can do targeted experiments for this, using fixed-length organisms (to avoid the whole levenshtein question), just to get a feel for how the curves differ, and thus, ideally, giving me an idea of whether we even NEED specialized diversity measures that encapsulate phenotypic difference and contribute that somehow.</p>
+
+			<ul>
+				<li>
+				<p>Measure:</p>
+
+				<ul>
+					<li>
+					<p>whole-population genotypic diversity.</p>
+					</li>
+					<li>
+					<p>genotypic diversity as subdivided by phenotype</p>
+					</li>
+					<li>
+					<p>straight phenotypic diversity.</p>
+					</li>
+				</ul>
+				</li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+		<li>
+		<p>As this relates to HGT, I&rsquo;m interested in how you might have genotypic connections between phenotypes, and how new phenotypes are acquired via HGT. Like if you have similar genotypes in different phenotypes.</p>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>

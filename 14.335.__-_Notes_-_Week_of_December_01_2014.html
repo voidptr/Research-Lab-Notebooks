@@ -1,0 +1,1028 @@
+<h1>Week of December 01, 2014</h1>
+
+<h2>Monday, Dec 01, 2014</h2>
+
+<h3>Log 12:05PM</h3>
+
+<p>Right, so new week. Last night, I left it at trying to understand the effect of the DIV_IN/DEL mutation rate on the population, which seems pretty disruptive. I submitted some runs to get at this.</p>
+
+<p>Separately, I started thinking about how to evaluate the similarity of the trait selection values (the histograms of female choosy display_c) between the paired allopatric populations. I considered several options:</p>
+
+<ul>
+	<li>Chi-Square
+	<ul>
+		<li>Unsuitable.
+		<ul>
+			<li>Some of my values are zero. Chi-square is a proportion, so 1/0 is infinity</li>
+			<li>Non-symmetric. How the hell can I compare two populations if the first vs. second matters? This is because Chi-Square assumes that one of the populations is a known distribution, which is not a valid assumption for my work</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Power Divergence (related to Chi-Sq)
+	<ul>
+		<li>Unsuitable for same reasons as Chi-Square.</li>
+	</ul>
+	</li>
+	<li>KS
+	<ul>
+		<li>Unsuitable.
+		<ul>
+			<li>My values are binned, not continuous.</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Mutual Information
+	<ul>
+		<li>Unsuitable?
+		<ul>
+			<li>How do you compare difference of probability between two scalar values? They aren&#39;t binary. :/</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p>So, what I&#39;m REALLY trying to get at is the average probability that an organism from a given population will mate with an organism from the other population.</p>
+
+<ul>
+	<li>Sum square of differences?
+	<ul>
+		<li>Undesirable because it magnifies the differences between populations that DO share a trait at high values. In other words, it penalizes you equally if you have 100 vs 50, as opposed to 50 vs 0, which is an entirely different scenario.</li>
+	</ul>
+	</li>
+	<li>Sum log of differences?
+	<ul>
+		<li>Undesirable because it magnifies the small differences at points where there just aren&#39;t very many displaying that trait. Those are more noise than signal.</li>
+	</ul>
+	</li>
+	<li>Sum differences?
+	<ul>
+		<li>Too flat?</li>
+	</ul>
+	</li>
+	<li>Sum probabilities?</li>
+</ul>
+
+<p>So, I want to get at is what the probability of an organism getting to mate.</p>
+
+<p><strong>https://people.richland.edu/james/lecture/m170/ch05-rul.html</strong></p>
+
+<ul>
+	<li>Assume that all organisms reproduce equally. That is, they show up in the birth chamber at the rates documented by the histogram.</li>
+	<li>Assume that the organisms are hard-match. Otherwise, things get SUPER FUCKING MESSY. :/ Hard match from here on in.</li>
+	<li>Assume that the organisms only go for a single trait. To do multiple traits, things get more complicated. Single-trait match for now.</li>
+</ul>
+
+<p>Probability of an organism having a given trait P(t):</p>
+
+<ul>
+	<li>t - the count of the trait</li>
+	<li>T - the total count of all trait expressions. ( T = Sum(all t) )</li>
+	<li>P(t) = t/T</li>
+</ul>
+
+<p>The organisms can&#39;t have more than one trait, but they must have 1 trait, so all the probabilities MUST add up to 1.</p>
+
+<ul>
+	<li>Sum( P(t) ) = 1 (this is because all the events are mutually exclusive, so you can just ADD the probabilities.)</li>
+</ul>
+
+<p>Right, so what about the organisms on the other side? (http://en.wikipedia.org/wiki/Joint_probability_distribution)</p>
+
+<ul>
+	<li>Calculate the individual trait probabilities (per above)</li>
+	<li>For each trait, calculate the joint probability.
+	<ul>
+		<li>P(t<sub>ab</sub>) = P(t<sub>a</sub>)*P(t<sub>b</sub>)</li>
+	</ul>
+	</li>
+</ul>
+
+<p>Fine, but what about an overall measure of the joint probabilities?</p>
+
+<p>Can I take the mean? It&#39;s a distribution, right? But, it&#39;s not really normally distributed...</p>
+
+<p>Or should I just sum the individual joint probabilities? Because I&#39;m trying to get the overall probabilities of a given organism from population A mating with a given organism in Population B, which is the P(t<sup>1</sup><sub>ab</sub>) or P(t<sup>2</sup><sub>ab</sub>) or P(t<sup>3</sup><sub>ab</sub>), etc.</p>
+
+<p><strong>So! The sum of the joint probabilities! :D YES YES YES</strong></p>
+
+<p>Software-wise, trivial. Going to make a little script now. :D</p>
+
+<h3>Log 1:31p</h3>
+
+<p>So, I put together the script to compare a couple distributions. The results weren&#39;t quite what I was expecting. The probabilities of distributions A and B resulting in a given mating were definitely lower than A to A, vs B to B, but AA and BB were both quite a bit lower. :? I don&#39;t really know how to interpret. I mean, in hindsight, yes, because the organisms aren&#39;t in heterogenous mating environments, a single organism has to contend with a variety of probabilities that make any given random mating encounter probably result in a failure. But if you&#39;re dropped in an environment that&#39;s different from yours, you&#39;re less well adapted for mating, so duh. But, how do I show that collectively for a run, so I can get a picture of the effect that that allopatry is having in general?</p>
+
+<h3>Log 2:45p</h3>
+
+<p>Ok, I finished the script, so that it can pull in values from the files.</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong>:<strong><span style="color:#0000FF">~/mate_discrimination/output/121_NonFixedLength_HardAndSoftMatch/Drift_SM_120001</span></strong>$ python ~/research_scripts/analysis/joint_probability_distribution.py -s &quot; &quot; *2a/choosy*dat *2b/choosy*dat
+</pre>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong>:<strong><span style="color:#0000FF">~/mate_discrimination/output/121_NonFixedLength_HardAndSoftMatch</span></strong>$
+roots=( Drift_HM Drift_SM )
+for root in ${roots[@]}
+do
+&nbsp;&nbsp;&nbsp; rm ${root}_joint_probability.csv
+&nbsp;&nbsp;&nbsp; for k in ${root}_??????;
+&nbsp;&nbsp;&nbsp; do
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if [ -e $k&quot;/&quot;*_step2a/mating_display_c_histogram-300000.dat ];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; then
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if [ -e $k&quot;/&quot;*_step2b/mating_display_c_histogram-300000.dat ];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; then
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; echo $k;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd $k/*_step2a/;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tail -1 mating_display_c_histogram-300000.dat | cut -d &quot; &quot; -f 6- &gt; choosy_female_2a-300000.dat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd ../../;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd $k/*_step2b/;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tail -1 mating_display_c_histogram-300000.dat | cut -d &quot; &quot; -f 6- &gt; choosy_female_2b-300000.dat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd ../../;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; python ~/research_scripts/analysis/joint_probability_distribution.py -s &quot; &quot; $k/*2a/choosy*dat $k/*2b/choosy*dat &gt;&gt; ${root}_joint_probability.csv
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fi
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fi
+&nbsp;&nbsp;&nbsp;&nbsp; done
+done</pre>
+
+<h3>Log 3:30p</h3>
+
+<p>Had my meeting w/ Charles. He&#39;s sick, so we chatted over gchat.</p>
+
+<div style="background:#eee; border:1px solid #ccc; padding:5px 10px"><samp>RCK:&nbsp;&nbsp;&nbsp; Dunno if you&#39;re at Beacon, but I&#39;m here.<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; Wow -- two weeks in a row? That&#39;s excellent!<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Unfortunatey, I&#39;m having some stomach issues today, so I&#39;ve stayed home, but should be able to chat online.<br />
+RCK:&nbsp;&nbsp;&nbsp; bummer! Hope you feel better!<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; I hope so too -- I have to teach tomorrow! ;-)<br />
+RCK:&nbsp;&nbsp;&nbsp; Eek.<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; I&#39;m already a bit better though -- I was thinking about coming in this afternoon and then decided not to chance it.<br />
+RCK:&nbsp;&nbsp;&nbsp; ah<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Well, I have results from the runs with non-fixed length allowed.<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; How&#39;d it go?<br />
+RCK:&nbsp;&nbsp;&nbsp; I did two sets of runs. Non fixed length, but no additional mutations, and non-fixed length with modest additional INS and DEL mutations on divide.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The first set went really well<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; By &quot;no additional mutations&quot; you mean you still had the default substitution mutations, right?<br />
+RCK:&nbsp;&nbsp;&nbsp; I saw even better numbers for hybridizing, but not a really significant decrease in viability.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; What rates?<br />
+RCK:&nbsp;&nbsp;&nbsp; my regular copy_mut rate of 0.0025<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; Okay -- that seems about right for my intuition too.<br />
+RCK:&nbsp;&nbsp;&nbsp; so, I was relying on algorithmic errors to result in indels<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; Which should happen some, but not a lot.<br />
+RCK:&nbsp;&nbsp;&nbsp; there&#39;s a bit of variation in length.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; right exactly.<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; You don&#39;t disallow unstable genotypes, right?<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Since that&#39;s the only way you get algorithmic errors.<br />
+RCK:&nbsp;&nbsp;&nbsp; Uh... I used the default setting<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; didn&#39;t think to look at it<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; I think they&#39;re allowed by default -- I actually don&#39;t remember.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; They *should* be allowed by default, in thinking about it.<br />
+RCK:&nbsp;&nbsp;&nbsp; it&#39;s allowed<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; Since they have a computational cost to get rid of them.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Good.<br />
+RCK:&nbsp;&nbsp;&nbsp; caninoko@dev-intel14:~/mate_discrimination/output/121_NonFixedLength_HardAndSoftMatch/Drift_SM_120001$<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; argh<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; STERILIZE_UNSTABLE 0<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; So, indels threw things off?<br />
+RCK:&nbsp;&nbsp;&nbsp; yes,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; they aren&#39;t using the choosyness<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; I think it is too disruptive<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; so my hybridization is really high<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; How odd.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; What indel rates did you use?<br />
+RCK:&nbsp;&nbsp;&nbsp; I think it makes sense<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; Is it just because with indels choosiness doesn&#39;t help as much -- you&#39;re still likely to crossover with someone where you&#39;ll break?<br />
+RCK:&nbsp;&nbsp;&nbsp; STERILIZE_UNSTABLE 0<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; argh<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stupid vim<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; heh.<br />
+RCK:&nbsp;&nbsp;&nbsp; DIV_INS_PROB 0.016<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; Ah -- those are very high then.<br />
+RCK:&nbsp;&nbsp;&nbsp; I have mouse=a turned on, and I have to use alt to be able to copy to my local clipboard<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; I think?<br />
+RCK:&nbsp;&nbsp;&nbsp; I feel like they&#39;re high<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; but these are on divide<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; they work out to, per site... DIV_INS_PROB 0.00008<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; er, COPY_INS_PROB<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; That means that over 3% of births are a different length than their parents.<br />
+RCK:&nbsp;&nbsp;&nbsp; divide that rate by 200 (which is avg genome length)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; I wonder if you&#39;d see a stronger result if you set it to be very low, but non zero. Maybe 0.00001<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Or lower.<br />
+RCK:&nbsp;&nbsp;&nbsp; I started a new set of runs with it switched to COPY_INS_PROB and dropped to 0.00005. Same with DEL. Then, dropped my COPY_MUT_PROB to 0.0015<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; to keep the same overall copy mutation rate.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this may still be too high<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; the runs aren&#39;t done yet<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; So just a slight drop, but it could help.<br />
+RCK:&nbsp;&nbsp;&nbsp; yeah. If it&#39;s still too much, I&#39;ll do a more dramatic drop.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; But yeah, so there&#39;s that. The other thing is that I&#39;m trying to get more of a feel for how likely hybridiziation is based on the display trait mix in the allopatric populations.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; So, I calculated the joint_probability of any given organism from one population being able to mate with any other given organism from the different population<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; er, joint probability<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; and I have a set of numbers, but I&#39;m not really sure how to interpret them.<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; So, the probability based on the display traits used in the different populations?<br />
+RCK:&nbsp;&nbsp;&nbsp; exactly yes<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; I have a nice histogram for the traits, so that&#39;s easy<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; I see. So, if they happen to be using the same display traits, of course you&#39;re going to see more hybrids at least attempted.<br />
+RCK:&nbsp;&nbsp;&nbsp; exactly, yes<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; This would imply that if they had more than 256 traits to choose from, they&#39;d also be more likely to have pre-zygotic isolation.<br />
+RCK:&nbsp;&nbsp;&nbsp; Yes, that&#39;s true.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; But the distributions are not really even<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; they&#39;re selected upon<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; And, as in the case where I enabled INDELs, they&#39;re really selected upon to be all the same trait<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; probably 0 or -1<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; So, one way to analyze data would be for us to think about what hypothesis we want to test and then how we would build a control for it.<br />
+RCK:&nbsp;&nbsp;&nbsp; because anything else is just too hard to hang on ot.<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; We can separate the specific displays from the genotypes in manual tests.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; So, for example, if every population was assigned a truely random trait (0 to 255) how likely would they mate, vs. the skewed traits that they have.<br />
+RCK:&nbsp;&nbsp;&nbsp; Yes.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; So that&#39;s your null.<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; That would allow us to estimate the effect of the skew.<br />
+RCK:&nbsp;&nbsp;&nbsp; excellent<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; that&#39;s exactly what I was looking for<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; The other null is that there is an extreme skew and everyone has the same value.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Which would mean zero pre-zygotic, but still post-zygotic isolation.<br />
+RCK:&nbsp;&nbsp;&nbsp; But, I also want to get an idealized model for what the mating rate should be, based on what the existing distribution is.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; but this gives me some nice bounds<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; I see.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; But given the current distributions, isn&#39;t there only one possible mating rate?<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; I mean, it&#39;s not like they have any choice OTHER than the trait about who they mate with...<br />
+RCK:&nbsp;&nbsp;&nbsp; it boils down to one mating rate, but there&#39;s issues like how fast the organisms go in the birth chamber<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; Fair enough.<br />
+RCK:&nbsp;&nbsp;&nbsp; so there&#39;s other effects that might alter the outcome<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; So if organisms synchronize, they might still have associative mating without looking at traits.<br />
+RCK:&nbsp;&nbsp;&nbsp; right<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; or if one side tries to mate faster, then they&#39;ll be more like them in the birth chamber to choose from<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; Okay, so that should be able to be looked at with the second control I mentioned -- give everyone the same trait and see what happens.<br />
+RCK:&nbsp;&nbsp;&nbsp; so the chances of getting someone from your population could be skewed in the favor of the faster one.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; yes<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; So, tell me more about your first set of results where you didn&#39;t have insertions and deletions on. You said they looked more promising? Are they going to be better data for us to work with?<br />
+RCK:&nbsp;&nbsp;&nbsp; yes, they look just like my previous results wrt viability, but they have 50% hybridizations vs the previous run. (25% -&gt; 15%)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ~50%<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; Okay -- much cleaner.<br />
+RCK:&nbsp;&nbsp;&nbsp; exactly<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; And I&#39;m going with purely hard-match from now on. It&#39;s mathematically simpler when you&#39;re calculating probabilities<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Separately, there might be a nice paper there for how to model isolation based on trait selection.<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; I don&#39;t think you saw any compelling reasons to go with soft matches, so I think that would be fine.<br />
+RCK:&nbsp;&nbsp;&nbsp; Is the probabilities math pans out<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; er, if<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; I think we should be doing more methods papers in general. ;-)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; But it sounds like this is moving along nicely. Cleaner data and some interesting points to tease apart.<br />
+RCK:&nbsp;&nbsp;&nbsp; yep! Going really well. :D<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; Did you get enough out of talking with Jason last week to be comfortable with how to pitch the paper write-up?<br />
+RCK:&nbsp;&nbsp;&nbsp; Some. He was going to send me a paper, but hasn&#39;t yet. I&#39;ll ping him today<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; Sounds good. I think that&#39;ll be important.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The other person you may want to talk to for ideas is Emily Weigel.<br />
+RCK:&nbsp;&nbsp;&nbsp; He thought we should phrase it as a bridge between the dry simple models and the observational studies of biological organisms.<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; Fair enough.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; I think our normal pitch goes along those lines: Avida lets us do experiments that we can&#39;t do with natural organisms BUT it has a lot more power than mathematical simulations.<br />
+RCK:&nbsp;&nbsp;&nbsp; well, there you go. :)<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; Anything else we need to chat about?<br />
+RCK:&nbsp;&nbsp;&nbsp; nope, that&#39;s it.<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; Sounds good. See you tomorrow!<br />
+RCK:&nbsp;&nbsp;&nbsp; see you tomorrow! feel better!<br />
+CO:&nbsp;&nbsp;&nbsp;&nbsp; Thanks!!</samp></div>
+
+<p>&nbsp;So, yeah, that went well. Some important points.</p>
+
+<ul>
+	<li>Run with even lower mutation rates.</li>
+	<li>Use hypothesis testing and null models for looking at my probability distributions
+	<ul>
+		<li>Null Model to test whether the organisms are mating randomly:
+		<ul>
+			<li>Even probabilities all the way across. This is essentially random mating</li>
+			<li>Do Chi-Squared against this as expected distribution</li>
+		</ul>
+		</li>
+		<li>Other model? not sure what this means.
+		<ul>
+			<li>Skewed probabilities to one or two traits. This is essentially perfectly strongly selected mating. Do a bunch of these, and draw some plots. :D</li>
+		</ul>
+		</li>
+		<li>So, I&#39;d generate the above for the different number of traits...</li>
+	</ul>
+	</li>
+</ul>
+
+<h3>Log 9:42p</h3>
+
+<p>Futzed until around 6, had dinner w/ Kendall (Sindhu takeout), then spent time printing and folding the new paper lab notebook. I modified Signature10 to add last week&#39;s notebook, which I don&#39;t expect to change. I&#39;ll add another signature to the book as I go and when I get enough more than 5, I&#39;ll pull them out and start a new book. It&#39;s important to me to have the latest work available to me.</p>
+
+<h2>Tuesday, Dec 2, 2014</h2>
+
+<h3>Log 2:36p</h3>
+
+<p>Made some updates to noodle to add a button for filling in the date and log times. Easier. Uploaded to github.</p>
+
+<p>Ok, what&#39;s next?</p>
+
+<ul>
+	<li>check for my new runs output (123), which seems to have finished.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong>:<strong><span style="color:#0000FF">~/mate_discrimination/output/123_NonFixedLength_HardAndSoftMatch_CopyInDels</span></strong>$ ../../scripts/11_17_analysis.sh &quot;123 - LightIndel&quot; 123
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong>:<strong><span style="color:#0000FF">~/mate_discrimination/output/123_NonFixedLength_HardAndSoftMatch_CopyInDels</span></strong>$ ../../scripts/11_22_analysis.sh &quot;123 - LightIndel&quot; 123</pre>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/123_forcedmatingnumdifftasks_filtered.png" style="height:225px; width:300px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/123_forcedmatingnumdifftasks_unfiltered.png" style="height:225px; width:300px" /></p>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/123_forcedmatingviability_filtered.png" style="height:225px; width:300px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/123_forcedmatingfitness_unfiltered.png" style="height:225px; width:300px" /></p>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/123_forcedmatingfitness_filtered.png" style="height:225px; width:300px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/123_forcedmatingviability_unfiltered.png" style="height:225px; width:300px" /></p>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/123_sum_matings_gen1.png" style="height:225px; width:300px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/123_ratio_sum_matings_gen1.png" style="height:225px; width:300px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/123_female_preference_data.png" style="height:225px; width:300px" /></p>
+
+<p>Ok, so, to be clear, here&#39;s the output from 121 (very little INDEL, only algorithmic) vs 123.</p>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_ratio_sum_matings_gen1.png" style="height:225px; width:300px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/123_ratio_sum_matings_gen1.png" style="height:225px; width:300px" /></p>
+
+<ul>
+	<li>check on the output of the re-submitted controls</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong>:<strong><span style="color:#0000FF">~/mate_discrimination/output/120_LongRuns_HardAndSoftMatch</span></strong>$ ../../scripts/11_17_analysis.sh &quot;120 - LongRuns&quot; 120
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong>:<strong><span style="color:#0000FF">~/mate_discrimination/output/120_LongRuns_HardAndSoftMatch</span></strong>$ ../../scripts/11_22_analysis.sh &quot;120 - LongRuns&quot; 120</pre>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/120_forcedmatingnumdifftasks_filtered.png" style="height:225px; width:300px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/120_forcedmatingnumdifftasks_unfiltered.png" style="height:225px; width:300px" /></p>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/120_forcedmatingfitness_filtered.png" style="height:225px; width:300px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/120_forcedmatingfitness_unfiltered.png" style="height:225px; width:300px" /></p>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/120_forcedmatingviability_filtered.png" style="height:225px; width:300px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/120_forcedmatingviability_unfiltered.png" style="height:225px; width:300px" /></p>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/120_ratio_sum_matings_gen1.png" style="height:225px; width:300px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/120_sum_matings_gen1.png" style="height:225px; width:300px" /></p>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/120_female_preference_data.png" style="height:225px; width:300px" /></p>
+
+<p>And for clarity, here&#39;s the long runs compared to the short indel runs and the original short runs. (the key columns to look at are the HM columns on the left, and the Control and Drift columns on the right).</p>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/118_ratio_sum_matings_gen1.png" style="height:225px; width:300px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/120_ratio_sum_matings_gen1.png" style="height:225px; width:300px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_ratio_sum_matings_gen1.png" style="height:225px; width:300px" /></p>
+
+<h3>Devolab Mtg 3:32p</h3>
+
+<ul>
+	<li>Just remembered that I wanted to try doing Joint Entropy rather than just the Joint Probability.</li>
+</ul>
+
+<h2>Wednesday, Dec 3, 2014</h2>
+
+<h3>Log 5:14p</h3>
+
+<p>Worked on the Joint Entropy stuff</p>
+
+<ul>
+	<li>Rejiggered made a script to generate new graphs for display C histograms, and integrated it with 11_17, replacing the naive histogram script.</li>
+</ul>
+
+<pre>
+plot_displayc_histogram() {
+&nbsp;&nbsp;&nbsp; for k in *;
+&nbsp;&nbsp;&nbsp; do
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if [ -e $k&quot;/&quot;*_step2a/choosy_female_2a-300000.dat ];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; then
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if [ -e $k&quot;/&quot;*_step2b/choosy_female_2b-300000.dat ];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; then
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; echo $k;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd $k;
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; python ~/research_scripts/graph_generation/mating_probability_from_csv.py -t &quot;Histogram Display C values - ${description} - $k&quot; \
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -x &quot;Display Trait C Value&quot; -y &quot;# of display&quot; --xlim_min -10 --xlim_max=266 -s &quot; &quot; displayc_histogram_entropy.png \
+#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *2a/choosy*dat *2b/choosy*dat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; python ~/research_scripts/graph_generation/mating_probability_from_csv.py -t &quot;Histogram Display C values - ${description} - $k&quot; \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -x &quot;Display Trait C Value&quot; -y &quot;# of display&quot; --xlim_min -10 --xlim_max=266 -s &quot; &quot; ${prefix}_${k}_displayc_histograms.png \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *_step2a/choosy_female_2a-300000.dat *_step2b/choosy_female_2b-300000.dat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd ../
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fi
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fi
+&nbsp;&nbsp;&nbsp; done
+}
+</pre>
+
+<ul>
+	<li>Also, updated the joint_probility_distribution.py script to print out entropy measures as well.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong>:<strong><span style="color:#0000FF">~/mate_discrimination/output/121_NonFixedLength_HardAndSoftMatch</span></strong>$
+roots=( Drift_HM Drift_SM )
+for root in ${roots[@]}
+do
+&nbsp;&nbsp;&nbsp; rm ${root}_joint_probability.csv
+&nbsp;&nbsp;&nbsp; for k in ${root}_??????;
+&nbsp;&nbsp;&nbsp; do
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if [ -e $k&quot;/&quot;*_step2a/mating_display_c_histogram-300000.dat ];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; then
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if [ -e $k&quot;/&quot;*_step2b/mating_display_c_histogram-300000.dat ];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; then
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; echo $k;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd $k/*_step2a/;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tail -1 mating_display_c_histogram-300000.dat | cut -d &quot; &quot; -f 6- &gt; choosy_female_2a-300000.dat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd ../../;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd $k/*_step2b/;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tail -1 mating_display_c_histogram-300000.dat | cut -d &quot; &quot; -f 6- &gt; choosy_female_2b-300000.dat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd ../../;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                python ~/research_scripts/analysis/joint_probability_distribution.py -s &quot; &quot; $k/*2a/choosy*dat $k/*2b/choosy*dat &gt;&gt; ${root}_joint_probability.csv
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fi
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fi
+&nbsp;&nbsp;&nbsp;&nbsp; done
+done</pre>
+
+<h3>Log 9:59p</h3>
+
+<p>Now, I need to plot out the average joint probabilities for a run. This is probably best handled by bar plots.</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong>:<strong><span style="color:#0000FF">~/mate_discrimination/output/121_NonFixedLength_HardAndSoftMatch</span></strong>$
+prefix=121;
+description=&quot;121 VarLength&quot;; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+python ~/research_scripts/graph_generation/bar_chart_from_csv.py \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -x Treatment -y &quot;Probability of Mating/Entropy&quot; -t &quot;Joint Probabilities of Matching Traits
+Joint Entropy of Trait Distribution - ${description}&quot; \
+--pair --groups=1 \
+--xticks=&quot;Drift - Hard Match&quot; \
+--legend=&quot;JointProbAB,JointProbAA,JointProbBB,JointEntroAB,JointEntroAA,JointEntroBB&quot; \
+--columns=&quot;1,2,3,4,5,6&quot; --error \
+${prefix}_joint_probability_entropy.png \
+Drift_HM_joint_probability.csv
+</pre>
+
+<p>&nbsp;</p>
+
+<p>I should also pull this out for the new run (123)</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong>:<strong><span style="color:#0000FF">~/mate_discrimination/output/123_NonFixedLength_HardAndSoftMatch_MoreCopyInDels</span></strong>$
+roots=( Drift )
+for root in ${roots[@]}
+do
+&nbsp;&nbsp;&nbsp; rm ${root}_joint_probability.csv
+&nbsp;&nbsp;&nbsp; for k in ${root}_??????;
+&nbsp;&nbsp;&nbsp; do
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if [ -e $k&quot;/&quot;*_step2a/mating_display_c_histogram-300000.dat ];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; then
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if [ -e $k&quot;/&quot;*_step2b/mating_display_c_histogram-300000.dat ];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; then
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; echo $k;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd $k/*_step2a/;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tail -1 mating_display_c_histogram-300000.dat | cut -d &quot; &quot; -f 6- &gt; choosy_female_2a-300000.dat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd ../../;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd $k/*_step2b/;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tail -1 mating_display_c_histogram-300000.dat | cut -d &quot; &quot; -f 6- &gt; choosy_female_2b-300000.dat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd ../../;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                python ~/research_scripts/analysis/joint_probability_distribution.py -s &quot; &quot; $k/*2a/choosy*dat $k/*2b/choosy*dat &gt;&gt; ${root}_joint_probability.csv
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fi
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fi
+&nbsp;&nbsp;&nbsp;&nbsp; done
+done</pre>
+
+<p>&nbsp;</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong>:<strong><span style="color:#0000FF">~/mate_discrimination/output/124_NonFixedLength_HardAndSoftMatch_MoreCopyInDels</span></strong>$
+prefix=123;
+description=&quot;123 VarLength CopyInDels&quot;; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+python ~/research_scripts/graph_generation/bar_chart_from_csv.py \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -x Treatment -y &quot;Probability of Mating/Entropy&quot; -t &quot;Joint Probabilities of Matching Traits
+Joint Entropy of Trait Distribution - ${description}&quot; \
+--pair --groups=1 \
+--xticks=&quot;Drift - Hard Match&quot; \
+--legend=&quot;JointProbAB,JointProbAA,JointProbBB,JointEntroAB,JointEntroAA,JointEntroBB&quot; \
+--columns=&quot;1,2,3,4,5,6&quot; --error \
+${prefix}_joint_probability_entropy.png \
+Drift_joint_probability.csv
+</pre>
+
+<p>Ultimately, the validator for this is runnign it against 122, which failed so catastrophically.</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong>:<strong><span style="color:#0000FF">~/mate_discrimination/output/122_NonFixedLength_HardAndSoftMatch_InDels</span></strong>$
+roots=( Drift_HM )
+for root in ${roots[@]}
+do
+&nbsp;&nbsp;&nbsp; rm ${root}_joint_probability.csv
+&nbsp;&nbsp;&nbsp; for k in ${root}_??????;
+&nbsp;&nbsp;&nbsp; do
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if [ -e $k&quot;/&quot;*_step2a/mating_display_c_histogram-300000.dat ];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; then
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if [ -e $k&quot;/&quot;*_step2b/mating_display_c_histogram-300000.dat ];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; then
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; echo $k;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd $k/*_step2a/;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tail -1 mating_display_c_histogram-300000.dat | cut -d &quot; &quot; -f 6- &gt; choosy_female_2a-300000.dat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd ../../;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd $k/*_step2b/;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tail -1 mating_display_c_histogram-300000.dat | cut -d &quot; &quot; -f 6- &gt; choosy_female_2b-300000.dat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd ../../;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                python ~/research_scripts/analysis/joint_probability_distribution.py -s &quot; &quot; $k/*2a/choosy*dat $k/*2b/choosy*dat &gt;&gt; ${root}_joint_probability.csv
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fi
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fi
+&nbsp;&nbsp;&nbsp;&nbsp; done
+done</pre>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong>:<strong><span style="color:#0000FF">~/mate_discrimination/output/122_NonFixedLength_HardAndSoftMatch_InDels</span></strong>$
+prefix=122;
+description=&quot;122 VarLength InDels&quot;; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+python ~/research_scripts/graph_generation/bar_chart_from_csv.py \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -x Treatment -y &quot;Probability of Mating/Entropy&quot; -t &quot;Joint Probabilities of Matching Traits
+Joint Entropy of Trait Distribution - ${description}&quot; \
+--pair --groups=1 \
+--xticks=&quot;Drift - Hard Match&quot; \
+--legend=&quot;JointProbAB,JointProbAA,JointProbBB,JointEntroAB,JointEntroAA,JointEntroBB&quot; \
+--columns=&quot;1,2,3,4,5,6&quot; --error \
+${prefix}_joint_probability_entropy.png \
+Drift_HM_joint_probability.csv
+</pre>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/120_joint_probability_entropy.png" style="height:225px; width:300px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_joint_probability_entropy.png" style="height:225px; width:300px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_joint_probability_entropy.png" style="height:225px; width:300px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/123_joint_probability_entropy.png" style="height:225px; width:300px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/124_joint_probability_entropy.png" style="height:225px; width:300px" /></p>
+
+<p>Actually, my joint entropy shows a lot of movement (and similarity between the parents) for 122 (catastrophic failure to differentiate).</p>
+
+<p>The plots look like this:</p>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122030_displayc_histograms.png" style="height:150px; width:200px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122029_displayc_histograms.png" style="height:150px; width:200px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122027_displayc_histograms.png" style="height:150px; width:200px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122026_displayc_histograms.png" style="height:150px; width:200px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122025_displayc_histograms.png" style="height:150px; width:200px" /></p>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122024_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122023_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122022_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122021_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122028_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122020_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122019_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122018_displayc_histograms.png" style="height:75px; width:100px" /></p>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122017_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122016_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122015_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122014_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122013_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122012_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122011_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122010_displayc_histograms.png" style="height:75px; width:100px" /></p>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122009_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122008_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122007_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122006_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122005_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122004_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122003_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122002_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_Drift_HM_122001_displayc_histograms.png" style="height:75px; width:100px" /></p>
+
+<p>Whereas, for a more successful run (121), they look like this:</p>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120030_displayc_histograms.png" style="height:150px; width:200px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120029_displayc_histograms.png" style="height:150px; width:200px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120028_displayc_histograms.png" style="height:150px; width:200px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120027_displayc_histograms.png" style="height:150px; width:200px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120026_displayc_histograms.png" style="height:150px; width:200px" /></p>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120025_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120024_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120023_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120022_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120021_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120020_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120019_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120018_displayc_histograms.png" style="height:75px; width:100px" /></p>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120017_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120016_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120015_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120014_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120013_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120012_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120011_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120010_displayc_histograms.png" style="height:75px; width:100px" /></p>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120009_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120008_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120007_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120006_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120005_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120004_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120003_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120002_displayc_histograms.png" style="height:75px; width:100px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_Drift_HM_120001_displayc_histograms.png" style="height:75px; width:100px" /></p>
+
+<h4>Later</h4>
+
+<p>It occurrs to me that what I would like to try to measure is how well the probabilities predict the mating rate. These are overall probabilities for hybridization. So, I would need to multiply the probabilities by the number of mating attempts.Um, how the hell do I gather the number of mating attempts?</p>
+
+<p>Oh, and fucking whooops, my &quot;124&quot; run got stuck in the wrong directory, using the wrong (123) seeds. Renamed. :/ NBD.</p>
+
+<p>Here are all the mating rates that I&#39;ve done.</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong>:<strong><span style="color:#0000FF">~/mate_discrimination/output/124_NonFixedLength_HardAndSoftMatch_MoreCopyInDels</span></strong>$ ../../scripts/11_17_analysis.sh &quot;124 - MoreCopyIndels&quot; 124; ../../scripts/11_22_analysis.sh &quot;124 - MoreCopyIndels&quot; 124</pre>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/120_ratio_sum_matings_gen1.png" style="height:225px; width:300px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_ratio_sum_matings_gen1.png" style="height:225px; width:300px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/122_ratio_sum_matings_gen1.png" style="height:225px; width:300px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/123_ratio_sum_matings_gen1.png" style="height:225px; width:300px" /><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/124_ratio_sum_matings_gen1.png" style="height:225px; width:300px" /></p>
+
+<p>So, wrt gathering the number of mating attempts, the number of executions of &quot;div&quot; should be a proxy, eh? Then, multiply by the probability, divide in half (because our counts are of matings), and that should approximate the value in the raw counts of hybrid matings... Except that I&#39;m ignoring the non-hybrid matings. :/ <strong>Maybe I should just be doing a simple regression of the probability values against the hybrid mating values. </strong></p>
+
+<h2>Thursday, Dec 4, 2014</h2>
+
+<h3>Log 6:38p</h3>
+
+<p>Ok, per the internets, you can use a command called &quot;polyfit&quot; to generate a best fit line.</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong>:<strong><span style="color:#0000FF">~/mate_discrimination/output/121_NonFixedLength_HardAndSoftMatch</span></strong>$ python ~/research_scripts/graph_generation/fit_line.py -x &quot;Probabilities of Trait Collision&quot; -y &quot;Hybridization Rate&quot; -t &quot;Fit&quot; 121_fit_prob_with_rate.png ./Drift_HM_joint_probability.csv ./Drift_HM_sum_matings_ratio_gen1.dat</pre>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_fit_prob_with_rate.png" style="height:600px; width:800px" /></p>
+
+<p>So, not bad, but I need information about the fit.</p>
+
+<h3>Log 11:42p</h3>
+
+<p>Ok, this is massively annoying. I can&#39;t seem to run statsmodels. :/</p>
+
+<p>Following this guide: https://wiki.hpcc.msu.edu/pages/viewpage.action?pageId=15435215</p>
+
+<p>I did all the htings, but when I load my file:</p>
+
+<pre>
+(.venv)<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong>:<strong><span style="color:#0000FF">~/mate_discrimination/output/121_NonFixedLength_HardAndSoftMatch</span></strong>$ python ~/research_scripts/graph_generation/fit_line.py -x &quot;Probabilities of Trait Collision&quot; -y &quot;Hybridization Rate&quot; -t &quot;Fit&quot; ~/mate_discrimination/output/121_NonFixedLength_HardAndSoftMatch/121_fit_prob_with_rate.png ~/mate_discrimination/output/121_NonFixedLength_HardAndSoftMatch/Drift_HM_sum_matings_ratio_gen1.dat ~/mate_discrimination/output/121_NonFixedLength_HardAndSoftMatch/Drift_HM_joint_probability.csv
+
+Traceback (most recent call last):
+&nbsp; File &quot;/mnt/home/caninoko/research_scripts/graph_generation/fit_line.py&quot;, line 15, in &lt;module&gt;
+&nbsp;&nbsp;&nbsp; import statsmodels.api as sm
+&nbsp; File &quot;/mnt/home/caninoko/.venv/lib/python2.7/site-packages/statsmodels/__init__.py&quot;, line 8, in &lt;module&gt;
+&nbsp;&nbsp;&nbsp; from .tools.sm_exceptions import (ConvergenceWarning, CacheWriteWarning,
+&nbsp; File &quot;/mnt/home/caninoko/.venv/lib/python2.7/site-packages/statsmodels/tools/__init__.py&quot;, line 1, in &lt;module&gt;
+&nbsp;&nbsp;&nbsp; from .tools import add_constant, categorical
+&nbsp; File &quot;/mnt/home/caninoko/.venv/lib/python2.7/site-packages/statsmodels/tools/tools.py&quot;, line 8, in &lt;module&gt;
+&nbsp;&nbsp;&nbsp; from scipy.linalg import svdvals
+&nbsp; File &quot;/opt/software/SciPy/0.9.0--GCC-4.4.5/lib/python2.7/site-packages/scipy/linalg/__init__.py&quot;, line 9, in &lt;module&gt;
+&nbsp;&nbsp;&nbsp; from basic import *
+&nbsp; File &quot;/opt/software/SciPy/0.9.0--GCC-4.4.5/lib/python2.7/site-packages/scipy/linalg/basic.py&quot;, line 14, in &lt;module&gt;
+&nbsp;&nbsp;&nbsp; from lapack import get_lapack_funcs
+&nbsp; File &quot;/opt/software/SciPy/0.9.0--GCC-4.4.5/lib/python2.7/site-packages/scipy/linalg/lapack.py&quot;, line 14, in &lt;module&gt;
+&nbsp;&nbsp;&nbsp; from scipy.linalg import flapack
+ImportError: /opt/software/ClusterStudio/2011.0/mkl/lib/intel64/libmkl_gnu_thread.so: undefined symbol: GOMP_loop_ordered_dynamic_start
+</pre>
+
+<p>Some cursory searches indicate that this is a bug in the compiler. Argh.</p>
+
+<p>Fine. I copied everything down to my laptop, where the relevant libraries are installed and work, no virtualenv or anything:</p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span></strong>:<strong><span style="color:#0000FF">~/Tmp/pythontmp</span></strong>$ python ./fit_line.py -x &quot;Probabilities of Trait Collision&quot; -y &quot;Hybridization Rate&quot; -t &quot;Fit&quot; 121_fit_prob_with_rate.png ./Drift_HM_joint_probability.csv ./Drift_HM_sum_matings_ratio_gen1.dat&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OLS Regression Results
+==============================================================================
+Dep. Variable:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; y&nbsp;&nbsp; R-squared:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.883
+Model:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OLS&nbsp;&nbsp; Adj. R-squared:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.879
+Method:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Least Squares&nbsp;&nbsp; F-statistic:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 211.0
+Date:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Fri, 05 Dec 2014&nbsp;&nbsp; Prob (F-statistic):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.46e-14
+Time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 00:08:55&nbsp;&nbsp; Log-Likelihood:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 59.143
+No. Observations:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 30&nbsp;&nbsp; AIC:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -114.3
+Df Residuals:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 28&nbsp;&nbsp; BIC:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -111.5
+Df Model:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1
+Covariance Type:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nonrobust
+==============================================================================
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; coef&nbsp;&nbsp;&nbsp; std err&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; P&gt;|t|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [95.0% Conf. Int.]
+------------------------------------------------------------------------------
+const&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.0840&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.007&nbsp;&nbsp;&nbsp;&nbsp; 11.814&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.069&nbsp;&nbsp;&nbsp;&nbsp; 0.099
+x1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.9699&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.067&nbsp;&nbsp;&nbsp;&nbsp; 14.525&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.833&nbsp;&nbsp;&nbsp;&nbsp; 1.107
+==============================================================================
+Omnibus:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 15.855&nbsp;&nbsp; Durbin-Watson:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.717
+Prob(Omnibus):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp; Jarque-Bera (JB):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 20.113
+Skew:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.300&nbsp;&nbsp; Prob(JB):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4.29e-05
+Kurtosis:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6.054&nbsp;&nbsp; Cond. No.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.5
+==============================================================================
+Warnings:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[ 0.08404188&nbsp; 0.96989387]</pre>
+
+<p>ALRIGHT!!!</p>
+
+<p>Ok, so my r2 gets 88% of the variation! :D So, this means that my hypothesis in this case, which is that the mating probability governs the hybridizing rate, is good! :D</p>
+
+<h2>Saturday, Dec 6, 2014</h2>
+
+<h3>Log 12:20p</h3>
+
+<p>Right, so after some conversations with K last night over sushi, he was concerned that my data has some outliers that are too heavily skewing the fit, and that I needed more data over to the right. I do have this data, from the 122 run that had worse mating rates, along with worse probabilities. And because they all share the same mating mechanism, then they can all be combined. Another possibility is that I can throw the 120 long run content in there.</p>
+
+<h3>Log 12:44p</h3>
+
+<p>Ugh, So, there&#39;s something wrong the 120, so that I don&#39;t have the same number of thingies for the sum vs the probabilities. WTF. I&#39;m going to regenerate the mating ratios and joint probabilities.</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong>:<strong><span style="color:#0000FF">~/mate_discrimination/output/120_LongRuns_HardAndSoftMatch</span></strong>$ ../../scripts/11_17_analysis.sh &quot;120 - LongRun&quot; 120
+
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong>:<strong><span style="color:#0000FF">~/mate_discrimination/output/120_LongRuns_HardAndSoftMatch</span></strong>$
+roots=( Drift_HM )
+for root in ${roots[@]}
+do
+&nbsp;&nbsp;&nbsp; rm ${root}_joint_probability.csv
+&nbsp;&nbsp;&nbsp; for k in ${root}_??????;
+&nbsp;&nbsp;&nbsp; do
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if [ -e $k&quot;/&quot;*_step2a/mating_display_c_histogram-1000000.dat ];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; then
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if [ -e $k&quot;/&quot;*_step2b/mating_display_c_histogram-1000000.dat ];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; then
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; echo $k;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd $k/*_step2a/;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tail -1 mating_display_c_histogram-1000000.dat | cut -d &quot; &quot; -f 6- &gt; choosy_female_2a-1000000.dat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd ../../;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd $k/*_step2b/;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tail -1 mating_display_c_histogram-1000000.dat | cut -d &quot; &quot; -f 6- &gt; choosy_female_2b-1000000.dat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd ../../;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                python ~/research_scripts/analysis/joint_probability_distribution.py -s &quot; &quot; $k/*2a/choosy_female_2a-1000000.dat $k/*2b/choosy_female_2b-1000000.dat &gt;&gt; ${root}_joint_probability.csv
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fi
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fi
+&nbsp;&nbsp;&nbsp;&nbsp; done
+done</pre>
+
+<p>Ok, it looks like it only generated 29 datapoints. The problem before was that it was pulling from the 300k histograms, which are NOT the ones it was mating against. Ok, so this is better. I&#39;ll still have to re-generate my figures for 120, but I&#39;m just not that inclined, because the mating rate (the important thing) isn&#39;t much better, so I don&#39;t care.</p>
+
+<h3>Log 12:55p</h3>
+
+<p>Ok, after having extensively explored the data, there is NO FIT. :/ It&#39;s terrible. So, back to the drawing board.</p>
+
+<h4>Just 121</h4>
+
+<p>All the data:</p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span></strong>:<strong><span style="color:#0000FF">~/Tmp/pythontmp</span></strong>$ python ./fit_line.py --columns 1,1 -x &quot;Probabilities of Trait Collision&quot; -y &quot;Hybridization Rate&quot; -t &quot;Fit - 121 VarLength&quot; 121_fit_prob_with_rate.png ./121_Drift_HM_joint_probability.csv ./121_Drift_HM_sum_matings_ratio_gen1.dat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OLS Regression Results
+==============================================================================
+Dep. Variable:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; y&nbsp;&nbsp; R-squared:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.883
+Model:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OLS&nbsp;&nbsp; Adj. R-squared:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.879
+Method:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Least Squares&nbsp;&nbsp; F-statistic:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 211.0
+Date:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sat, 06 Dec 2014&nbsp;&nbsp; Prob (F-statistic):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.46e-14
+Time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14:39:15&nbsp;&nbsp; Log-Likelihood:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 59.143
+No. Observations:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 30&nbsp;&nbsp; AIC:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -114.3
+Df Residuals:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 28&nbsp;&nbsp; BIC:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -111.5
+Df Model:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1
+Covariance Type:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nonrobust
+==============================================================================
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; coef&nbsp;&nbsp;&nbsp; std err&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; P&gt;|t|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [95.0% Conf. Int.]
+------------------------------------------------------------------------------
+const&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.0840&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.007&nbsp;&nbsp;&nbsp;&nbsp; 11.814&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.069&nbsp;&nbsp;&nbsp;&nbsp; 0.099
+x1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.9699&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.067&nbsp;&nbsp;&nbsp;&nbsp; 14.525&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.833&nbsp;&nbsp;&nbsp;&nbsp; 1.107
+==============================================================================
+Omnibus:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 15.855&nbsp;&nbsp; Durbin-Watson:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.717
+Prob(Omnibus):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp; Jarque-Bera (JB):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 20.113
+Skew:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.300&nbsp;&nbsp; Prob(JB):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4.29e-05
+Kurtosis:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6.054&nbsp;&nbsp; Cond. No.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 10.5
+==============================================================================Warnings:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[ 0.08404188&nbsp; 0.96989387]</pre>
+
+<h4><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_fit_prob_with_rate.png" style="height:600px; width:800px" /></h4>
+
+<p>Removed one outlier (.49/.49)</p>
+
+<pre>
+rosiec@Weir:~/Tmp/pythontmp$ python ./fit_line.py --columns 1,1 -x &quot;Probabilities of Trait Collision&quot; -y &quot;Hybridization Rate&quot; -t &quot;Fit - 121 VarLength - Removed 1 Outlier&quot; 121_nooutlier_fit_prob_with_rate.png ./121_nooutlier_Drift_HM_joint_probability.csv ./121_nooutlier_Drift_HM_sum_matings_ratio_gen1.dat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OLS Regression Results
+==============================================================================
+Dep. Variable:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; y&nbsp;&nbsp; R-squared:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.873
+Model:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OLS&nbsp;&nbsp; Adj. R-squared:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.869
+Method:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Least Squares&nbsp;&nbsp; F-statistic:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 185.9
+Date:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sat, 06 Dec 2014&nbsp;&nbsp; Prob (F-statistic):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.26e-13
+Time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14:42:40&nbsp;&nbsp; Log-Likelihood:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 64.675
+No. Observations:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 29&nbsp;&nbsp; AIC:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -125.4
+Df Residuals:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 27&nbsp;&nbsp; BIC:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -122.6
+Df Model:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1
+Covariance Type:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nonrobust
+==============================================================================
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; coef&nbsp;&nbsp;&nbsp; std err&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; P&gt;|t|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [95.0% Conf. Int.]
+------------------------------------------------------------------------------
+const&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.0740&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.006&nbsp;&nbsp;&nbsp;&nbsp; 12.468&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.062&nbsp;&nbsp;&nbsp;&nbsp; 0.086
+x1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3442&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.099&nbsp;&nbsp;&nbsp;&nbsp; 13.636&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.142&nbsp;&nbsp;&nbsp;&nbsp; 1.546
+==============================================================================
+Omnibus:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12.620&nbsp;&nbsp; Durbin-Watson:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.594
+Prob(Omnibus):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.002&nbsp;&nbsp; Jarque-Bera (JB):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 13.304
+Skew:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.141&nbsp;&nbsp; Prob(JB):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.00129
+Kurtosis:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5.408&nbsp;&nbsp; Cond. No.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 19.7
+==============================================================================
+Warnings:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[ 0.07404462&nbsp; 1.34420288]</pre>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_nooutlier_fit_prob_with_rate.png" style="height:600px; width:800px" /></p>
+
+<p>Removed two outliers:</p>
+
+<pre>
+rosiec@Weir:~/Tmp/pythontmp$ python ./fit_line.py --columns 1,1 -x &quot;Probabilities of Trait Collision&quot; -y &quot;Hybridization Rate&quot; -t &quot;Fit - 121 VarLength - Removed 2 Outliers&quot; 121_nooutliers_fit_prob_with_rate.png ./121_nooutliers_Drift_HM_joint_probability.csv ./121_nooutliers_Drift_HM_sum_matings_ratio_gen1.dat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OLS Regression Results
+==============================================================================
+Dep. Variable:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; y&nbsp;&nbsp; R-squared:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.769
+Model:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OLS&nbsp;&nbsp; Adj. R-squared:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.760
+Method:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Least Squares&nbsp;&nbsp; F-statistic:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 86.54
+Date:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sat, 06 Dec 2014&nbsp;&nbsp; Prob (F-statistic):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9.35e-10
+Time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14:43:54&nbsp;&nbsp; Log-Likelihood:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 64.212
+No. Observations:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 28&nbsp;&nbsp; AIC:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -124.4
+Df Residuals:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 26&nbsp;&nbsp; BIC:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -121.8
+Df Model:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1
+Covariance Type:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nonrobust
+==============================================================================
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; coef&nbsp;&nbsp;&nbsp; std err&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; P&gt;|t|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [95.0% Conf. Int.]
+------------------------------------------------------------------------------
+const&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.0671&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.006&nbsp;&nbsp;&nbsp;&nbsp; 10.367&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.054&nbsp;&nbsp;&nbsp;&nbsp; 0.080
+x1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.6731&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.180&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9.303&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.303&nbsp;&nbsp;&nbsp;&nbsp; 2.043
+==============================================================================
+Omnibus:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.784&nbsp;&nbsp; Durbin-Watson:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.665
+Prob(Omnibus):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.676&nbsp;&nbsp; Jarque-Bera (JB):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.100
+Skew:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.001&nbsp;&nbsp; Prob(JB):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.951
+Kurtosis:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3.293&nbsp;&nbsp; Cond. No.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 37.6
+==============================================================================
+Warnings:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[ 0.06707031&nbsp; 1.6730529 ]</pre>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/121_nooutliers_fit_prob_with_rate.png" style="height:600px; width:800px" /></p>
+
+<h4>Combined 121, 122</h4>
+
+<pre>
+rosiec@Weir:~/Tmp/pythontmp$ python ./fit_line.py --columns 1,1 -x &quot;Probabilities of Trait Collision&quot; -y &quot;Hybridization Rate&quot; -t &quot;Fit - 121,122&quot; combined_fit_prob_with_rate.png ./combined_Drift_HM_joint_probability.csv ./combined_Drift_HM_sum_matings_ratio_gen1.dat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OLS Regression Results
+==============================================================================
+Dep. Variable:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; y&nbsp;&nbsp; R-squared:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.488
+Model:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OLS&nbsp;&nbsp; Adj. R-squared:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.479
+Method:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Least Squares&nbsp;&nbsp; F-statistic:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 55.35
+Date:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sat, 06 Dec 2014&nbsp;&nbsp; Prob (F-statistic):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5.35e-10
+Time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14:45:37&nbsp;&nbsp; Log-Likelihood:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 42.890
+No. Observations:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 60&nbsp;&nbsp; AIC:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -81.78
+Df Residuals:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 58&nbsp;&nbsp; BIC:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -77.59
+Df Model:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1
+Covariance Type:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nonrobust
+==============================================================================
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; coef&nbsp;&nbsp;&nbsp; std err&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; P&gt;|t|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [95.0% Conf. Int.]
+------------------------------------------------------------------------------
+const&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.1631&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.021&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7.872&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.122&nbsp;&nbsp;&nbsp;&nbsp; 0.205
+x1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.4341&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.193&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7.439&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.048&nbsp;&nbsp;&nbsp;&nbsp; 1.820
+==============================================================================
+Omnibus:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.252&nbsp;&nbsp; Durbin-Watson:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.621
+Prob(Omnibus):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.882&nbsp;&nbsp; Jarque-Bera (JB):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.010
+Skew:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.003&nbsp;&nbsp; Prob(JB):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.995
+Kurtosis:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3.063&nbsp;&nbsp; Cond. No.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12.5
+==============================================================================
+Warnings:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[ 0.16308826&nbsp; 1.43414814]</pre>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/combined_fit_prob_with_rate.png" style="height:600px; width:800px" /></p>
+
+<p>Removed the same outlier from 121:</p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span></strong>:<strong><span style="color:#0000FF">~/Tmp/pythontmp</span></strong>$ python ./fit_line.py --columns 1,1 -x &quot;Probabilities of Trait Collision&quot; -y &quot;Hybridization Rate&quot; -t &quot;Fit - 121, 122 - Removed 1 Outlier&quot; combined_nooutlier_fit_prob_with_rate.png ./combined_nooutlier_Drift_HM_joint_probability.csv ./combined_nooutlier_Drift_HM_sum_matings_ratio_gen1.dat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OLS Regression Results
+==============================================================================
+Dep. Variable:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; y&nbsp;&nbsp; R-squared:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.626
+Model:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OLS&nbsp;&nbsp; Adj. R-squared:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.620
+Method:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Least Squares&nbsp;&nbsp; F-statistic:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 95.49
+Date:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sat, 06 Dec 2014&nbsp;&nbsp; Prob (F-statistic):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8.71e-14
+Time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14:47:26&nbsp;&nbsp; Log-Likelihood:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 51.905
+No. Observations:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 59&nbsp;&nbsp; AIC:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -99.81
+Df Residuals:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 57&nbsp;&nbsp; BIC:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -95.65
+Df Model:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1
+Covariance Type:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nonrobust
+==============================================================================
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; coef&nbsp;&nbsp;&nbsp; std err&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; P&gt;|t|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [95.0% Conf. Int.]
+------------------------------------------------------------------------------
+const&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.1236&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.019&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6.383&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.085&nbsp;&nbsp;&nbsp;&nbsp; 0.162
+x1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.1482&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.220&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9.772&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.708&nbsp;&nbsp;&nbsp;&nbsp; 2.588
+==============================================================================
+Omnibus:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3.881&nbsp;&nbsp; Durbin-Watson:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.849
+Prob(Omnibus):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.144&nbsp;&nbsp; Jarque-Bera (JB):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.907
+Skew:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.443&nbsp;&nbsp; Prob(JB):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.234
+Kurtosis:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3.631&nbsp;&nbsp; Cond. No.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 16.6
+==============================================================================
+Warnings:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[ 0.12358264&nbsp; 2.14816452]</pre>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/combined_nooutlier_fit_prob_with_rate.png" style="height:600px; width:800px" /></p>
+
+<p>Removed two outliers:</p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span></strong>:<strong><span style="color:#0000FF">~/Tmp/pythontmp</span></strong>$ python ./fit_line.py --columns 1,1 -x &quot;Probabilities of Trait Collision&quot; -y &quot;Hybridization Rate&quot; -t &quot;Fit - 121, 122 - Removed 2 Outliers&quot; combined_nooutliers_fit_prob_with_rate.png ./combined_nooutliers_Drift_HM_joint_probability.csv ./combined_nooutliers_Drift_HM_sum_matings_ratio_gen1.dat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OLS Regression Results
+==============================================================================
+Dep. Variable:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; y&nbsp;&nbsp; R-squared:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.688
+Model:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OLS&nbsp;&nbsp; Adj. R-squared:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.682
+Method:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Least Squares&nbsp;&nbsp; F-statistic:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 123.2
+Date:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sat, 06 Dec 2014&nbsp;&nbsp; Prob (F-statistic):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9.05e-16
+Time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14:48:52&nbsp;&nbsp; Log-Likelihood:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 56.091
+No. Observations:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 58&nbsp;&nbsp; AIC:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -108.2
+Df Residuals:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 56&nbsp;&nbsp; BIC:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -104.1
+Df Model:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1
+Covariance Type:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nonrobust
+==============================================================================
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; coef&nbsp;&nbsp;&nbsp; std err&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; P&gt;|t|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [95.0% Conf. Int.]
+------------------------------------------------------------------------------
+const&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.1085&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.018&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5.932&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.072&nbsp;&nbsp;&nbsp;&nbsp; 0.145
+x1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.4797&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.223&nbsp;&nbsp;&nbsp;&nbsp; 11.102&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.032&nbsp;&nbsp;&nbsp;&nbsp; 2.927
+==============================================================================
+Omnibus:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9.283&nbsp;&nbsp; Durbin-Watson:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.114
+Prob(Omnibus):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.010&nbsp;&nbsp; Jarque-Bera (JB):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8.997
+Skew:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.939&nbsp;&nbsp; Prob(JB):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.0111
+Kurtosis:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3.442&nbsp;&nbsp; Cond. No.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 18.2
+==============================================================================
+Warnings:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[ 0.10846445&nbsp; 2.47965682]</pre>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/combined_nooutliers_fit_prob_with_rate.png" style="height:600px; width:800px" /></p>
+
+<h4>Combined 120, 121, 122</h4>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span></strong>:<strong><span style="color:#0000FF">~/Tmp/pythontmp</span></strong>$ python ./fit_line.py --columns 1,1 -x &quot;Probabilities of Trait Collision&quot; -y &quot;Hybridization Rate&quot; -t &quot;Fit - 120, 121, 122&quot; all_combined_fit_prob_with_rate.png ./all_combined_Drift_HM_joint_probability.csv ./all_combined_Drift_HM_sum_matings_ratio_gen1.dat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OLS Regression Results
+==============================================================================
+Dep. Variable:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; y&nbsp;&nbsp; R-squared:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.311
+Model:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OLS&nbsp;&nbsp; Adj. R-squared:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.303
+Method:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Least Squares&nbsp;&nbsp; F-statistic:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 39.25
+Date:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sat, 06 Dec 2014&nbsp;&nbsp; Prob (F-statistic):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.38e-08
+Time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12:52:38&nbsp;&nbsp; Log-Likelihood:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 59.321
+No. Observations:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 89&nbsp;&nbsp; AIC:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -114.6
+Df Residuals:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 87&nbsp;&nbsp; BIC:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -109.7
+Df Model:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1
+Covariance Type:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nonrobust
+==============================================================================
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; coef&nbsp;&nbsp;&nbsp; std err&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; P&gt;|t|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [95.0% Conf. Int.]
+------------------------------------------------------------------------------
+const&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.1498&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.018&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8.159&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.113&nbsp;&nbsp;&nbsp;&nbsp; 0.186
+x1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.0539&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.168&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6.265&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.720&nbsp;&nbsp;&nbsp;&nbsp; 1.388
+==============================================================================
+Omnibus:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4.404&nbsp;&nbsp; Durbin-Watson:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.608
+Prob(Omnibus):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.111&nbsp;&nbsp; Jarque-Bera (JB):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4.013
+Skew:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.445&nbsp;&nbsp; Prob(JB):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.134
+Kurtosis:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.461&nbsp;&nbsp; Cond. No.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12.7
+==============================================================================
+Warnings:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[ 0.14981723&nbsp; 1.0539195 ]</pre>
+
+<p><strong><span style="color:#EE82EE"><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/all_combined_fit_prob_with_rate.png" style="height:600px; width:800px" /></span></strong></p>
+
+<p>Removed a single outlier:</p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span></strong>:<strong><span style="color:#0000FF">~/Tmp/pythontmp</span></strong>$ python ./fit_line.py --columns 1,1 -x &quot;Probabilities of Trait Collision&quot; -y &quot;Hybridization Rate&quot; -t &quot;Fit - 120, 121, 122 - Removed 1 Outlier&quot; all_combined_nooutlier_fit_prob_with_rate.png ./all_combined_nooutlier_Drift_HM_joint_probability.csv ./all_combined_nooutlier_Drift_HM_sum_matings_ratio_gen1.dat
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OLS Regression Results
+==============================================================================
+Dep. Variable:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; y&nbsp;&nbsp; R-squared:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.307
+Model:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OLS&nbsp;&nbsp; Adj. R-squared:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.299
+Method:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Least Squares&nbsp;&nbsp; F-statistic:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 38.12
+Date:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sat, 06 Dec 2014&nbsp;&nbsp; Prob (F-statistic):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.12e-08
+Time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 12:55:00&nbsp;&nbsp; Log-Likelihood:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 59.497
+No. Observations:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 88&nbsp;&nbsp; AIC:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -115.0
+Df Residuals:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 86&nbsp;&nbsp; BIC:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -110.0
+Df Model:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1
+Covariance Type:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nonrobust
+==============================================================================
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; coef&nbsp;&nbsp;&nbsp; std err&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; P&gt;|t|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [95.0% Conf. Int.]
+------------------------------------------------------------------------------
+const&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.1391&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.019&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7.186&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.101&nbsp;&nbsp;&nbsp;&nbsp; 0.178
+x1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.2338&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.200&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6.174&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.837&nbsp;&nbsp;&nbsp;&nbsp; 1.631
+==============================================================================
+Omnibus:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.258&nbsp;&nbsp; Durbin-Watson:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.661
+Prob(Omnibus):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.533&nbsp;&nbsp; Jarque-Bera (JB):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.249
+Skew:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.277&nbsp;&nbsp; Prob(JB):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.536
+Kurtosis:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.814&nbsp;&nbsp; Cond. No.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 15.1
+==============================================================================
+Warnings:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[ 0.13905494&nbsp; 1.23377994]</pre>
+
+<h3><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/all_combined_nooutlier_fit_prob_with_rate.png" style="height:600px; width:800px" /></h3>
+
+<p>&nbsp;
+<h3>Log 2:33p</h3>
+</p>
+
+<p>I (retroactively, sorry), pasted all the figures above (after fixing the titles). Also, it occurred to me to try combining 120 and 121 (not including 122) because they have comparable choosyness rates.</p>
+
+<h4 class="item_body_heading_2">120 and 121 Only, since they have comparable choosyness rates.</h4>
+
+<pre>
+rosiec@Weir:~/Tmp/pythontmp$ python ./fit_line.py --columns 1,1 -x &quot;Probabilities of Trait Collision&quot; -y &quot;Hybridization Rate&quot; -t &quot;Fit - 120, 121&quot; 120_121_combined_fit_prob_with_rate.png ./120_121_combined_Drift_HM_joint_probability.csv ./120_121_combined_Drift_HM_sum_matings_ratio_gen1.dat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OLS Regression Results
+==============================================================================
+Dep. Variable:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; y&nbsp;&nbsp; R-squared:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.591
+Model:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OLS&nbsp;&nbsp; Adj. R-squared:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.584
+Method:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Least Squares&nbsp;&nbsp; F-statistic:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 82.28
+Date:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sat, 06 Dec 2014&nbsp;&nbsp; Prob (F-statistic):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.18e-12
+Time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14:58:18&nbsp;&nbsp; Log-Likelihood:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 89.097
+No. Observations:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 59&nbsp;&nbsp; AIC:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -174.2
+Df Residuals:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 57&nbsp;&nbsp; BIC:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -170.0
+Df Model:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1
+Covariance Type:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nonrobust
+==============================================================================
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; coef&nbsp;&nbsp;&nbsp; std err&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; P&gt;|t|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [95.0% Conf. Int.]
+------------------------------------------------------------------------------
+const&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.0945&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.009&nbsp;&nbsp;&nbsp;&nbsp; 10.726&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.077&nbsp;&nbsp;&nbsp;&nbsp; 0.112
+x1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.7297&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.080&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9.071&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.569&nbsp;&nbsp;&nbsp;&nbsp; 0.891
+==============================================================================
+Omnibus:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4.615&nbsp;&nbsp; Durbin-Watson:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.424
+Prob(Omnibus):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.099&nbsp;&nbsp; Jarque-Bera (JB):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4.196
+Skew:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.350&nbsp;&nbsp; Prob(JB):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.123
+Kurtosis:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4.103&nbsp;&nbsp; Cond. No.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 11.4
+==============================================================================
+Warnings:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[ 0.0945313&nbsp;&nbsp; 0.72973922]</pre>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/120_121_combined_fit_prob_with_rate.png" style="height:600px; width:800px" /></p>
+
+<p>Removed the outlier.</p>
+
+<pre>
+rosiec@Weir:~/Tmp/pythontmp$ python ./fit_line.py --columns 1,1 -x &quot;Probabilities of Trait Collision&quot; -y &quot;Hybridization Rate&quot; -t &quot;Fit - 120, 121 - Removed 1 Outlier&quot; 120_121_combined_nooutlier_fit_prob_with_rate.png ./120_121_combined_nooutlier_Drift_HM_joint_probability.csv ./120_121_combined_nooutlier_Drift_HM_sum_matings_ratio_gen1.dat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OLS Regression Results
+==============================================================================
+Dep. Variable:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; y&nbsp;&nbsp; R-squared:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.424
+Model:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OLS&nbsp;&nbsp; Adj. R-squared:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.414
+Method:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Least Squares&nbsp;&nbsp; F-statistic:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 41.20
+Date:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sat, 06 Dec 2014&nbsp;&nbsp; Prob (F-statistic):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3.14e-08
+Time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 15:02:46&nbsp;&nbsp; Log-Likelihood:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 87.658
+No. Observations:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 58&nbsp;&nbsp; AIC:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -171.3
+Df Residuals:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 56&nbsp;&nbsp; BIC:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -167.2
+Df Model:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1
+Covariance Type:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nonrobust
+==============================================================================
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; coef&nbsp;&nbsp;&nbsp; std err&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; P&gt;|t|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [95.0% Conf. Int.]
+------------------------------------------------------------------------------
+const&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.0977&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.009&nbsp;&nbsp;&nbsp;&nbsp; 10.496&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.079&nbsp;&nbsp;&nbsp;&nbsp; 0.116
+x1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.6618&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.103&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6.419&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.455&nbsp;&nbsp;&nbsp;&nbsp; 0.868
+==============================================================================
+Omnibus:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7.739&nbsp;&nbsp; Durbin-Watson:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.392
+Prob(Omnibus):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.021&nbsp;&nbsp; Jarque-Bera (JB):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7.236
+Skew:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.664&nbsp;&nbsp; Prob(JB):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.0268
+Kurtosis:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4.110&nbsp;&nbsp; Cond. No.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14.5
+==============================================================================
+Warnings:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[ 0.09770871&nbsp; 0.66184731]</pre>
+
+<p><img src="./14.335.__-_Notes_-_Week_of_December_01_2014/120_121_combined_nooutlier_fit_prob_with_rate.png" style="height:600px; width:800px" /></p>
+
+<p>It occurrs to me that I might try doing to a multiple regression including the choosyness rate as a predictor variable. This would make it 3-D, but I&#39;m not really sure how to plot that.</p>

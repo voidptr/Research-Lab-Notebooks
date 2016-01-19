@@ -1,0 +1,668 @@
+<h1>Week of November 17, 2014</h1>
+
+<h2>Monday, Nov 17, 2014</h2>
+
+<h3>Log 11:37AM</h3>
+
+<p>Yay! A new week!</p>
+
+<p>I&#39;m writing a bash script to do my analysis more or less for me. Yay!</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Tuesday, Nov 18, 2014</h2>
+
+<h3>Log 3:21</h3>
+
+<p>Ok, I did a bunch of stuff yesterday, but I didn&#39;t write anything down, because I&#39;m dumb.</p>
+
+<p>The script is at ~/mate_discrimination/scripts/11_17_analysis.sh, not under version control yet, because I suck.</p>
+
+<p>I&#39;m going to paste it here, for posterity. :P</p>
+
+<pre>
+#!/bin/bash
+
+me=`basename $0`
+
+if [ $# -lt 2 ]
+then
+    echo &quot;usage ${me} &lt;description&gt; &lt;prefix&gt;&quot;
+    echo &quot;e.g. % ${me} \&quot;118\&quot; 118&quot;
+    exit
+fi
+
+description=$1
+prefix=$2
+
+echo &quot;Description: &quot; $1 ${1}
+echo &quot;Prefix: &quot; $2 ${2}
+
+module load matplotlib
+
+matings_timeseries() {
+    ## extract the matings timeseries data
+    for k in *;
+    do
+        if [ -e $k&quot;/&quot;*_step3/mates ];
+        then
+            echo $k;
+            cd $k/*_step3/mates/;
+            pwd;
+            rm matings_timeseries.dat;
+            rm total_matings_timeseries.dat;
+            for i in {0..250};
+            do
+                #echo $i;
+                ## over the wall matings
+                awk -v i=&quot;$i&quot; &#39;{ \
+                if (\
+                    ($13 == 1) &amp;&amp; \
+                    (\
+                        ($11 &gt; 1799 &amp;&amp; $24 &lt; 1800) || \
+                        ($11 &lt; 1800 &amp;&amp; $24 &gt; 1799)\
+                    )\
+                   ) \
+                   print $2,$3,$4,$5,$8,$11,&quot;---&gt;&quot;,$15,$16,$17, $18,$21,$24}&#39; mates-${i}.dat* | wc -l &gt;&gt; matings_timeseries.dat ;
+                ## total matings
+                awk -v i=&quot;$i&quot; &#39;{ \
+                if ($13 == 1) \
+                   print $2,$3,$4,$5,$8,$11,&quot;---&gt;&quot;,$15,$16,$17, $18,$21,$24}&#39; mates-${i}.dat* | wc -l &gt;&gt; total_matings_timeseries.dat ;  
+            done;  
+            
+            cd ../../../;
+        fi ;
+    done
+}
+
+plot_matings_timeseries() {
+    ## plot
+    python ../../../research_scripts/quickplot.py --error --end_at 100 -x Updates -y Matings -t &quot;Post-Allopatry Hybridizing Matings Gen 1 - ${description} Sexual Selection After Allopatry&quot; ${prefix}_hybridizing_matings_100u_postallopatry_ss_gen1 \
+    matings_timeseries.dat 1 &quot;Ctrl_*/*_step3/mates/&quot; Control \
+    matings_timeseries.dat 1 &quot;ScenD_*/*_step3/mates/&quot; ScenarioD \
+    matings_timeseries.dat 1 &quot;ScenA_*/*_step3/mates/&quot; ScenarioA \
+    matings_timeseries.dat 1 &quot;ScenB_*/*_step3/mates/&quot; ScenarioB \
+    matings_timeseries.dat 1 &quot;ScenC_*/*_step3/mates/&quot; ScenarioC \
+    matings_timeseries.dat 1 &quot;ScenE_*/*_step3/mates/&quot; ScenarioE
+
+    python ../../../research_scripts/quickplot.py --error --end_at 100 -x Updates -y Matings -t &quot;Post-Allopatry Total Matings Gen 1 - ${description} Sexual Selection After Allopatry&quot; ${prefix}_total_matings_100u_postallopatry_ss_gen1 \
+    total_matings_timeseries.dat 1 &quot;Ctrl_*/*_step3/mates/&quot; Control \
+    total_matings_timeseries.dat 1 &quot;ScenD_*/*_step3/mates/&quot; ScenarioD \
+    total_matings_timeseries.dat 1 &quot;ScenA_*/*_step3/mates/&quot; ScenarioA \
+    total_matings_timeseries.dat 1 &quot;ScenB_*/*_step3/mates/&quot; ScenarioB \
+    total_matings_timeseries.dat 1 &quot;ScenC_*/*_step3/mates/&quot; ScenarioC \
+    total_matings_timeseries.dat 1 &quot;ScenE_*/*_step3/mates/&quot; ScenarioE
+
+    python ../../../research_scripts/quickplot.py --error --end_at 100 -x Updates -y Matings -t &quot;Post-Allopatry Total Matings Gen 1 - ${description} Sexual Selection After Allopatry&quot; ${prefix}_matings_ratio_100u_postallopatry_ss_gen1 \
+    matings_ratio_timeseries.dat 1 &quot;Ctrl_*/*_step3/mates/&quot; Control \
+    matings_ratio_timeseries.dat 1 &quot;ScenD_*/*_step3/mates/&quot; ScenarioD \
+    matings_ratio_timeseries.dat 1 &quot;ScenA_*/*_step3/mates/&quot; ScenarioA \
+    matings_ratio_timeseries.dat 1 &quot;ScenB_*/*_step3/mates/&quot; ScenarioB \
+    matings_ratio_timeseries.dat 1 &quot;ScenC_*/*_step3/mates/&quot; ScenarioC \
+    matings_ratio_timeseries.dat 1 &quot;ScenE_*/*_step3/mates/&quot; ScenarioE
+
+}
+
+summed_matings() {
+    ## convert to a summed column
+    for k in *;
+    do
+        if [ -e $k&quot;/&quot;*_step3/mates ];
+        then
+            echo $k;
+            cd $k/*_step3/mates/;
+            pwd;
+            python ~/research_scripts/common/aggregate_file.py --sum matings_timeseries.dat &gt; sum_matings_gen1.dat ;
+            python ~/research_scripts/common/aggregate_file.py --sum total_matings_timeseries.dat &gt; sum_total_matings_gen1.dat ;
+            cd ../../../;
+        fi ;
+    done
+
+    roots=( Ctrl ScenA ScenB ScenC ScenD ScenE )
+    for root in ${roots[@]}
+    do
+        rm $root&quot;_&quot;sum_matings_gen1.dat;
+        rm $root&quot;_&quot;sum_total_matings_gen1.dat;         
+        for k in $root&quot;_&quot;*;
+        do
+            if [ -e $k&quot;/&quot;*_step3/mates ];
+            then
+                echo $k;
+                cd $k/*_step3/mates/;
+                pwd;
+                cat sum_matings_gen1.dat &gt;&gt; ../../../$root&quot;_&quot;sum_matings_gen1.dat ;
+                cat sum_total_matings_gen1.dat &gt;&gt; ../../../$root&quot;_&quot;sum_total_matings_gen1.dat ;
+                cd ../../../;
+            fi ;
+        done
+
+        rm ${root}_sum_matings_ratio_gen1.dat
+        while IFS=$&#39;\t&#39; read -r f1 f2;
+        do
+            if [ $f2 != 0 ]
+            then
+                echo &quot;${f1}/${f2}&quot; | bc -l &gt;&gt; ${root}_sum_matings_ratio_gen1.dat
+            else
+                    echo &quot;0&quot; &gt;&gt; ${root}_sum_matings_ratio_gen1.dat
+            fi
+        done &lt; &lt;(paste ${root}_sum_matings_gen1.dat ${root}_sum_total_matings_gen1.dat)
+
+    done
+}
+
+plot_summed_matings() {
+    ## and plot
+    python ~/research_scripts/graph_generation/bar_chart_from_csv.py -x Treatment -y &quot;Total Hybridizing Matings in Gen 1&quot; -t &quot;Total Initial Matings - ${description}&quot; --xticks=&quot;Control-Sympatry,Drift,A - L9-&gt;L7,B - L9-&gt;L9+3in,C - L5-&gt;L7,E - BL4-&gt;L9&quot; --error ${prefix}_sum_matings_gen1.png \
+    Ctrl_sum_matings_gen1.dat \
+    ScenD_sum_matings_gen1.dat \
+    ScenA_sum_matings_gen1.dat \
+    ScenB_sum_matings_gen1.dat \
+    ScenC_sum_matings_gen1.dat \
+    ScenE_sum_matings_gen1.dat
+
+        
+    python ~/research_scripts/graph_generation/bar_chart_from_csv.py -x Treatment -y &quot;Ratio of Hybridizing vs Total Matings in Gen 1&quot; -t &quot;Ratio Initial Hybridizing Matings - ${description}&quot; --xticks=&quot;Control-Sympatry,Drift,A - L9-&gt;L7,B - L9-&gt;L9+3in,C - L5-&gt;L7,E - BL4-&gt;L9&quot; --error ${prefix}_ratio_sum_matings_gen1.png \
+    Ctrl_sum_matings_ratio_gen1.dat \
+    ScenD_sum_matings_ratio_gen1.dat \
+    ScenA_sum_matings_ratio_gen1.dat \
+    ScenB_sum_matings_ratio_gen1.dat \
+    ScenC_sum_matings_ratio_gen1.dat \
+    ScenE_sum_matings_ratio_gen1.dat
+
+}
+
+plot_display_preference() {
+    ## plot out the display preference C data
+    python ~/research_scripts/quickplot.py -x Updates --error --xtick_multiplier=100 -y &quot;Females Using Display C&quot; -t &quot;Female Display C Preference Data - ${description}&quot; ${prefix}_female_preference_data \
+    female_mate_preference_data.dat 11 &quot;Ctrl_*/*_step3/&quot; &quot;Control&quot; \
+    female_mate_preference_data.dat 11 &quot;ScenD_*/*_step3/&quot; &quot;ScenD&quot; \
+    female_mate_preference_data.dat 11 &quot;ScenA_*/*_step3/&quot; &quot;ScenA&quot; \
+    female_mate_preference_data.dat 11 &quot;ScenB_*/*_step3/&quot; &quot;ScenB&quot; \
+    female_mate_preference_data.dat 11 &quot;ScenC_*/*_step3/&quot; &quot;ScenC&quot; \
+    female_mate_preference_data.dat 11 &quot;ScenE_*/*_step3/&quot; &quot;ScenE&quot;
+
+}
+
+extract_post_zygotic() {
+    for k in *;
+    do
+        if [ -e $k&quot;/&quot;*_step3/ ];
+        then
+            echo $k;
+            cd $k/*_step3/;
+            for i in {25..1};
+            do
+                cat detail-$i&quot;0&quot;.spop* | tail -n +26 &gt;&gt; detail-total.spop;
+            done;
+            sort -u -k1,1  detail-total.spop &gt; detail-uniq.spop;
+
+            rm gen1_total.dat;
+            for i in {1..25};
+            do
+                awk -v i=&quot;$i&quot; &#39;{if ($11 == 1) print &quot;parents:&quot;,$4,&quot;merit,gest,fit:&quot;,$8,$9,$10,&quot;-- generation,update:&quot;,$11,$12}&#39; detail-$i&quot;0&quot;.spop* | wc -l &gt;&gt; gen1_total.dat;
+            done;
+
+            rm gen1_meritnonzero.dat;
+            for i in {1..25};
+            do
+                awk -v i=&quot;$i&quot; &#39;{if ($11 == 1 &amp;&amp; $8 == 0) print &quot;parents:&quot;,$4,&quot;merit,gest,fit:&quot;,$8,$9,$10,&quot;-- generation,update:&quot;,$11,$12}&#39; detail-$i&quot;0&quot;.spop* | wc -l &gt;&gt; gen1_meritnonzero.dat;
+            done;
+
+            rm gen1_meritnonzero_overthewall.dat;
+            for i in {1..25};
+            do
+                awk -v i=&quot;$i&quot; &#39;{split($4, array, /,/); if ($11 == 1 &amp;&amp; $8 &gt; 0 &amp;&amp; ((array[1] &gt; 1799 &amp;&amp; array[2] &lt; 1800) || (array[1] &lt; 1800 &amp;&amp; array[2] &gt; 1799))) print &quot;parents:&quot;,$4,&quot;merit,gest,fit:&quot;,$8,$9,$10,&quot;-- generation,update:&quot;,$11,$12}&#39; detail-$i&quot;0&quot;.spop* | wc -l &gt;&gt; gen1_meritnonzero_overthewall.dat ;
+            done;
+            
+            rm gen1_overthewall.dat;
+            for i in {1..25};
+            do
+                awk -v i=&quot;$i&quot; &#39;{split($4, array, /,/); if ($11 == 1 &amp;&amp; ((array[1] &gt; 1799 &amp;&amp; array[2] &lt; 1800) || (array[1] &lt; 1800 &amp;&amp; array[2] &gt; 1799)) ) print &quot;parents:&quot;,$4,&quot;merit,gest,fit:&quot;,$8,$9,$10,&quot;-- generation,update:&quot;,$11,$12}&#39; detail-$i&quot;0&quot;.spop* | wc -l &gt;&gt; gen1_overthewall.dat ;
+            done;
+    
+            rm gen1_live_nonhybrid.dat;
+            for i in {1..25};
+            do
+                awk -v i=&quot;$i&quot; &#39;{split($4, array, /,/); if ($11 == 1 &amp;&amp; $8 &gt; 0 &amp;&amp; ((array[1] &lt; 1800 &amp;&amp; array[2] &lt; 1800) || (array[1] &gt; 1799 &amp;&amp; array[2] &gt; 1799)) ) print &quot;parents:&quot;,$4,&quot;merit,gest,fit:&quot;,$8,$9,$10,&quot;-- generation,update:&quot;,$11,$12}&#39; detail-$i&quot;0&quot;.spop* | wc -l &gt;&gt; gen1_live_nonhybrid.dat ;
+            done;
+
+            rm gen1_nonhybrid.dat;
+            for i in {1..25};
+            do awk -v i=&quot;$i&quot; &#39;{split($4, array, /,/); if ($11 == 1 &amp;&amp; ((array[1] &lt; 1800 &amp;&amp; array[2] &lt; 1800) || (array[1] &gt; 1799 &amp;&amp; array[2] &gt; 1799)) ) print &quot;parents:&quot;,$4,&quot;merit,gest,fit:&quot;,$8,$9,$10,&quot;-- generation,update:&quot;,$11,$12}&#39; detail-$i&quot;0&quot;.spop* | wc -l &gt;&gt; gen1_nonhybrid.dat ;
+            done;
+
+            rm updates.dat;
+            for i in {1..25} ;
+            do
+                echo $i&quot;0&quot; &gt;&gt; updates.dat;
+            done;
+
+            echo &quot;#update     gen1_total,      gen1_merit&gt;0,   gen1_merit&gt;0_OTW,   gen1_OTW, gen1_Live_NonHybrid, gen1_nonHybrid&quot; &gt; offspring.dat; paste updates.dat gen1_total.dat gen1_meritnonzero.dat gen1_meritnonzero_overthewall.dat gen1_overthewall.dat gen1_live_nonhybrid.dat gen1_nonhybrid.dat &gt;&gt; offspring.dat;
+            awk &#39;{$1=$1}1&#39; OFS=&quot; &quot; offspring.dat &gt; offspring.cleaned.dat;
+            cd ../../;
+        fi ;
+    done;
+
+    for k in *;
+    do
+        if [ -e $k&quot;/&quot;*_step3 ];
+        then
+            echo $k;
+            cd $k/*_step3/;
+            pwd;
+            python ~/research_scripts/common/aggregate_file.py --header --sum offspring.cleaned.dat &gt; sum_offspring.cleaned.dat ;
+            cd ../..;
+        fi ;
+    done
+
+    target=&quot;sum_offspring.cleaned.dat&quot;;
+    roots=( Ctrl ScenA ScenB ScenC ScenD ScenE )
+    for root in ${roots[@]}
+    do
+        for k in $root&quot;_&quot;*;
+        do
+            if [ -e $k&quot;/&quot;*_step3 ];
+            then
+                echo $k;
+                cd $k/*_step3/;
+                pwd;
+                cat $target &gt;&gt; ../../$root&quot;_&quot;$target ;
+                cd ../../;
+            fi ;
+        done;
+    done
+
+    roots=( Ctrl ScenA ScenB ScenC ScenD ScenE )
+    for root in ${roots[@]}
+    do
+        echo $root
+        rm ${root}_sum_offspring_ratio_gen1.dat
+        while IFS=$&#39;,&#39; read -r f1 f2 f3 f4 f5 f6;
+        do
+            if [ $f2 != 0 ]
+            then
+                #echo &quot;${f4}/${f3}&quot;
+                #echo &quot;${f4}/${f3}&quot; | bc -l
+                echo &quot;${f4}/${f3}&quot; | bc -l &gt;&gt; ${root}_sum_offspring_ratio_gen1.dat
+            else
+                echo &quot;0&quot; &gt;&gt; ${root}_sum_offspring_ratio_gen1.dat
+            fi
+        done &lt;${root}_sum_offspring.cleaned.dat
+    done
+
+}
+
+plot_post_zygotic() {
+
+    python ~/research_scripts/graph_generation/bar_chart_from_csv.py \
+        -x Treatment -y &quot;Offspring of Gen 1&quot; -t &quot;Initial Offspring - ${description}&quot; --pair --groups=6 \
+        --xticks=&quot;Sympatry,Drift,A,B,C,E&quot; --legend=&quot;Total,Hybrid,Non-Hybrid,Live,LiveHybrid,Live-NonHybrid&quot; \
+        --columns=&quot;2,5,7,3,4,6&quot; --error \
+        ${prefix}_sum_offspring_gen1.png \
+        Ctrl_sum_offspring.cleaned.dat \
+        ScenD_sum_offspring.cleaned.dat \
+        ScenA_sum_offspring.cleaned.dat \
+        ScenB_sum_offspring.cleaned.dat \
+        ScenC_sum_offspring.cleaned.dat \
+        ScenE_sum_offspring.cleaned.dat
+
+    python ~/research_scripts/graph_generation/bar_chart_from_csv.py \
+        -x Treatment -y &quot;Ratio of Live Hybrid Offspring vs Total Live Offspring of Gen 1&quot; -t &quot;Initial Offspring Ratio Live Hybrid vs Total Live - ${description}&quot; --pair --groups=6 \
+        --xticks=&quot;Sympatry,Drift,A,B,C,E&quot; --legend=&quot;LiveHybrid/TotalLive&quot; \
+        --columns=&quot;1&quot; --error \
+        ${prefix}_sum_ratio_hybridlive_vs_live_gen1.png \
+        Ctrl_sum_offspring_ratio_gen1.dat \
+        ScenD_sum_offspring_ratio_gen1.dat \
+        ScenA_sum_offspring_ratio_gen1.dat \
+        ScenB_sum_offspring_ratio_gen1.dat \
+        ScenC_sum_offspring_ratio_gen1.dat \
+        ScenE_sum_offspring_ratio_gen1.dat        
+
+}
+
+extract_displayc_histogram() {
+
+    for k in *;
+    do
+        if [ -e $k&quot;/&quot;*_step2a/mating_display_c_histogram-300000.dat ];
+        then
+            if [ -e $k&quot;/&quot;*_step2b/mating_display_c_histogram-300000.dat ];
+            then
+
+                echo $k;
+                cd $k/*_step2a/;
+                tail -1 mating_display_c_histogram-300000.dat | cut -d &quot; &quot; -f 6- &gt; choosy_female_2a-300000.dat
+                cd ../../;
+                cd $k/*_step2b/;
+                tail -1 mating_display_c_histogram-300000.dat | cut -d &quot; &quot; -f 6- &gt; choosy_female_2b-300000.dat
+                cd ../../;
+            fi
+        fi
+     done
+}
+
+plot_displayc_histogram() {
+    for k in *;
+    do
+        if [ -e $k&quot;/&quot;*_step2a/choosy_female_2a-300000.dat ];
+        then
+            if [ -e $k&quot;/&quot;*_step2b/choosy_female_2b-300000.dat ];
+            then
+                echo $k;
+                cd $k;
+                python ~/research_scripts/graph_generation/histogram_from_csv.py -t &quot;Histogram Display C values - ${description} - $k&quot; -x &quot;Display Trait C Value&quot; -y &quot;# of display&quot; -s &quot; &quot; --xlim_min -10 --xlim_max=266 ${prefix}_${k}_displayc_histograms.png *_step2a/choosy_female_2a-300000.dat *_step2b/choosy_female_2b-300000.dat
+                cd ../
+            fi
+        fi
+    done
+}
+
+
+#matings_timeseries;
+#summed_matings;
+#extract_post_zygotic;
+#plot_post_zygotic;
+#plot_summed_matings;
+#plot_display_preference;
+extract_displayc_histogram;
+plot_displayc_histogram;
+
+</pre>
+
+<p>So, this is the better setup (Run 118), with Hard Match</p>
+
+<p><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_ratio_sum_matings_gen1.png" style="height:225px; width:300px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_sum_ratio_hybridlive_vs_live_gen1.png" style="height:225px; width:300px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_female_preference_data.png" style="height:225px; width:300px" /></p>
+
+<p><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_ScenA_118001_displayc_histograms.png" style="height:225px; width:300px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_ScenA_118011_displayc_histograms.png" style="height:225px; width:300px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_ScenA_118021_displayc_histograms.png" style="height:225px; width:300px" /></p>
+
+<p><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_ScenB_118011_displayc_histograms.png" style="height:225px; width:300px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_ScenB_118021_displayc_histograms.png" style="height:225px; width:300px" /></p>
+
+<p><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_ScenC_118001_displayc_histograms.png" style="height:225px; width:300px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_ScenC_118011_displayc_histograms.png" style="height:225px; width:300px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_ScenC_118021_displayc_histograms.png" style="height:225px; width:300px" /></p>
+
+<p><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_ScenD_Drift_118001_displayc_histograms.png" style="height:225px; width:300px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_ScenD_Drift_118011_displayc_histograms.png" style="height:225px; width:300px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_ScenD_Drift_118021_displayc_histograms.png" style="height:225px; width:300px" /></p>
+
+<p><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_ScenE_118001_displayc_histograms.png" style="height:225px; width:300px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_ScenE_118011_displayc_histograms.png" style="height:225px; width:300px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_ScenE_118021_displayc_histograms.png" style="height:225px; width:300px" /></p>
+
+<p><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/119_ratio_sum_matings_gen1.png" style="height:225px; width:300px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/119_sum_ratio_hybridlive_vs_live_gen1.png" style="height:225px; width:300px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/119_female_preference_data.png" style="height:225px; width:300px" /></p>
+
+<p><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/119_ScenA_119001_displayc_histograms.png" style="height:225px; width:300px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/119_ScenA_119011_displayc_histograms.png" style="height:225px; width:300px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/119_ScenA_119021_displayc_histograms.png" style="height:225px; width:300px" /></p>
+
+<p><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/119_ScenB_119001_displayc_histograms.png" style="height:225px; width:300px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/119_ScenB_119011_displayc_histograms.png" style="height:225px; width:300px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/119_ScenB_119021_displayc_histograms.png" style="height:225px; width:300px" /></p>
+
+<p><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/119_ScenC_119001_displayc_histograms.png" style="height:225px; width:300px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/119_ScenC_119011_displayc_histograms.png" style="height:225px; width:300px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/119_ScenC_119021_displayc_histograms.png" style="height:225px; width:300px" /></p>
+
+<p><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/119_ScenD_Drift_119001_displayc_histograms.png" style="height:225px; width:300px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/119_ScenD_Drift_119011_displayc_histograms.png" style="height:225px; width:300px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/119_ScenD_Drift_119021_displayc_histograms.png" style="height:225px; width:300px" /></p>
+
+<p><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/119_ScenE_119001_displayc_histograms.png" style="height:225px; width:300px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/119_ScenE_119011_displayc_histograms.png" style="height:225px; width:300px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/119_ScenE_119021_displayc_histograms.png" style="height:225px; width:300px" /></p>
+
+<p>Ok, notes from lab meeting.</p>
+
+<p>Post-zygotic graph fixes</p>
+
+<ul>
+	<li>stacked bar graph of total hybrids. Within total hybrids, show live vs dead.
+	<ul>
+		<li>This should remove need for original graph.</li>
+	</ul>
+	</li>
+</ul>
+
+<p>Forced Matings!</p>
+
+<p>- mate regardless of choice within group (for the baseline), and between group</p>
+
+<p>Oh, it occurred to me that one way to remove the effect of the basins of attraction at 0 and -1 (255), for a given run, randomly assign an origin value. But, how do I make that stick when they get put in a shared environment?</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Wednesday, Nov 19, 2014</h2>
+
+<h3>Log 4:42p</h3>
+
+<p>I generated some more graphs.</p>
+
+<p><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_sum_offspring_gen1.png" style="height:300px; width:400px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/119_sum_offspring_gen1.png" style="height:300px; width:400px" /></p>
+
+<p>And I&#39;ve been trying to suss out what each of these things means.</p>
+
+<p>Live Hybrid/Total Live</p>
+
+<p>In the control (sympatry), of all the live organisms, about 33% are &quot;hybrids&quot;. Whereas, in the allopatry treatments, only between between 22-15% of the live offspring are hybrids. I think this is a pretty solid set of evidence for lesser representation. However, you can&#39;t distinguish between the effect of pre-zygotic isolation (resulting is just fewer hybrid offspring in general), and post-zygotic, which means that fewer of the hybrids live.</p>
+
+<p><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_sum_ratio_hybridlive_vs_live_gen1.png" style="height:300px; width:400px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/119_sum_ratio_hybridlive_vs_live_gen1.png" style="height:300px; width:400px" /></p>
+
+<p>So, I put together a set of graphs that compare the ratios of living to dead hybrids. The first graph, with absolute counts, makes it hard to see the difference between pre and post zyg.</p>
+
+<p><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_sum_dead_live_hybrid_gen1.png" style="height:300px; width:400px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/119_sum_dead_live_hybrid_gen1.png" style="height:300px; width:400px" /></p>
+
+<p>But the second... well fuck.</p>
+
+<p><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_livedead_hybrid_ratio_gen1.png" style="height:300px; width:400px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/119_livedead_hybrid_ratio_gen1.png" style="height:300px; width:400px" /></p>
+
+<p>Essentially, there doesn&#39;t seem to be much variation between the treatments. Yes, there are fewer hybrids overall, but they have the same chance of being live as the control, which is bad news.</p>
+
+<p>Also, it&#39;s mildly surprising. What&#39;s the ratio over the whole population, not just hybrids?</p>
+
+<p><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_livedead_ratio_gen1.png" style="height:300px; width:400px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/119_livedead_ratio_gen1.png" style="height:300px; width:400px" /></p>
+
+<p>So, one factor whose effect I just don&#39;t know is that I&#39;m not capturing every offspring. I&#39;m only capturing a snapshot of the population every ten updates. So, it&#39;s possible that I&#39;m missing quite a few offspring that get squished. But, what&#39;s the chance of that? I look at the counts, and there should be twice as many offspring per mating event. In control, there were just under 500 hybrid mating events, so there should be almost 1000 offspring, but I&#39;m only counting about 700 hybrid offspring. So, per my raw counts, there should be almost 50% more offspring counted.</p>
+
+<p><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_sum_matings_gen1.png" style="height:300px; width:400px" /><img alt="" src="./14.321.__-_Notes_-_Week_of_November_17_2014/118_sum_offspring_gen1.png" style="height:300px; width:400px" /></p>
+
+<p>So, obviously, my data-gathering technique for the post-zygotic is super suspect, and may, possibly, be biasing the number of dead offspring downward. Harrumph. It&#39;s also possible that, because they&#39;re so heavily pounded by recombination, that they&#39;re super modular and robust, so they don&#39;t neccesarily die. But, do they have lower fitness? Dunno!</p>
+
+<p>So, I&#39;m going to do the forced mating assay (via the SPECIES command in analyze mode) and see if I can get something better going.</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Friday, Nov 21, 2014</h2>
+
+<h3>Log 11:30p</h3>
+
+<p>Spent much of yesterday and today on getting analyze mode working with what I want to do. I settled on the RECOMBINE command, which I then use with DETAIL_AVERAGE to pull out appropriate data. I had to make a bunch of code changes and fixes to get things working, but I now have a working pipeline, which I will incorporate into future runs. For now, I&#39;m using the following analysis script:</p>
+
+<pre>
+## Copy the files out so I can load them agnostically :/
+SYSTEM cp data*step2a/detail-300000.spop ./detail-300000.spop.2a
+SYSTEM cp data*step2b/detail-300000.spop ./detail-300000.spop.2b
+
+## The stats for the whole batches
+SET_BATCH 0
+PURGE_BATCH
+NAME_BATCH BatchA
+load detail-300000.spop.2a
+RECALCULATE
+DETAIL_AVERAGE detail_avg.dat viable fitness gest_time total_task_count tasks_done mating_display_c mating_type
+
+SET_BATCH 1
+PURGE_BATCH
+NAME_BATCH BatchB
+load detail-300000.spop.2b
+RECALCULATE
+DETAIL_AVERAGE detail_avg.dat viable fitness gest_time total_task_count tasks_done mating_display_c mating_type
+
+## regular sampled recombination
+SET_BATCH 0
+NAME_BATCH BatchA_Sampled
+SAMPLE_ORGANISMS 0.06
+DETAIL_AVERAGE detail_avg.dat viable fitness gest_time total_task_count tasks_done mating_display_c mating_type
+
+SET_BATCH 1
+NAME_BATCH BatchB_Sampled
+SAMPLE_ORGANISMS 0.06
+DETAIL_AVERAGE detail_avg.dat viable fitness gest_time total_task_count tasks_done mating_display_c mating_type
+
+SET_BATCH 2
+PURGE_BATCH
+NAME_BATCH Recombination_
+RECOMBINE 0 1 2 10
+RECALCULATE
+DETAIL_AVERAGE detail_avg.dat viable fitness gest_time total_task_count tasks_done mating_display_c mating_type
+
+## Recombining only with viable organisms
+SET_BATCH 0
+PURGE_BATCH
+NAME_BATCH BatchA_Sampled_Viable
+load detail-300000.spop.2a
+RECALCULATE
+SAMPLE_ORGANISMS 0.06 1
+DETAIL_AVERAGE detail_avg.dat viable fitness gest_time total_task_count tasks_done mating_display_c mating_type
+
+SET_BATCH 1
+PURGE_BATCH
+NAME_BATCH BatchB_Sampled_Viable
+load detail-300000.spop.2b
+RECALCULATE
+SAMPLE_ORGANISMS 0.06 1
+DETAIL_AVERAGE detail_avg.dat viable fitness gest_time total_task_count tasks_done mating_display_c mating_type
+
+SET_BATCH 2
+PURGE_BATCH
+RECOMBINE 0 1 2 10
+ 
+NAME_BATCH Recombination__Viable
+RECALCULATE
+DETAIL_AVERAGE detail_avg.dat viable fitness gest_time total_task_count tasks_done mating_display_c mating_type
+
+SYSTEM rm ./detail-300000.spop.2a
+SYSTEM rm ./detail-300000.spop.2b
+</pre>
+
+<p>And the following bash script to run it on the runs output, which is stored as <span style="font-family:courier new,courier,monospace">~/mate_discrimination/scripts/analyze_mode_script.sh</span> on the HPCC</p>
+
+<pre>
+#!/bin/bash
+
+me=`basename $0`
+
+if [ $# -lt 2 ]
+then
+    echo &quot;usage ${me} &lt;startseed&gt; &lt;endseed&gt;&quot;
+    echo &quot;e.g. % ${me} \&quot;118001\&quot; 118030&quot;
+    exit
+fi
+
+startseed=$1
+endseed=$2
+
+echo &quot;startseed: &quot; $1 ${1}
+echo &quot;endseed: &quot; $2 ${2}
+
+for (( seed=$startseed; seed&lt;=$endseed; seed++ ))  
+do
+    pwd
+    cd Ctrl_${seed}
+    ../avida -a -s $seed -set ANALYZE_FILE ../analyze_ctrl.cfg -set EVENT_FILE events_I.cfg -set ENVIRONMENT_FILE environment_I_*.cfg -set DATA_DIR data__Ctrl_analyze
+    cd ../
+done
+
+for (( seed=$startseed; seed&lt;=$endseed; seed++ ))  
+do
+    pwd
+    cd ScenD_Drift_${seed}
+    ../avida -a -s $seed -set ANALYZE_FILE ../analyze_allo.cfg -set EVENT_FILE events_I.cfg -set ENVIRONMENT_FILE environment_I_*.cfg -set DATA_DIR data__D_analyze
+    cd ../
+done
+
+for (( seed=$startseed; seed&lt;=$endseed; seed++ ))  
+do
+    pwd
+    cd ScenA_${seed}
+    ../avida -a -s $seed -set ANALYZE_FILE ../analyze_allo.cfg -set EVENT_FILE events_I.cfg -set ENVIRONMENT_FILE environment_I_*.cfg -set DATA_DIR data__A_analyze
+    cd ../
+done
+
+for (( seed=$startseed; seed&lt;=$endseed; seed++ ))  
+do
+    pwd
+    cd ScenB_${seed}
+    ../avida -a -s $seed -set ANALYZE_FILE ../analyze_allo.cfg -set EVENT_FILE events_I.cfg -set ENVIRONMENT_FILE environment_I_*.cfg -set DATA_DIR data__B_analyze
+    cd ../
+done    
+
+for (( seed=$startseed; seed&lt;=$endseed; seed++ ))  
+do
+    pwd
+    cd ScenC_${seed}
+    ../avida -a -s $seed -set ANALYZE_FILE ../analyze_allo.cfg -set EVENT_FILE events_I.cfg -set ENVIRONMENT_FILE environment_V_*.cfg -set DATA_DIR data__C_analyze
+    cd ../
+done
+
+for (( seed=$startseed; seed&lt;=$endseed; seed++ ))  
+do
+    pwd
+    cd ScenE_${seed}
+    ../avida -a -s $seed -set ANALYZE_FILE ../analyze_allo.cfg -set EVENT_FILE events_I.cfg -set ENVIRONMENT_FILE environment_VI_*.cfg -set DATA_DIR data__E_analyze
+    cd ../
+done    
+
+</pre>
+
+<p>Not really sure yet how to interpret the output. The numbers aren&#39;t exactly super dramatic. :/</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Saturday Nov 22, 2014</h2>
+
+<h3>Log 11:45a</h3>
+
+<p>My analysis script completed for 118b, but not for 119, so I&#39;m re-running it. Hope it makes it through this time.</p>
+
+<p>Next is to plot:</p>
+
+<ul>
+	<li>Sampled Recombinants Viability Rate
+	<ul>
+		<li>Filtered by Viable</li>
+		<li>Not filtered</li>
+	</ul>
+	</li>
+</ul>
+
+<p>Think about how the viability is predicted by the viability of the source bodies. You would expect a certain baseline recombinant viability from organisms sampled from the same population. Maybe we want to control for the baseline viability by recombining from A-A and B-B, and then see what the difference is when you sample A-B. The control is just... an unrelated way to do this maybe? With a larger population? I feel like some advanced statistical math may be required here. :/ I may have to look at some literature. :/</p>
+
+<p>Maybe for the above, look at the average recombination viability is within each population, and the average recombination viability when you combine the populations. The N of the latter will be half of the former, but... shrug? Plot bars against each other, and see how they track, or just see if there is a predictable difference. Look at all the samples A and B, and look at the correlation? R^2? Re-read the correlation thing. Divide it based on the treatments.</p>
+
+<p>RV - recombinant viability</p>
+
+<p>RV(A) - recombinant viability of A-A; RV(B) - recombinant viability of B-B</p>
+
+<p>RV(ab) - recombinant viability of A-B</p>
+
+<p>Look at correlation (R^2) of RV(A)&amp;RV(B) vs RV(ab)?</p>
+
+<p>Also, plot point-cloud for the samples? Plot average bar for RV(A)&amp;RV(B) with error bars. Plot average bar for RV(ab) with error bars.</p>
+
+<p>Do this divided by treatment, and divided by pre-selected for viable, and NOT pre-selected for viable.</p>
+
+<p>----- BUNNY TRAIL ------</p>
+
+<p>Measure rate of mating WITHIN each population!!! Duh.</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Sunday Nov 23, 2014</h2>
+
+<h3>Log 1:13a</h3>
+
+<p>I&#39;m regenerating the data per above.</p>
+
+<p>Next step, when the re-gen finishes (hopefully tmorrow am):</p>
+
+<ul>
+	<li>plot a scatter plot with the AB viability on the x-axis, and AA,BB as different colors, but on the Y axis. :D</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

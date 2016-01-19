@@ -1,0 +1,88 @@
+<h1>Week of July 14, 2014</h1>
+
+<h2>Sunday, Jul 20, 2014</h2>
+
+<h3>Log 11:56AM</h3>
+
+<p>Ok, but seriously, I did do work this week. I chatted with Charles over the phone on the way to Annie&#39;s house. We talked about the issues with the birth chamber and one half of the population getting excluded from being able to mate. Charles asserts it&#39;s a scheduler issue. I am extremely skeptical. I divided the birth chamber into halves by zone.</p>
+
+<p>Unfortunately, this doesn&#39;t fix the problem. They now have appropriately full birth chambers, but the one half is running so much more slowly than the other that they just don&#39;t often get to execute their genomes. So, they end up evolving super slowly. I tried changing the task reward multiplier to additive instead of pow. It helped, but not enough that I feel confident that the zones are going to evolve at comparable rates.</p>
+
+<h3>Plan</h3>
+
+<ul>
+	<li>Run 1 - Full population, 100k, limited resources whole stack of tasks, no rewards for tasks.</li>
+	<li>Run 2a &amp; b - 100k (or fixed # of generations), divide outcome population of run 1 into two runs of 30x60. Each zone has a different half of the resource tree.</li>
+	<li>Run 3 - combine outcomes of runs 2a and 2b into combined population. See if they mate with each other.
+	<ul>
+		<li>Concerns:
+		<ul>
+			<li>They won&#39;t have an opportunity to mate with each other because one half will wipe out the other (in the combined birth chamber) before they even get to choose mates
+			<ul>
+				<li>Might be able to alleviate this by dumping them into separate zones, but don&#39;t mate discriminate, so have a separated birth chamber offspring stack that they can then look at.</li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Measure:
+	<ul>
+		<li>Population Diversity
+		<ul>
+			<li>Fixed length organisms</li>
+			<li>Entropy at each site.</li>
+		</ul>
+		</li>
+		<li>Sexual choosyness
+		<ul>
+			<li>Make sure this shit is working</li>
+			<li>&nbsp;</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Controls:
+	<ul>
+		<li>Sexual population - unlimited resources</li>
+		<li>Sexual population - limited resources</li>
+	</ul>
+	</li>
+</ul>
+
+<h3 class="item_body_heading_3">Task List</h3>
+
+<ul>
+	<li>Figure out how to do limited resources - look at documentation - 5m
+	<ul>
+		<li><a href="http://file:///Users/rosiec/Dropbox/School%20Docs/Research/AvidaDev/Authoritative_GitHub_Forked_avida/documentation/The-environment-file.md">file:///Users/rosiec/Dropbox/School%20Docs/Research/AvidaDev/Authoritative_GitHub_Forked_avida/documentation/The-environment-file.md</a></li>
+	</ul>
+	</li>
+</ul>
+
+<pre>
+  RESOURCE  resNOT:inflow=100:outflow=0.01   
+  RESOURCE  resNAND:inflow=100:outflow=0.01
+  RESOURCE  resAND:inflow=100:outflow=0.01   
+  RESOURCE  resORN:inflow=100:outflow=0.01
+  RESOURCE  resOR:inflow=100:outflow=0.01    
+  RESOURCE  resANDN:inflow=100:outflow=0.01
+  RESOURCE  resNOR:inflow=100:outflow=0.01   
+  RESOURCE  resXOR:inflow=100:outflow=0.01
+  RESOURCE  resEQU:inflow=100:outflow=0.01
+  
+  REACTION  NOT  not   process:resource=resNOT:value=1.0:frac=0.0025  requisite:max_count=1
+  REACTION  NAND nand  process:resource=resNAND:value=1.0:frac=0.0025  requisite:max_count=1
+  REACTION  AND  and   process:resource=resAND:value=2.0:frac=0.0025  requisite:max_count=1
+  REACTION  ORN  orn   process:resource=resORN:value=2.0:frac=0.0025  requisite:max_count=1
+  REACTION  OR   or    process:resource=resOR:value=4.0:frac=0.0025  requisite:max_count=1
+  REACTION  ANDN andn  process:resource=resANDN:value=4.0:frac=0.0025  requisite:max_count=1
+  REACTION  NOR  nor   process:resource=resNOR:value=8.0:frac=0.0025  requisite:max_count=1
+  REACTION  XOR  xor   process:resource=resXOR:value=8.0:frac=0.0025  requisite:max_count=1
+  REACTION  EQU  equ   process:resource=resEQU:value=16.0:frac=0.0025  requisite:max_count=1</pre>
+
+<h3>&nbsp;</h3>
+
+<h3>Log 2:54a</h3>
+
+<p>Ok, I did some things. I submitted some runs (108) using limited resources, no wall, and 50k updates for the organisms to adjust and do whatever the hell they&#39;re going to do.</p>

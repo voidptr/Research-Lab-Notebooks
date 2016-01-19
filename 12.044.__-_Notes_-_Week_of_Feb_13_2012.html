@@ -1,0 +1,464 @@
+<h1>Week of February 13, 2012</h1>
+
+<h2>Tuesday 2/14/12</h2>
+
+<h3>12:54 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>After a completely wasted weekend procrastinating on writing my Alife paper (and not using research as the procrastination method because Charles told me not to do more research, but write instead. FUCK.), I&rsquo;m diving back in to polish some figures. Yay.</li>
+</ul>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Modifying &ldquo;calculate_physical_modularity.py&rdquo; to keep the modularity figures split by task, and then averaged.</li>
+	<li>Re-calculating the physical modularity measures, separated by task:</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/062</span>$</strong> for i in c*_i*_??????; do echo $i; cd $i/data/; for j in two_task*.dat*; do python ../../../../../scripts/evolution_of_modularity_pipelines/calculate_physical_modularity.py 11 12 16 17 $j &gt; task_physical_modularity__$j; done; cd ../../; done;</pre>
+
+<p><em>&hellip; etc.</em></p>
+
+<ul>
+	<li>This will take a while, so also extracting the task counts to integrate into the figure.</li>
+</ul>
+
+<pre>
+rm control_intertwined__organisms_doing_fluctuating_task.csv ; for i in c*_i*_??????; do echo $i; cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot; &quot; 3 tasks.dat* &gt;&gt; ../../control_intertwined__organisms_doing_fluctuating_task.csv ; cd ../../; done</pre>
+
+<p><em>&hellip; etc.</em></p>
+
+<ul>
+	<li>Generated the figure, kludged the fluct ct to double the values so the X axes match.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#008000">rosiec@malp</span>:<span style="color:#0000FF">/Volumes/rosiec/research/Devolab Research/evolution_of_modularity/raw_data/062</span>$</strong> python ../../../scripts/generate_graphs_from_raw_data/plot_from_csv.py -i -o -t &quot;Separated Task Ancestor&quot; -x &quot;Updates x50&quot; -y &quot;Modularity&quot; -w &quot;Fluct Ct&quot; comparitive_physical_functional_modularity_task_ct__separated__two_task.png control_s*__functional_modularity.csv control_s*__physical_modularity.csv control_separated__organisms_doing_fluctuating_task.csv noreward_first_s*__functional_modularity.csv noreward_first_s*__physical_modularity.csv noreward_first_separated__organisms_doing_fluctuating_task.csv punish_first_s*__functional_modularity.csv punish_first_s*__physical_modularity.csv punish_first_separated__organisms_doing_fluctuating_task.csv</pre>
+
+<p><img src="./12.044.__-_Notes_-_Week_of_Feb_13_2012/image001.png" style="height:320px; width:434px" /></p>
+
+<p>LAB MTG NOTES:</p>
+
+<ul>
+	<li>Showed the figure.</li>
+	<li>Heather suggests adding a gray line to mark the switch-over.</li>
+	<li>Luis suggests adding a second switch back, to eliminate source contingency, and make sure the scatter effect is actually as nasty as it looks.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Thursday 2/16/12</h2>
+
+<h3>12:46 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Started job 063, adding an additional phase to address Luis&rsquo;s question about contingency</li>
+</ul>
+
+<p>LOG:</p>
+
+<ul>
+	<li>The separating out of the physical modularity metrics should be done generating. Will generate graph now.</li>
+	<li>Use extract_single_column_to_csv.py to pull out and calculate the stats on physical modularity. <em>Notice the &ndash;s &quot;,&rdquo; option, which sets the separator to comma. Also notice that I&rsquo;ve defined the column, which contains the individual task&rsquo;s physical modularity only</em>.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/062</span>$</strong> for i in *_??????; do echo $i; cd $i/data/; rm fluct_task_physical_modularity__two_task_physical_modularity__stats.csv ;python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py -s &quot;,&quot; -c 2 task_physical*-?.dat* task_physical*-??.dat* task_physical*-???.dat* task_physical*-????.dat* task_physical*-?????.dat* &gt;&gt; fluct_task_physical_modularity__two_task_physical_modularity__stats.csv; cd ../../; done
+
+for i in *_??????; do echo $i; cd $i/data/; rm backbone_task_physical_modularity__two_task_physical_modularity__stats.csv ;python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py -s &quot;,&quot; -c 1 task_physical*-?.dat* task_physical*-??.dat* task_physical*-???.dat* task_physical*-????.dat* task_physical*-?????.dat* &gt;&gt; backbone_task_physical_modularity__two_task_physical_modularity__stats.csv; cd ../../; done</pre>
+
+<ul>
+	<li>Aggregating the fluctuating task&rsquo;s data</li>
+</ul>
+
+<pre>
+rm punish_first_separated__fluct_task_physical_modularity.csv; for i in p*_s*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 fluct_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../punish_first_separated__fluct_task_physical_modularity.csv; cd ../../; done
+
+rm noreward_first_separated__fluct_task_physical_modularity.csv; for i in n*_s*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 fluct_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../noreward_first_separated__fluct_task_physical_modularity.csv; cd ../../; done
+
+rm control_separated__fluct_task_physical_modularity.csv; for i in c*_s*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 fluct_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../control_separated__fluct_task_physical_modularity.csv; cd ../../; done
+
+rm punish_first_intertwined__fluct_task_physical_modularity.csv; for i in p*_i*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 fluct_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../punish_first_intertwined__fluct_task_physical_modularity.csv; cd ../../; done
+
+rm noreward_first_intertwined__fluct_task_physical_modularity.csv; for i in n*_i*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 fluct_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../noreward_first_intertwined__fluct_task_physical_modularity.csv; cd ../../; done
+
+rm control_intertwined__fluct_task_physical_modularity.csv; for i in c*_i*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 fluct_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../control_intertwined__fluct_task_physical_modularity.csv; cd ../../; done</pre>
+
+<ul>
+	<li>Aggregating the backbone task&rsquo;s physical modularity</li>
+</ul>
+
+<pre>
+rm punish_first_separated__backbone_task_physical_modularity.csv; for i in p*_s*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 backbone_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../punish_first_separated__backbone_task_physical_modularity.csv; cd ../../; done;
+
+rm noreward_first_separated__backbone_task_physical_modularity.csv; for i in n*_s*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 backbone_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../noreward_first_separated__backbone_task_physical_modularity.csv; cd ../../; done;
+
+rm control_separated__backbone_task_physical_modularity.csv; for i in c*_s*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 backbone_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../control_separated__backbone_task_physical_modularity.csv; cd ../../; done;
+
+rm punish_first_intertwined__backbone_task_physical_modularity.csv; for i in p*_i*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 backbone_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../punish_first_intertwined__backbone_task_physical_modularity.csv; cd ../../; done;
+
+rm noreward_first_intertwined__backbone_task_physical_modularity.csv; for i in n*_i*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 backbone_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../noreward_first_intertwined__backbone_task_physical_modularity.csv; cd ../../; done;
+
+rm control_intertwined__backbone_task_physical_modularity.csv; for i in c*_i*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 backbone_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../control_intertwined__backbone_task_physical_modularity.csv; cd ../../; done</pre>
+
+<ul>
+	<li>Now to generate the graph. I&rsquo;ll use the every third option for the different task physical modularity data.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#008000">rosiec@malp</span>:<span style="color:#0000FF">/Volumes/rosiec/research/Devolab Research/evolution_of_modularity/raw_data/062</span>$</strong> python ../../../scripts/generate_graphs_from_raw_data/plot_from_csv.py -i -o -t &quot;Separated Task Ancestor&quot; -x &quot;Updates x50&quot; -y &quot;Modularity&quot; physical_modularity_by_task__separated__two_task.png control_s*__functional_modularity.csv control_s*__backbone_task_physical_modularity.csv control_s*__fluct_task_physical_modularity.csv noreward_first_s*__functional_modularity.csv noreward_first_s*__backbone_task_physical_modularity.csv noreward_first_s*__fluct_task_physical_modularity.csv punish_first_s*__functional_modularity.csv punish_first_s*__backbone_task_physical_modularity.csv punish_first_s*__fluct_task_physical_modularity.csv
+
+python ../../../scripts/generate_graphs_from_raw_data/plot_from_csv.py -i -o -t &quot;Intertwined Task Ancestor&quot; -x &quot;Updates x50&quot; -y &quot;Modularity&quot; physical_modularity_by_task__intertwined__two_task.png control_i*__functional_modularity.csv control_i*__backbone_task_physical_modularity.csv control_i*__fluct_task_physical_modularity.csv noreward_first_i*__functional_modularity.csv noreward_first_i*__backbone_task_physical_modularity.csv noreward_first_i*__fluct_task_physical_modularity.csv punish_first_i*__functional_modularity.csv punish_first_i*__backbone_task_physical_modularity.csv punish_first_i*__fluct_task_physical_modularity.csv</pre>
+
+<p>&nbsp;</p>
+
+<p><img src="./12.044.__-_Notes_-_Week_of_Feb_13_2012/image003.png" style="height:308px; width:410px" /></p>
+
+<p><img src="./12.044.__-_Notes_-_Week_of_Feb_13_2012/image005.png" style="height:314px; width:418px" /></p>
+
+<h2>&nbsp;</h2>
+
+<h2>Friday 2/17/12</h2>
+
+<h3>9:53 AM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Job 063 finished. Must move around and copy home</li>
+</ul>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Moving around, compressing, and transferring.</li>
+</ul>
+
+<pre>
+[<span style="color:#FF0000"><strong>caninoko@gateway</strong></span>]:[4]:[<span style="color:#0000FF"><strong>/mnt/scratch/caninoko/063</strong></span>]:$ mkdir populations/; for i in *_??????; do if [ ! -e $i.tar.gz ] ; then mkdir $i/data/populations/; mv $i/data/detail* $i/data/populations/; mv $i/data/populations/ ./populations/$i; tar -cvf $i.tar.gz $i ; else : ; fi; done
+
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/063</span>$</strong> scp caninoko@gateway.hpcc.msu.edu:/mnt/scratch/caninoko/063/*.tar.gz ./
+
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/063</span>$</strong> for i in *.tar.gz; do tar -xvf $i; done; rm *.tar.gz</pre>
+
+<ul>
+	<li>Writing analysis.bash script with all the steps in it. Ideally, there will be a script like this for each job.</li>
+</ul>
+
+<pre>
+#!/bin/bash
+
+
+## call this script with one parameter, which the the stage to perform
+
+MINPARAMS=1
+
+USAGE=&quot;usage: $0 &lt;STAGE #&gt;&quot;
+
+
+STAGE1=&quot;Pull out only the organisms that do both tasks from the individual modularity files (one file for each sample in a run, a jillion files.&quot;
+
+STAGE2=&quot;Generate the Physical Modularity Measure File (one for each sample in a run, a jillion files)&quot;
+
+STAGE3=&quot;generate the stats for the physical modularity measures, and aggregate into a single file for a run&quot;
+
+STAGE4=&quot;aggregate the physical modularity measures - fluctuating task&quot;
+
+STAGE5=&quot;aggregate the task organism counts.&quot;
+
+STAGE6=&quot;generate the graphs&quot;
+
+
+if [ $# -lt &quot;$MINPARAMS&quot; ]
+
+then
+
+    echo &quot;Incorrect parameters.&quot;
+
+    echo $USAGE
+
+
+    echo &quot;Stage 1: $STAGE1&quot;
+
+    echo &quot;Stage 2: $STAGE2&quot;
+
+    echo &quot;Stage 3: $STAGE3&quot;
+
+    echo &quot;Stage 4: $STAGE4&quot;
+
+    echo &quot;Stage 5: $STAGE5&quot;
+
+    echo &quot;Stage 6: $STAGE6&quot;
+
+
+    exit 1
+
+fi
+
+
+######## STAGE 1 #########
+
+##Pull out only the organisms that do both tasks from the individual modularity files
+
+if [ $1 -eq 1 ]
+
+then
+
+echo $STAGE1
+
+screen -dmS c_i bash -c &#39;for i in c*_i*_??????; do echo $i; cd $i/data/; rm two_task_only__*.dat*; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_line_on_condition.py 2 &quot; &gt; 1&quot; two_task_only__ individual_modularity-?.dat* individual_modularity-??.dat* individual_modularity-???.dat* individual_modularity-????.dat* individual_modularity-?????.dat*; cd ../../; done;&#39;
+
+screen -dmS c_s bash -c &#39;for i in c*_s*_??????; do echo $i; cd $i/data/; rm two_task_only__*.dat*; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_line_on_condition.py 2 &quot; &gt; 1&quot; two_task_only__ individual_modularity-?.dat* individual_modularity-??.dat* individual_modularity-???.dat* individual_modularity-????.dat* individual_modularity-?????.dat*; cd ../../; done;&#39;
+
+screen -dmS n_i bash -c &#39;for i in n*_i*_??????; do echo $i; cd $i/data/; rm two_task_only__*.dat*; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_line_on_condition.py 2 &quot; &gt; 1&quot; two_task_only__ individual_modularity-?.dat* individual_modularity-??.dat* individual_modularity-???.dat* individual_modularity-????.dat* individual_modularity-?????.dat*; cd ../../; done;&#39;
+
+screen -dmS n_s bash -c &#39;for i in n*_s*_??????; do echo $i; cd $i/data/; rm two_task_only__*.dat*; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_line_on_condition.py 2 &quot; &gt; 1&quot; two_task_only__ individual_modularity-?.dat* individual_modularity-??.dat* individual_modularity-???.dat* individual_modularity-????.dat* individual_modularity-?????.dat*; cd ../../; done;&#39;
+
+screen -dmS p_i bash -c &#39;for i in p*_i*_??????; do echo $i; cd $i/data/; rm two_task_only__*.dat*; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_line_on_condition.py 2 &quot; &gt; 1&quot; two_task_only__ individual_modularity-?.dat* individual_modularity-??.dat* individual_modularity-???.dat* individual_modularity-????.dat* individual_modularity-?????.dat*; cd ../../; done;&#39;
+
+screen -dmS p_s bash -c &#39;for i in p*_s*_??????; do echo $i; cd $i/data/; rm two_task_only__*.dat*; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_line_on_condition.py 2 &quot; &gt; 1&quot; two_task_only__ individual_modularity-?.dat* individual_modularity-??.dat* individual_modularity-???.dat* individual_modularity-????.dat* individual_modularity-?????.dat*; cd ../../; done;&#39;
+
+echo &quot;done&quot;
+
+exit 0
+
+
+fi
+
+
+######## STAGE 2 #########
+
+## Generate the Physical Modularity Measure File (one for each sample in a run, a jillion files)
+
+if [ $1 -eq 2 ]
+
+then
+
+screen -dmS c_i bash -c &#39;for i in c*_i*_??????; do echo $i; cd $i/data/; for j in two_task_only__*.dat*; do python ../../../../../scripts/evolution_of_modularity_pipelines/calculate_physical_modularity.py 11 12 16 17 $j &gt; task_physical_modularity__$j; done; cd ../../; done;&#39;
+
+screen -dmS c_s bash -c &#39;for i in c*_s*_??????; do echo $i; cd $i/data/; for j in two_task_only__*.dat*; do python ../../../../../scripts/evolution_of_modularity_pipelines/calculate_physical_modularity.py 11 12 16 17 $j &gt; task_physical_modularity__$j; done; cd ../../; done;&#39;
+
+screen -dmS n_i bash -c &#39;for i in n*_i*_??????; do echo $i; cd $i/data/; for j in two_task_only__*.dat*; do python ../../../../../scripts/evolution_of_modularity_pipelines/calculate_physical_modularity.py 11 12 16 17 $j &gt; task_physical_modularity__$j; done; cd ../../; done;&#39;
+
+screen -dmS n_s bash -c &#39;for i in n*_s*_??????; do echo $i; cd $i/data/; for j in two_task_only__*.dat*; do python ../../../../../scripts/evolution_of_modularity_pipelines/calculate_physical_modularity.py 11 12 16 17 $j &gt; task_physical_modularity__$j; done; cd ../../; done;&#39;
+
+screen -dmS p_i bash -c &#39;for i in p*_i*_??????; do echo $i; cd $i/data/; for j in two_task_only__*.dat*; do python ../../../../../scripts/evolution_of_modularity_pipelines/calculate_physical_modularity.py 11 12 16 17 $j &gt; task_physical_modularity__$j; done; cd ../../; done;&#39;
+
+screen -dmS p_s bash -c &#39;for i in p*_s*_??????; do echo $i; cd $i/data/; for j in two_task_only__*.dat*; do python ../../../../../scripts/evolution_of_modularity_pipelines/calculate_physical_modularity.py 11 12 16 17 $j &gt; task_physical_modularity__$j; done; cd ../../; done;&#39;
+
+exit 0
+
+fi
+
+
+
+########### STAGE 3 #########
+
+##generate the stats for the physical modularity measures, and aggregate into a single file for a run
+
+if [ $1 -eq 3 ]
+
+then
+
+
+for i in *_??????; do echo $i; cd $i/data/; rm fluct_task_physical_modularity__two_task_physical_modularity__stats.csv ;python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py -s &quot;,&quot; -c 2 task_physical*-?.dat* task_physical*-??.dat* task_physical*-???.dat* task_physical*-????.dat* task_physical*-?????.dat* &gt;&gt; fluct_task_physical_modularity__two_task_physical_modularity__stats.csv; cd ../../; done
+
+for i in *_??????; do echo $i; cd $i/data/; rm backbone_task_physical_modularity__two_task_physical_modularity__stats.csv ;python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py -s &quot;,&quot; -c 1 task_physical*-?.dat* task_physical*-??.dat* task_physical*-???.dat* task_physical*-????.dat* task_physical*-?????.dat* &gt;&gt; backbone_task_physical_modularity__two_task_physical_modularity__stats.csv; cd ../../; done
+
+exit 0
+
+
+fi
+
+
+########## STAGE 4 ##########
+
+## aggregate the physical modularity measures - fluctuating task
+
+if [ $1 -eq 4 ]
+
+then
+
+
+rm punish_first_separated__fluct_task_physical_modularity.csv; for i in p*_s*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 fluct_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../punish_first_separated__fluct_task_physical_modularity.csv; cd ../../; done;
+
+
+rm noreward_first_separated__fluct_task_physical_modularity.csv; for i in n*_s*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 fluct_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../noreward_first_separated__fluct_task_physical_modularity.csv; cd ../../; done;
+
+
+rm control_separated__fluct_task_physical_modularity.csv; for i in c*_s*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 fluct_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../control_separated__fluct_task_physical_modularity.csv; cd ../../; done;
+
+
+rm punish_first_intertwined__fluct_task_physical_modularity.csv; for i in p*_i*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 fluct_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../punish_first_intertwined__fluct_task_physical_modularity.csv; cd ../../; done;
+
+
+rm noreward_first_intertwined__fluct_task_physical_modularity.csv; for i in n*_i*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 fluct_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../noreward_first_intertwined__fluct_task_physical_modularity.csv; cd ../../; done;
+
+
+rm control_intertwined__fluct_task_physical_modularity.csv; for i in c*_i*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 fluct_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../control_intertwined__fluct_task_physical_modularity.csv; cd ../../; done;
+
+
+## aggregate the physical modularity measures - backbone tasks
+
+rm punish_first_separated__backbone_task_physical_modularity.csv; for i in p*_s*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 backbone_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../punish_first_separated__backbone_task_physical_modularity.csv; cd ../../; done;
+
+
+rm noreward_first_separated__backbone_task_physical_modularity.csv; for i in n*_s*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 backbone_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../noreward_first_separated__backbone_task_physical_modularity.csv; cd ../../; done;
+
+
+rm control_separated__backbone_task_physical_modularity.csv; for i in c*_s*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 backbone_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../control_separated__backbone_task_physical_modularity.csv; cd ../../; done;
+
+
+rm punish_first_intertwined__backbone_task_physical_modularity.csv; for i in p*_i*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 backbone_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../punish_first_intertwined__backbone_task_physical_modularity.csv; cd ../../; done;
+
+
+rm noreward_first_intertwined__backbone_task_physical_modularity.csv; for i in n*_i*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 backbone_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../noreward_first_intertwined__backbone_task_physical_modularity.csv; cd ../../; done;
+
+
+rm control_intertwined__backbone_task_physical_modularity.csv; for i in c*_i*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 backbone_task_physical_modularity__two_task_physical_modularity__stats.csv &gt;&gt; ../../control_intertwined__backbone_task_physical_modularity.csv; cd ../../; done;
+
+exit 0
+
+
+fi
+
+
+########### STAGE 5 ###########
+
+## aggregate the task organism counts for those doing the fluctuating tasks.
+
+if [ $1 -eq 5 ]
+
+then
+
+
+rm control_intertwined__organisms_doing_fluctuating_task.csv; for i in c*_i*_??????; do echo $i; cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot; &quot; 3 tasks.dat* &gt;&gt; ../../control_intertwined__organisms_doing_fluctuating_task.csv ; cd ../../; done
+
+rm control_separated__organisms_doing_fluctuating_task.csv; for i in c*_s*_??????; do echo $i; cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot; &quot; 3 tasks.dat* &gt;&gt; ../../control_separated__organisms_doing_fluctuating_task.csv ; cd ../../; done
+
+rm noreward_first_intertwined__organisms_doing_fluctuating_task.csv; for i in n*_i*_??????; do echo $i; cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot; &quot; 3 tasks.dat* &gt;&gt; ../../noreward_first_intertwined__organisms_doing_fluctuating_task.csv ; cd ../../; done
+
+rm noreward_first_separated__organisms_doing_fluctuating_task.csv; for i in n*_s*_??????; do echo $i; cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot; &quot; 3 tasks.dat* &gt;&gt; ../../noreward_first_separated__organisms_doing_fluctuating_task.csv ; cd ../../; done
+
+rm punish_first_intertwined__organisms_doing_fluctuating_task.csv; for i in p*_i*_??????; do echo $i; cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot; &quot; 3 tasks.dat* &gt;&gt; ../../punish_first_intertwined__organisms_doing_fluctuating_task.csv ; cd ../../; done
+
+rm punish_first_separated__organisms_doing_fluctuating_task.csv; for i in p*_s*_??????; do echo $i; cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot; &quot; 3 tasks.dat* &gt;&gt; ../../punish_first_separated__organisms_doing_fluctuating_task.csv ; cd ../../; done
+
+
+exit 0
+
+fi
+
+
+########## STAGE 6 ############
+
+##generate the stats for the functional modularity measures, and aggregate into a single file for a run
+
+if [ $1 -eq 6 ]
+
+then
+
+
+for i in *_??????; do echo $i; cd $i/data/; rm two_task_functional_modularity__stats.csv ;python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py -c 8 two_task*-?.dat* two_task*-??.dat* two_task*-???.dat* two_task*-????.dat* two_task*-?????.dat* &gt;&gt; two_task_functional_modularity__stats.csv; cd ../../; done
+
+exit 0
+
+
+fi
+
+
+########## STAGE 7 ##########
+
+## aggregate the physical modularity measures - fluctuating task
+
+if [ $1 -eq 7 ]
+
+then
+
+
+rm punish_first_separated__functional_modularity.csv; for i in p*_s*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 two_task_functional_modularity__stats.csv &gt;&gt; ../../punish_first_separated__functional_modularity.csv; cd ../../; done
+
+
+rm noreward_first_separated__functional_modularity.csv; for i in noreward_first_sep*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 two_task_functional_modularity__stats.csv &gt;&gt; ../../noreward_first_separated__functional_modularity.csv; cd ../../; done
+
+
+rm control_separated__functional_modularity.csv; for i in control_sep*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 two_task_functional_modularity__stats.csv &gt;&gt; ../../control_separated__functional_modularity.csv; cd ../../; done
+
+
+rm control_intertwined__functional_modularity.csv; for i in control_inter*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 two_task_functional_modularity__stats.csv &gt;&gt; ../../control_intertwined__functional_modularity.csv; cd ../../; done
+
+
+rm noreward_first_intertwined__functional_modularity.csv; for i in noreward_first_inte*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 two_task_functional_modularity__stats.csv &gt;&gt; ../../noreward_first_intertwined__functional_modularity.csv; cd ../../; done
+
+
+rm punish_first_intertwined__functional_modularity.csv; for i in punish_first_inter*_??????; do cd $i/data/; python ../../../../../scripts/common\ modules\ and\ helper\ scripts/extract_single_column_to_csv.py --dimensionality 1 -s &quot;,&quot; 1 two_task_functional_modularity__stats.csv &gt;&gt; ../../punish_first_intertwined__functional_modularity.csv; cd ../../; done
+
+
+fi
+
+
+########### STAGE 8 -- ONLY RUN ON MALP (or a machine with matplot lib #########
+
+##generate the graphs
+
+if [ $1 -eq 8 ]
+
+then
+
+
+python ../../../scripts/generate_graphs_from_raw_data/plot_from_csv.py -i -o -t &quot;Separated Task Ancestor&quot; -x &quot;Updates x50&quot; -y &quot;Modularity&quot; physical_modularity_by_task__separated__two_task.png control_s*__functional_modularity.csv control_s*__backbone_task_physical_modularity.csv control_s*__fluct_task_physical_modularity.csv noreward_first_s*__functional_modularity.csv noreward_first_s*__backbone_task_physical_modularity.csv noreward_first_s*__fluct_task_physical_modularity.csv punish_first_s*__functional_modularity.csv punish_first_s*__backbone_task_physical_modularity.csv punish_first_s*__fluct_task_physical_modularity.csv
+
+
+python ../../../scripts/generate_graphs_from_raw_data/plot_from_csv.py -i -o -t &quot;Intertwined Task Ancestor&quot; -x &quot;Updates x50&quot; -y &quot;Modularity&quot; physical_modularity_by_task__intertwined__two_task.png control_i*__functional_modularity.csv control_i*__backbone_task_physical_modularity.csv control_i*__fluct_task_physical_modularity.csv noreward_first_i*__functional_modularity.csv noreward_first_i*__backbone_task_physical_modularity.csv noreward_first_i*__fluct_task_physical_modularity.csv punish_first_i*__functional_modularity.csv punish_first_i*__backbone_task_physical_modularity.csv punish_first_i*__fluct_task_physical_modularity.csv
+
+exit 0
+
+
+fi</pre>
+
+<ul>
+	<li>running the script. Gotta wait to run stage 2 until stage 1 is finished, and then stages 3,4, &amp;6 when stage2 is finished.&nbsp; Stage 5 can run independently.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/063</span>$</strong> processing_scripts/analyze.bash 1
+</pre>
+
+<p><em>...waiting...</em></p>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/063</span>$</strong> processing_scripts/analyze.bash 2
+
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/063</span>$</strong> processing_scripts/analyze.bash 5
+
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/063</span>$</strong> processing_scripts/analyze.bash 3; processing_scripts/analyze.bash 4</pre>
+
+<ul>
+	<li>Once stages 1-5 finish, I can run 6 from MALP. This probably won&rsquo;t be until tomorrow. :/</li>
+</ul>
+
+<h2>&nbsp;</h2>
+
+<h2>Sunday 2/19/12</h2>
+
+<h3>6:39 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Modified analyze.bash to include pulling out the functional modularity as well (edited above).</li>
+	<li>Produced graphs of job 063.</li>
+</ul>
+
+<p><img src="./12.044.__-_Notes_-_Week_of_Feb_13_2012/image007.png" style="height:320px; width:434px" /></p>
+
+<p><img src="./12.044.__-_Notes_-_Week_of_Feb_13_2012/image009.png" style="height:320px; width:434px" /></p>
+
+<ul>
+	<li>Set job 064 running, which does the same pattern as 063, but extends each phase to 50k updates. This will allow me to see how this plays out.</li>
+</ul>

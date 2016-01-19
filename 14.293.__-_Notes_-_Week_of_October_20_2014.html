@@ -1,0 +1,128 @@
+<h1>Week of October 20, 2014</h1>
+
+<h2>Tuesday, Oct 21, 2014</h2>
+
+<h3>Meeting w/ Charles 02:41PM</h3>
+
+<p>make them speciate (using the previous regime that enforces speciation).</p>
+
+<p>- re-evaluate the sympatric speciation.</p>
+
+<p>- charles suggestion: make half the spectrum of be harmful to using mate choice against.</p>
+
+<p>- make crossover tougher.</p>
+
+<p>- set up an asexual population (zero points of crossover) and then do the crossover for the test. should get something that can help us confirm that the system is working. BLAH</p>
+
+<p>- redo carlos&#39;s work in a different substrate</p>
+
+<p style="margin-left:40px">http://scholar.google.com/citations?user=Iin714UAAAAJ&amp;hl=en&amp;oi=sra</p>
+
+<table id="gsc_a_t">
+	<tbody>
+		<tr>
+			<td>
+			<p style="margin-left:40px"><a class="gsc_a_at" href="http://scholar.google.com/citations?view_op=view_citation&amp;hl=en&amp;user=Iin714UAAAAJ&amp;citation_for_view=Iin714UAAAAJ:2osOgNQ5qMEC">The role of standing genetic variation in adaptation of digital organisms to a new environment</a></p>
+
+			<div style="margin-left:40px">CJR Anderson</div>
+
+			<div style="margin-left:40px">Artificial Life 13, 3-10</div>
+			</td>
+			<td>
+			<p style="margin-left:40px"><a class="gsc_a_ac" href="http://scholar.google.com/scholar?oi=bibs&amp;hl=en&amp;cites=1896881449772223653">2</a></p>
+			</td>
+			<td>
+			<p style="margin-left:40px">2012</p>
+			</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td>
+			<p style="margin-left:40px">&nbsp;</p>
+
+			<p style="margin-left:40px"><a class="gsc_a_at" href="http://scholar.google.com/citations?view_op=view_citation&amp;hl=en&amp;user=Iin714UAAAAJ&amp;citation_for_view=Iin714UAAAAJ:UeHWp8X0CEIC">Ecological and Mutation-Order Speciation in Digital Organisms</a></p>
+
+			<div style="margin-left:40px">CJR Anderson, L Harmon</div>
+
+			<div style="margin-left:40px">The American Naturalist 183 (2), 257-268</div>
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<h2>&nbsp;</h2>
+
+<h2>Sat Oct 25, 2014</h2>
+
+<h3>12:26a</h3>
+
+<p>Ok, I&#39;ve got a working dist_run replacement.</p>
+
+<p>https://github.com/voidptr/dist_qsub</p>
+
+<p>it works using the same features as dist_run for reading run_list files. it&#39;s not complete, as in it doesn&#39;t do check pointing, but the array thing lets you exceed the quota. YAY.</p>
+
+<h3>&nbsp;</h3>
+
+<h3>Log 9:43a</h3>
+
+<p>Have a chance to do some work. Yay! All my 115 and 116 runs are completed. Time to do some data analysis.</p>
+
+<p>Also, I&#39;ve started using <code>tmux</code>! Better than screen, and also the <code>set mouse=a thing</code> for vim is Aaaaaahhhhmazing.</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/116_ExperimentalPipeline_SexualSelectionAfterSep</span>$</strong> gunzip */*.cfg.gz
+</pre>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/116_ExperimentalPipeline_SexualSelectionAfterSep</span>$</strong> for k in *; do if [ -e $k&quot;/&quot;*_step3/mates ]; then echo $k; cd $k/*_step3/mates/; pwd; rm matings_timeseries.dat; for i in {0..250}; do echo $i; awk -v i=&quot;$i&quot; &#39;{if (($13 == 1) &amp;&amp; (($11 &gt; 1799 &amp;&amp; $24 &lt; 1800) || ($11 &lt; 1800 &amp;&amp; $24 &gt; 1799))) print $2,$3,$4,$5,$8,$11,&quot;---&gt;&quot;,$15,$16,$17, $18,$21,$24}&#39; &lt;(gzip -dc mates-$i&quot;.&quot;dat*) | wc -l &gt;&gt; matings_timeseries.dat ; done;&nbsp; cd ../../../; fi ; done
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/116_ExperimentalPipeline_SexualSelectionAfterSep</span>$</strong> python ../../../research_scripts/quickplot.py --error --end_at 100 -x Updates -y Matings -t &quot;Post-Allopatry Matings Gen 1 - 116 Sexual Selection After Allopatry&quot; 116_matings_100u_postallopatry_ss_gen1 \
+matings_timeseries.dat 1 &quot;Ctrl_*/*_step3/mates/&quot; Control \
+matings_timeseries.dat 1 &quot;ScenD_*/*_step3/mates/&quot; ScenarioD \
+matings_timeseries.dat 1 &quot;ScenA_*/*_step3/mates/&quot; ScenarioA \
+matings_timeseries.dat 1 &quot;ScenB_*/*_step3/mates/&quot; ScenarioB \
+matings_timeseries.dat 1 &quot;ScenC_*/*_step3/mates/&quot; ScenarioC</pre>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/115_ExperimentalPipeline_ForceSexualSelection</span>$</strong> for k in *; do if [ -e $k&quot;/&quot;*_step3/mates ]; then echo $k; cd $k/*_step3/mates/; pwd; rm matings_timeseries.dat; for i in {0..250}; do echo $i; awk -v i=&quot;$i&quot; &#39;{if (($13 == 1) &amp;&amp; (($11 &gt; 1799 &amp;&amp; $24 &lt; 1800) || ($11 &lt; 1800 &amp;&amp; $24 &gt; 1799))) print $2,$3,$4,$5,$8,$11,&quot;---&gt;&quot;,$15,$16,$17, $18,$21,$24}&#39; &lt;(gzip -dc mates-$i&quot;.&quot;dat*) | wc -l &gt;&gt; matings_timeseries.dat ; done;&nbsp; cd ../../../; fi ; done
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/115_ExperimentalPipeline_ForceSexualSelection</span>$</strong> python ../../../research_scripts/quickplot.py --error --end_at 100 -x Updates -y Matings -t &quot;Post-Allopatry Matings Gen 1 - 115 Forced Sexual Selection&quot; 115_matings_100u_postallopatry_gen1 \
+matings_timeseries.dat 1 &quot;Ctrl_*/*_step3/mates/&quot; Control \
+matings_timeseries.dat 1 &quot;ScenD_*/*_step3/mates/&quot; ScenarioD \
+matings_timeseries.dat 1 &quot;ScenA_*/*_step3/mates/&quot; ScenarioA \
+matings_timeseries.dat 1 &quot;ScenB_*/*_step3/mates/&quot; ScenarioB \
+matings_timeseries.dat 1 &quot;ScenC_*/*_step3/mates/&quot; ScenarioC</pre>
+
+<p><img alt="" src="./14.293.__-_Notes_-_Week_of_October_20_2014/115_matings_100u_postallopatry_gen1.png" style="height:450px; width:600px" /><img alt="" src="./14.293.__-_Notes_-_Week_of_October_20_2014/116_matings_100u_postallopatry_ss_gen1.png" style="height:450px; width:600px" /></p>
+
+<p>&nbsp;</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/115_ExperimentalPipeline_ForceSexualSelection</span>$</strong> for k in *; do if [ -e $k&quot;/&quot;*_step3/mates ]; then echo $k; cd $k/*_step3/mates/; pwd; python ~/research_scripts/common/aggregate_file.py --sum matings_timeseries.dat &gt; sum_matings_gen1.dat ; cd ../../../; fi ; done
+
+root=&quot;Ctrl&quot;; rm $root&quot;_&quot;sum_matings_gen1.dat; for k in $root&quot;_&quot;*; do if [ -e $k&quot;/&quot;*_step3/mates ]; then echo $k; cd $k/*_step3/mates/; pwd; cat sum_matings_gen1.dat &gt;&gt; ../../../$root&quot;_&quot;sum_matings_gen1.dat ; cd ../../../; fi ; done
+
+root=&quot;ScenA&quot;; rm $root&quot;_&quot;sum_matings_gen1.dat; for k in $root&quot;_&quot;*; do if [ -e $k&quot;/&quot;*_step3/mates ]; then echo $k; cd $k/*_step3/mates/; pwd; cat sum_matings_gen1.dat &gt;&gt; ../../../$root&quot;_&quot;sum_matings_gen1.dat ; cd ../../../; fi ; done
+
+root=&quot;ScenB&quot;; rm $root&quot;_&quot;sum_matings_gen1.dat; for k in $root&quot;_&quot;*; do if [ -e $k&quot;/&quot;*_step3/mates ]; then echo $k; cd $k/*_step3/mates/; pwd; cat sum_matings_gen1.dat &gt;&gt; ../../../$root&quot;_&quot;sum_matings_gen1.dat ; cd ../../../; fi ; done
+
+root=&quot;ScenC&quot;; rm $root&quot;_&quot;sum_matings_gen1.dat; for k in $root&quot;_&quot;*; do if [ -e $k&quot;/&quot;*_step3/mates ]; then echo $k; cd $k/*_step3/mates/; pwd; cat sum_matings_gen1.dat &gt;&gt; ../../../$root&quot;_&quot;sum_matings_gen1.dat ; cd ../../../; fi ; done
+
+root=&quot;ScenD&quot;; rm $root&quot;_&quot;sum_matings_gen1.dat; for k in $root&quot;_&quot;*; do if [ -e $k&quot;/&quot;*_step3/mates ]; then echo $k; cd $k/*_step3/mates/; pwd; cat sum_matings_gen1.dat &gt;&gt; ../../../$root&quot;_&quot;sum_matings_gen1.dat ; cd ../../../; fi ; done</pre>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/115_ExperimentalPipeline_ForceSexualSelection</span>$</strong> python ~/research_scripts/graph_generation/bar_chart_from_csv.py -x Treatment -y &quot;Total Matings in Gen 1&quot; -t &quot;Total Initial Matings - 115 Forced Sexual Selection&quot; --xticks=&quot;Control-Sympatry,Drift,A - L9-&gt;L7,B - L9-&gt;L9+3in,C - L5-&gt;L7&quot; --error 115_sum_matings_gen1.png \
+Ctrl_sum_matings_gen1.dat \
+ScenD_sum_matings_gen1.dat \
+ScenA_sum_matings_gen1.dat \
+ScenB_sum_matings_gen1.dat \
+ScenC_sum_matings_gen1.dat</pre>
+
+<p>Edit 10/27. Somehow I lost a bunch of my notes in this notebook. I think it&#39;s because my browser had crashed, and I hadn&#39;t implemented autosaving. :/ This is now corrected.</p>
+
+<p><img alt="" src="./14.293.__-_Notes_-_Week_of_October_20_2014/115_sum_matings_gen1.png" style="height:450px; width:600px" /><img alt="" src="./14.293.__-_Notes_-_Week_of_October_20_2014/116_sum_matings_gen1.png" style="height:450px; width:600px" /></p>
+
+<p>&nbsp;</p>

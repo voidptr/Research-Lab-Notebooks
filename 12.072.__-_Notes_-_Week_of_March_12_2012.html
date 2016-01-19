@@ -1,0 +1,253 @@
+<h1>Week of March 12, 2012</h1>
+
+<h2>Monday 3/12/12</h2>
+
+<h3>12:34 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Before sleep, some notes:
+	<ul style="list-style-type:circle">
+		<li>Plot out the gap distributions between backbone and fluct</li>
+		<li>Count the organisms not the genotypes.
+		<ul>
+			<li>Not sure quite how to go about doing this. This might entail fucking with calculate physical modularity, or possibly with extract lines on condition, or inserting a step in the middle there. :/</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Created a convert_to_organisms.py script, which, using the two_task_only_individual_modularity/ files (column 18), duplicates the content of the downstream files (physical_modularity_stats and also itself), and dumps the content into new directories with a __organisms file ending.</li>
+	<li>Added additional step to the sanitize action, to go through and gunzip everything, since this is a big nasty time-sink every time I have to do file processing.</li>
+	<li>Sanitize is running on 071/SEPARATED and 071/INTERTWINED right now in a screen on atlantis.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>3:10 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>070 finished downloading and unzipping. I split them up into Intertwined and Separated experiments.</li>
+	<li>Sanitizing (gunzipping all) 069, 070, and 071 in screen.</li>
+	<li>Quick rundown of currently relevant experiments
+	<ul style="list-style-type:circle">
+		<li>Job 069_Mutation_Rate_0.00075__Written_Ancestors
+		<ul>
+			<li>Written separated ancestor</li>
+			<li>30k updates</li>
+		</ul>
+		</li>
+		<li>Job 070_Test_Modularity_Contingency__Longer_Phases__Low_Mutation_Rate
+		<ul>
+			<li>Written separated ancestor</li>
+			<li>Evolved intertwined ancestor</li>
+			<li>90k updates (3 phases)</li>
+			<li>0.00075 mutation rate</li>
+		</ul>
+		</li>
+		<li>071_Mut_Rate_0.001__Written_Ancestors
+		<ul>
+			<li>Written separated ancestor</li>
+			<li>Evolved intertwined ancestor</li>
+			<li>30k updates</li>
+		</ul>
+		</li>
+		<li>072_Mut_Rate_0.002__Written_Ancestors
+		<ul>
+			<li>50 replicates each&hellip; Too many! D:</li>
+			<li>Written separated ancestor</li>
+			<li>Evolved intertwined ancestor</li>
+			<li>30k updates</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>PLANS:</p>
+
+<ul>
+	<li>make a script to pull out the lineages</li>
+	<li>make a script to pull out a histogram of gaps (of organisms)</li>
+	<li>run the convert_to_organism action on 069, 070, 071, and 072 when it&rsquo;s finished.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Updated HPCC script separate_and_compress_HPCC.py to support up to 100 runs per treatment.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Tuesday 3/13/12</h2>
+
+<h3>4:53 PM</h3>
+
+<p>LAB MEETING NOTES:</p>
+
+<ul>
+	<li>Error bars &ndash; fill between</li>
+	<li>Flamegraphs are just stacked histograms where the y-axis is the index of the histogram, and the height of each bar is depicted as color. You build a histogram for each point in time, and put them together.&nbsp;</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Wednesday 3/14/12</h2>
+
+<h3>12:33 AM</h3>
+
+<p>PLANS:</p>
+
+<ul>
+	<li>I&rsquo;m going to create a script to take existing data and run analyses on them on the hpcc. :/</li>
+</ul>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Done creating the script. Submitted jobs 073-077 reanalyzing 069-072</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>7:08 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Job 073 seems to be done (had to restart because 256mb is not enough. :/)</li>
+	<li>Cleaning up and copying the data down.</li>
+</ul>
+
+<pre>
+[<strong><span style="color:#FF0000"><strong>caninoko@dev-intel07</strong></span></strong>]:[30]:[<strong><span style="color:#0000FF"><strong>/mnt/scratch/caninoko/073</strong></span></strong>]:$ for i in *_??????; do echo $i ; if [ -e $i/data ] ; then cd $i/data ; rm *.dat.gz ; rm -rf physical_modularity_stats; rm -rf two_task_only_individual_modularity ; cd ../../ ; fi ; done
+
+[<strong><span style="color:#FF0000">caninoko@dev-intel07</span></strong>]:[32]:[<strong><span style="color:#0000FF">/mnt/scratch/caninoko/073</span></strong>]:$ ~/scripts/separate_and_compress_HPCC.py</pre>
+
+<p>&nbsp;</p>
+
+<p>PLANS/TODO:</p>
+
+<ul>
+	<li><s>Modify analyze.py to include organism-based aggregation. Should be pretty straightforward, adding a parameter for the file to aggregate from.</s> <strong>Done</strong></li>
+	<li>Analyze the dominant lineage to identify&nbsp; mutational hot spots
+	<ul style="list-style-type:circle">
+		<li>Set up a script to pull up the final dominant&rsquo;s lineage.
+		<ul>
+			<li>On the HPCC, copy out the final detail file of every run. Zip these up and copy down.</li>
+			<li>Loop through every detail file, and run avida on it with analyze mode to pull out the lineage with details (see the format that I sent out with the phylogeny constructor. This should have the thing I want. Also, make sure it has hamming distance, or site of mutation or something.</li>
+		</ul>
+		</li>
+		<li>Once every lineage is generated, go through and map the rate of evolution for each site. Make sure to do an alignment first, to make sure that I don&rsquo;t get sites mismatched.</li>
+		<li>Plot the mutation rate over 30k updates</li>
+		<li>Maybe make a movie? With every site blinking on and off as it mutates</li>
+	</ul>
+	</li>
+	<li>Fix flamegraph to fill in the background as black when you set the ylim. This is probably as easy as setting the length of the histograms to the new ylim.</li>
+	<li>Plot the distributions of gaps.</li>
+	<li>Think about using R to plot some stuff, since it is so much prettier.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Thursday 3/15/12</h2>
+
+<h3>12:33 AM</h3>
+
+<p>STATUS</p>
+
+<ul>
+	<li>Analyzed 069/073 for differences between counting organisms or not, and, sigh, there doesn&rsquo;t seem to be any real discernible difference. If anything, my lines are closer together under the organism count treatment. Sigh. Still, the organism count treatment is the way to go, going forward.</li>
+	<li>075/071 is finished downloading the unzipping. Going to set it sanitizing overnight. :/</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Friday 3/16/12</h2>
+
+<h3>2:20 AM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Not a lot of progress today. Copied down the last population dump of each run in 069, 071, and 072. Next is writing the analyze script to pull out the lineages.
+	<ul style="list-style-type:circle">
+		<li>Need to look at the ALIGN thing&hellip; I think there is one.</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>4:07 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Analyze script has been run, and lineages generated.</li>
+</ul>
+
+<pre>
+NUM=071; mkdir results_$NUM ; cd last_pop_dump_$NUM/; for i in *detail*; do echo $i; rm ../data/* ; cp $i ../data/detail-30000.spop.gz ; gunzip ../data/detail-30000.spop.gz ; cd ../ ; ./avida -a ; cp data/lineage.dat results_$NUM/$i&quot;__lineage.dat&quot; ; cd last_pop_dump_$NUM/ ; done ; cd ../</pre>
+
+<ul>
+	<li>Wrote script to put together two columns from some other file together in an expression (combine_.on_expression&hellip;. something. etc.). Realized, however,&nbsp; that I need it to put together two end-game csvs, which have each line one run full of data, so I need to change my script to do that instead. Maybe a nice switch to go from column number to file instead.</li>
+	<li>Now to bad movie night!</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Sunday 3/18/12</h2>
+
+<h3>1:00 AM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Half-updated the script mentioned above. WIP.</li>
+	<li>TODO:&nbsp; write script to extract histogram of gaps (list of gap frequencies: 0-space gaps, 1-space gaps, 2-space gaps)
+	<ul style="list-style-type:circle">
+		<li>Hmmn. How am I calculating gaps of 0? Some tasks may have no gaps&hellip;
+		<ul>
+			<li>Currently, every instruction is compared to the next. So, XXXXX, has mean gap of 0, while XXXX X has mean gap of 0.25. ; XXX X X=0.5. Does this make sense?
+			<ul>
+				<li>XX X X X=0.75</li>
+				<li>XX X&nbsp; X X=1
+				<ul style="list-style-type:circle">
+					<li>Should gap be called instruction spacing or layout?</li>
+				</ul>
+				</li>
+			</ul>
+			</li>
+			<li>Should it instead be: XXXXX=0, XXXX X=1, XXX X X=1, XX X X X=1
+			<ul>
+				<li>I don&rsquo;t think so. This is too much like the unity measure, and completely ignores long strings of connected components in the calculation.</li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p style="margin-left:1.0in">&nbsp;</p>
+
+<p style="margin-left:1.0in">&nbsp;</p>
+
+<p>&nbsp;</p>

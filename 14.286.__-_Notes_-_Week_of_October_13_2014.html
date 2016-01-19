@@ -1,0 +1,212 @@
+<h1>Week of October 13, 2014</h1>
+
+<h2>Monday, Oct 13, 2014</h2>
+
+<h3>Log 11:40PM</h3>
+
+<p>So, yeah, I had a meeting with Charles. Told him I have results.</p>
+
+<p>One thing I&#39;m doing is cleaning up how I generate my mating trials. I updated the code to dump out the parental generation, and the cell ID of the matings, so that they&#39;re easier to pull apart.</p>
+
+<p>Below generates the updated data using the newly compiled Avida that includes the generation in the mating output.</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113b_ExperimentalPipeline_8Bits</span>$</strong> gunzip Control_113002/events_III.cfg.gz
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113b_ExperimentalPipeline_8Bits</span>$</strong> gunzip Control_113002/environment_I_wholelogic9.cfg.gz
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113b_ExperimentalPipeline_8Bits</span>$</strong> cp Control_113002/*.cfg ./
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113b_ExperimentalPipeline_8Bits</span>$</strong> gunzip */*.cfg.gz
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113b_ExperimentalPipeline_8Bits</span>$</strong> root=&quot;Control&quot;; for seed in {113001..113030}; do if [ -e $root&quot;_&quot;$seed/*step2/detail-300000.spop* ]; then cd $root&quot;_&quot;$seed; zcat data*step2/detail-300000.spop* &gt; detail-combined.spop; ../avida -s $seed -set EVENT_FILE ../events_III.cfg -set ENVIRONMENT_FILE ../environment_I_*.cfg -set DATA_DIR data__Control_step5; cd ../; fi; done
+</pre>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113_ExperimentalPipeline_8Bits</span>$</strong> cp ../../configs/113*/config/*.cfg ./
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113_ExperimentalPipeline_8Bits</span>$</strong> gunzip */*.cfg.gz</pre>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113_ExperimentalPipeline_8Bits</span>$</strong> root=&quot;ScenarioA&quot;; event=&quot;III&quot;; envt=&quot;I&quot;; for seed in {113001..113030}; do if [ -e $root&quot;_&quot;$seed/*step2a/detail-300000.spop* ]; then cd $root&quot;_&quot;$seed; zcat data__*_step2a/detail-300000.spop* &gt; detail-combined.spop; zcat data__*_step2b/detail-300000.spop* | tail -n +24 &gt;&gt; detail-combined.spop; ../avida -s $seed -set EVENT_FILE ../events_$event&quot;.&quot;cfg -set ENVIRONMENT_FILE ../environment_$envt&quot;_&quot;*.cfg -set DATA_DIR data__$root&quot;_&quot;step5; cd ../; fi; done</pre>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113_ExperimentalPipeline_8Bits</span>$</strong> root=&quot;ScenarioB&quot;; event=&quot;III&quot;; envt=&quot;IV&quot;; for seed in {113001..113030}; do if [ -e $root&quot;_&quot;$seed/*step2a/detail-300000.spop* ]; then cd $root&quot;_&quot;$seed; zcat data__*_step2a/detail-300000.spop* &gt; detail-combined.spop; zcat data__*_step2b/detail-300000.spop*| tail -n +24 &gt;&gt; detail-combined.spop; ../avida -s $seed -set EVENT_FILE ../events_$event&quot;.&quot;cfg -set ENVIRONMENT_FILE ../environment_$envt&quot;_&quot;*.cfg -set DATA_DIR data__$root&quot;_&quot;step5; cd ../; fi; done</pre>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113_ExperimentalPipeline_8Bits</span>$</strong> root=&quot;ScenarioC&quot;; event=&quot;III&quot;; envt=&quot;I&quot;; for seed in {113001..113030}; do if [ -e $root&quot;_&quot;$seed/*step2a/detail-300000.spop* ]; then cd $root&quot;_&quot;$seed; zcat data__*_step2a/detail-300000.spop* &gt; detail-combined.spop; zcat data__*_step2b/detail-300000.spop* | tail -n +24 &gt;&gt; detail-combined.spop; ../avida -s $seed -set EVENT_FILE ../events_$event&quot;.&quot;cfg -set ENVIRONMENT_FILE ../environment_$envt&quot;_&quot;*.cfg -set DATA_DIR data__$root&quot;_&quot;step5; cd ../; fi; done</pre>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113_ExperimentalPipeline_8Bits</span>$</strong> root=&quot;ScenarioD_Drift&quot;; event=&quot;III&quot;; envt=&quot;I&quot;; for seed in {113001..113030}; do if [ -e $root&quot;_&quot;$seed/*step2a/detail-300000.spop* ]; then cd $root&quot;_&quot;$seed; zcat data__*_step2a/detail-300000.spop* &gt; detail-combined.spop; zcat data__*_step2b/detail-300000.spop* | tail -n +24 &gt;&gt; detail-combined.spop; ../avida -s $seed -set EVENT_FILE ../events_$event&quot;.&quot;cfg -set ENVIRONMENT_FILE ../environment_$envt&quot;_&quot;*.cfg -set DATA_DIR data__$root&quot;_&quot;step5; cd ../; fi; done</pre>
+
+<p>Below re-pulls the mating data using only generation 1.</p>
+
+<pre>
+# First half of each line gives information about the &#39;chosen&#39; mate
+# Second half of each line gives information about the &#39;chooser&#39;
+# 1      2         3     4           5               6                7                8                9     10      11             12        13
+# genome timestamp merit mating_type mate_preference mating_display_a mating_display_b mating_display_c group mate_id parent_cell_id parent_id parent_generation</pre>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113b_ExperimentalPipeline_8Bits$</span></strong> for k in *; do if [ -e $k&quot;/&quot;*_step5/mates ]; then echo $k; cd $k/*_step5/mates/; pwd; rm matings_timeseries.dat; for i in {0..250}; do echo $i; awk -v i=&quot;$i&quot; &#39;{if (($13 == 1) &amp;&amp; (($11 &gt; 1799 &amp;&amp; $24 &lt; 1800) || ($11 &lt; 1800 &amp;&amp; $24 &gt; 1799))) print $2,$3,$4,$5,$8,$11,&quot;---&gt;&quot;,$15,$16,$17, $18,$21,$24}&#39; mates-$i&quot;.dat&quot; | wc -l &gt;&gt; matings_timeseries.dat ; done;&nbsp; cd ../../../; fi ; done</pre>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113_ExperimentalPipeline_8Bits$</span></strong> for k in *; do if [ -e $k&quot;/&quot;*_step5/mates ]; then echo $k; cd $k/*_step5/mates/; pwd; rm matings_timeseries.dat; for i in {0..250}; do echo $i; awk -v i=&quot;$i&quot; &#39;{if (($13 == 1) &amp;&amp; (($11 &gt; 1799 &amp;&amp; $24 &lt; 1800) || ($11 &lt; 1800 &amp;&amp; $24 &gt; 1799))) print $2,$3,$4,$5,$8,$11,&quot;---&gt;&quot;,$15,$16,$17, $18,$21,$24}&#39; mates-$i&quot;.dat&quot; | wc -l &gt;&gt; matings_timeseries.dat ; done;&nbsp; cd ../../../; fi ; done</pre>
+
+<p>And plot:</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113_ExperimentalPipeline_8Bits$</span></strong> python ../../../research_scripts/quickplot.py --error --end_at 100 -x Updates -y Matings -t &quot;Post-Allopatry Matings Gen 1 - 113 Sexual Selection&quot; 113_matings_100u_postallopatry_gen1 matings_timeseries.dat 1 &quot;../113b*/Control_*/*_step5/mates/&quot; Control matings_timeseries.dat 1 &quot;ScenarioD_*/*_step5/mates/&quot; ScenarioD matings_timeseries.dat 1 &quot;ScenarioA_*/*_step5/mates/&quot; ScenarioA matings_timeseries.dat 1 &quot;ScenarioB_*/*_step5/mates/&quot; ScenarioB matings_timeseries.dat 1 &quot;ScenarioC_*/*_step5/mates/&quot; ScenarioC</pre>
+
+<p>Above was also all done for 114 run (no sexual selection)</p>
+
+<p><img alt="" src="./14.286.__-_Notes_-_Week_of_October_13_2014/113_matings_100u_postallopatry_gen1.png" style="height:450px; width:600px" /><img alt="" src="./14.286.__-_Notes_-_Week_of_October_13_2014/114_matings_100u_postallopatry_gen1.png" style="height:450px; width:600px" /></p>
+
+<p>Awesome. Ok, next step is to combine all these into just bar graphs, since the time component is meaningless.</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113_ExperimentalPipeline_8Bits$</span></strong> for k in *; do if [ -e $k&quot;/&quot;*_step5/mates ]; then echo $k; cd $k/*_step5/mates/; pwd; python ~/research_scripts/common/aggregate_file.py --sum matings_timeseries.dat &gt; sum_matings_gen1.dat ; cd ../../../; fi ; done
+
+root=&quot;ScenarioA&quot;; for k in $root&quot;_&quot;*; do if [ -e $k&quot;/&quot;*_step5/mates ]; then echo $k; cd $k/*_step5/mates/; pwd; cat sum_matings_gen1.dat &gt;&gt; ../../../$root&quot;_&quot;sum_matings_gen1.dat ; cd ../../../; fi ; done
+
+root=&quot;ScenarioB&quot;; for k in $root&quot;_&quot;*; do if [ -e $k&quot;/&quot;*_step5/mates ]; then echo $k; cd $k/*_step5/mates/; pwd; cat sum_matings_gen1.dat &gt;&gt; ../../../$root&quot;_&quot;sum_matings_gen1.dat ; cd ../../../; fi ; done
+
+root=&quot;ScenarioC&quot;; for k in $root&quot;_&quot;*; do if [ -e $k&quot;/&quot;*_step5/mates ]; then echo $k; cd $k/*_step5/mates/; pwd; cat sum_matings_gen1.dat &gt;&gt; ../../../$root&quot;_&quot;sum_matings_gen1.dat ; cd ../../../; fi ; done
+
+root=&quot;ScenarioD&quot;; for k in $root&quot;_&quot;*; do if [ -e $k&quot;/&quot;*_step5/mates ]; then echo $k; cd $k/*_step5/mates/; pwd; cat sum_matings_gen1.dat &gt;&gt; ../../../$root&quot;_&quot;sum_matings_gen1.dat ; cd ../../../; fi ; done
+
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113b_ExperimentalPipeline_8Bits$</span></strong> for k in *; do if [ -e $k&quot;/&quot;*_step5/mates ]; then echo $k; cd $k/*_step5/mates/; pwd; python ~/research_scripts/common/aggregate_file.py --sum matings_timeseries.dat &gt; sum_matings_gen1.dat ; cd ../../../; fi ; done
+
+for k in Control*; do if [ -e $k&quot;/&quot;*_step5/mates ]; then echo $k; cd $k/*_step5/mates/; pwd; cat sum_matings_gen1.dat &gt;&gt; ../../../Control_sum_matings_gen1.dat ; cd ../../../; fi ; done
+</pre>
+
+<p>Finally, plot. (did all the same things to run 114 with no sexual selection).</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113_ExperimentalPipeline_8Bits$</span></strong> python ~/research_scripts/graph_generation/bar_chart_from_csv.py -x Treatment -y &quot;Total Matings in Gen 1&quot; -t &quot;Total Initial Matings - 113 Sexual Selection&quot; --xticks=&quot;Control-Sympatry,Drift,A - L9-&gt;L7,B - L9-&gt;L9+3in,C - L5-&gt;L7&quot; --error 113_sum_matings_gen1.png ../113b_ExperimentalPipeline_8Bits/Control_sum_matings_gen1.dat ScenarioD_sum_matings_gen1.dat ScenarioA_sum_matings_gen1.dat ScenarioB_sum_matings_gen1.dat ScenarioC_sum_matings_gen1.dat
+</pre>
+
+<p><img alt="" src="./14.286.__-_Notes_-_Week_of_October_13_2014/113_sum_matings_gen1.png" style="height:450px; width:600px" /><img alt="" src="./14.286.__-_Notes_-_Week_of_October_13_2014/114_sum_matings_gen1.png" style="height:450px; width:600px" /></p>
+
+<h2>&nbsp;</h2>
+
+<h2>Tuesday, Oct 14, 2014</h2>
+
+<h3>Log 4:24p</h3>
+
+<p>Explained my graphs. Charles finds that the differences aren&#39;t very big.</p>
+
+<p>Suggestions to make them use (see notebook)</p>
+
+<p>Here, I&#39;m going to pull the matings of just the organisms that are using the mating display.</p>
+
+<pre>
+# First half of each line gives information about the &#39;chosen&#39; mate
+# Second half of each line gives information about the &#39;chooser&#39;
+# 1      2         3     4           5               6                7                8                9     10      11             12        13
+# genome timestamp merit mating_type mate_preference mating_display_a mating_display_b mating_display_c group mate_id parent_cell_id parent_id parent_generation</pre>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113b_ExperimentalPipeline_8Bits$</span></strong> for k in *; do if [ -e $k&quot;/&quot;*_step5/mates ]; then echo $k; cd $k/*_step5/mates/; pwd; rm matings_timeseries.dat; for i in {0..250}; do echo $i; awk -v i=&quot;$i&quot; &#39;{if (($13 == 1) &amp;&amp; ($18 &gt; 1) &amp;&amp; (($11 &gt; 1799 &amp;&amp; $24 &lt; 1800) || ($11 &lt; 1800 &amp;&amp; $24 &gt; 1799))) print $2,$3,$4,$5,$8,$11,&quot;---&gt;&quot;,$15,$16,$17, $18,$21,$24}&#39; mates-$i&quot;.dat&quot; | wc -l &gt;&gt; choosy_matings_timeseries.dat ; done;&nbsp; cd ../../../; fi ; done</pre>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113_ExperimentalPipeline_8Bits$</span></strong> for k in *; do if [ -e $k&quot;/&quot;*_step5/mates ]; then echo $k; cd $k/*_step5/mates/; pwd; rm matings_timeseries.dat; for i in {0..250}; do echo $i; awk -v i=&quot;$i&quot; &#39;{if (($13 == 1) &amp;&amp; ($18 &gt; 1) &amp;&amp; (($11 &gt; 1799 &amp;&amp; $24 &lt; 1800) || ($11 &lt; 1800 &amp;&amp; $24 &gt; 1799))) print $2,$3,$4,$5,$8,$11,&quot;---&gt;&quot;,$15,$16,$17, $18,$21,$24}&#39; mates-$i&quot;.dat&quot; | wc -l &gt;&gt; choosy_matings_timeseries.dat ; done;&nbsp; cd ../../../; fi ; done</pre>
+
+<p>And plot:</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113_ExperimentalPipeline_8Bits$</span></strong> python ../../../research_scripts/quickplot.py --error --end_at 100 -x Updates -y Matings -t &quot;Post-Allopatry Choosy Matings Gen 1 - 113 Sexual Selection&quot; 113_choosy_matings_100u_postallopatry_gen1 choosy_matings_timeseries.dat 1 &quot;../113b*/Control_*/*_step5/mates/&quot; Control choosy_matings_timeseries.dat 1 &quot;ScenarioD_*/*_step5/mates/&quot; ScenarioD choosy_matings_timeseries.dat 1 &quot;ScenarioA_*/*_step5/mates/&quot; ScenarioA choosy_matings_timeseries.dat 1 &quot;ScenarioB_*/*_step5/mates/&quot; ScenarioB choosy_matings_timeseries.dat 1 &quot;ScenarioC_*/*_step5/mates/&quot; ScenarioC</pre>
+
+<p><img alt="" src="./14.286.__-_Notes_-_Week_of_October_13_2014/113_choosy_matings_100u_postallopatry_gen1.png" style="height:450px; width:600px" /><img alt="" src="./14.286.__-_Notes_-_Week_of_October_13_2014/113_matings_100u_postallopatry_gen1.png" style="height:450px; width:600px" /></p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113_ExperimentalPipeline_8Bits$</span></strong> for k in *; do if [ -e $k&quot;/&quot;*_step5/mates ]; then echo $k; cd $k/*_step5/mates/; pwd; python ~/research_scripts/common/aggregate_file.py --sum choosy_matings_timeseries.dat &gt; sum_choosy_matings_gen1.dat ; cd ../../../; fi ; done
+
+root=&quot;ScenarioA&quot;; for k in $root&quot;_&quot;*; do if [ -e $k&quot;/&quot;*_step5/mates ]; then echo $k; cd $k/*_step5/mates/; pwd; cat sum_choosy_matings_gen1.dat &gt;&gt; ../../../$root&quot;_&quot;sum_choosy_matings_gen1.dat ; cd ../../../; fi ; done;
+
+root=&quot;ScenarioB&quot;; for k in $root&quot;_&quot;*; do if [ -e $k&quot;/&quot;*_step5/mates ]; then echo $k; cd $k/*_step5/mates/; pwd; cat sum_choosy_matings_gen1.dat &gt;&gt; ../../../$root&quot;_&quot;sum_choosy_matings_gen1.dat ; cd ../../../; fi ; done;
+
+root=&quot;ScenarioC&quot;; for k in $root&quot;_&quot;*; do if [ -e $k&quot;/&quot;*_step5/mates ]; then echo $k; cd $k/*_step5/mates/; pwd; cat sum_choosy_matings_gen1.dat &gt;&gt; ../../../$root&quot;_&quot;sum_choosy_matings_gen1.dat ; cd ../../../; fi ; done;
+
+root=&quot;ScenarioD&quot;; for k in $root&quot;_&quot;*; do if [ -e $k&quot;/&quot;*_step5/mates ]; then echo $k; cd $k/*_step5/mates/; pwd; cat sum_choosy_matings_gen1.dat &gt;&gt; ../../../$root&quot;_&quot;sum_choosy_matings_gen1.dat ; cd ../../../; fi ; done<strong><span style="color:#FF0000">;
+
+caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113b_ExperimentalPipeline_8Bits$</span></strong> for k in *; do if [ -e $k&quot;/&quot;*_step5/mates ]; then echo $k; cd $k/*_step5/mates/; pwd; python ~/research_scripts/common/aggregate_file.py --sum choosy_matings_timeseries.dat &gt; sum_choosy_matings_gen1.dat ; cd ../../../; fi ; done
+
+for k in Control*; do if [ -e $k&quot;/&quot;*_step5/mates ]; then echo $k; cd $k/*_step5/mates/; pwd; cat sum_choosy_matings_gen1.dat &gt;&gt; ../../../Control_sum_choosy_matings_gen1.dat ; cd ../../../; fi ; done</pre>
+
+<p>Finally, plot. (did all the same things to run 114 with no sexual selection).</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113_ExperimentalPipeline_8Bits$</span></strong> python ~/research_scripts/graph_generation/bar_chart_from_csv.py -x Treatment -y &quot;Matings in Gen 1&quot; -t &quot;Initial Matings - Sexual Selection (113) vs Random (114)&quot; --pair --groups=3 --xticks=&quot;114 Non-selection,113 Whole Pop,113 Choosy-Only&quot; --legend=&quot;Control-Sympatry,Drift,A - L9-&gt;L7,B - L9-&gt;L9+3in,C - L5-&gt;L7&quot; --error 113_114_sum_all_matings_gen1.png \
+../114b_ExperimentalPipeline_NoSexualSelection/Control_sum_matings_gen1.dat ../114_ExperimentalPipeline_NoSexualSelection/ScenarioD_sum_matings_gen1.dat ../114_ExperimentalPipeline_NoSexualSelection/ScenarioA_sum_matings_gen1.dat ../114_ExperimentalPipeline_NoSexualSelection/ScenarioB_sum_matings_gen1.dat ../114_ExperimentalPipeline_NoSexualSelection/ScenarioC_sum_matings_gen1.dat \
+../113b_ExperimentalPipeline_8Bits/Control_sum_matings_gen1.dat ScenarioD_sum_matings_gen1.dat ScenarioA_sum_matings_gen1.dat ScenarioB_sum_matings_gen1.dat ScenarioC_sum_matings_gen1.dat \
+../113b_ExperimentalPipeline_8Bits/Control_sum_choosy_matings_gen1.dat ScenarioD_sum_choosy_matings_gen1.dat ScenarioA_sum_choosy_matings_gen1.dat ScenarioB_sum_choosy_matings_gen1.dat ScenarioC_sum_choosy_matings_gen1.dat
+</pre>
+
+<p><img alt="" src="./14.286.__-_Notes_-_Week_of_October_13_2014/113_sum_matings_gen1.png" style="height:450px; width:600px" /><img alt="" src="./14.286.__-_Notes_-_Week_of_October_13_2014/113_sum_choosy_matings_gen1.png" style="height:450px; width:600px" /></p>
+
+<p><img alt="" src="./14.286.__-_Notes_-_Week_of_October_13_2014/113_114_sum_all_matings_gen1.png" style="height:600px; width:800px" /></p>
+
+<h2>&nbsp;</h2>
+
+<h2>Thu Oct 16, 2014</h2>
+
+<h3>Log 1:05a</h3>
+
+<p>Summing up the post-zygotic information into bar-chart-digestibles.</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113_ExperimentalPipeline_8Bits$</span></strong> for k in *; do if [ -e $k&quot;/&quot;*_step3 ]; then echo $k; cd $k/*_step3/; pwd; python ~/research_scripts/common/aggregate_file.py --header --sum offspring.cleaned.dat &gt; sum_offspring.cleaned.dat ; cd ../..; fi ; done
+
+target=&quot;sum_offspring.cleaned.dat&quot;;
+
+root=&quot;ScenarioA&quot;; for k in $root&quot;_&quot;*; do if [ -e $k&quot;/&quot;*_step3 ]; then echo $k; cd $k/*_step3/; pwd; cat $target &gt;&gt; ../../$root&quot;_&quot;$target ; cd ../../; fi ; done;
+
+root=&quot;ScenarioB&quot;; for k in $root&quot;_&quot;*; do if [ -e $k&quot;/&quot;*_step3 ]; then echo $k; cd $k/*_step3/; pwd; cat $target &gt;&gt; ../../$root&quot;_&quot;$target ; cd ../../; fi ; done;
+
+root=&quot;ScenarioC&quot;; for k in $root&quot;_&quot;*; do if [ -e $k&quot;/&quot;*_step3 ]; then echo $k; cd $k/*_step3/; pwd; cat $target &gt;&gt; ../../$root&quot;_&quot;$target ; cd ../../; fi ; done;
+
+root=&quot;ScenarioD&quot;; for k in $root&quot;_&quot;*; do if [ -e $k&quot;/&quot;*_step3 ]; then echo $k; cd $k/*_step3/; pwd; cat $target &gt;&gt; ../../$root&quot;_&quot;$target ; cd ../../; fi ; done<strong><span style="color:#FF0000">;
+
+</span></strong><strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113b_ExperimentalPipeline_8Bits$</span></strong> for k in *; do if [ -e $k&quot;/&quot;*_step3 ]; then echo $k; cd $k/*_step3/; pwd; python ~/research_scripts/common/aggregate_file.py --header --sum offspring.cleaned.dat &gt; sum_offspring.cleaned.dat ; cd ../..; fi ; done; 
+
+target=&quot;sum_offspring.cleaned.dat&quot;;
+
+for k in Control*; do if [ -e $k&quot;/&quot;*_step3/ ]; then echo $k; cd $k/*_step3/; pwd; cat $target &gt;&gt; ../../Control_$target ; cd ../../; fi ; done</pre>
+
+<p>Plot!</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113_ExperimentalPipeline_8Bits$</span></strong> python ~/research_scripts/graph_generation/bar_chart_from_csv.py -x Treatment -y &quot;Offspring of Gen 1&quot; -t &quot;Initial Offspring - Sexual Selection (113)&quot; --pair --groups=5 --xticks=&quot;Sympatry,Drift,A,B,C&quot; --legend=&quot;Total,Hybrid,Non-Hybrid,Live,LiveHybrid,Live-NonHybrid&quot; --columns=&quot;2,5,7,3,4,6&quot; --error 113_sum_offspring_gen1.png \
+../113b_ExperimentalPipeline_8Bits/Control_sum_offspring.cleaned.dat ScenarioD_sum_offspring.cleaned.dat ScenarioA_sum_offspring.cleaned.dat ScenarioB_sum_offspring.cleaned.dat ScenarioC_sum_offspring.cleaned.dat </pre>
+
+<p><img alt="" src="./14.286.__-_Notes_-_Week_of_October_13_2014/113_sum_offspring_gen1.png" style="height:600px; width:800px" /></p>
+
+<p>Right, so post-zygotic isn&#39;t a thing, at least among the total population, of which I can&#39;t tell which are choosy because the detail file doesn&#39;t contain that information. :/ So, new runs need to be run.</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Fri Oct 17, 2014</h2>
+
+<h3>Log 10:37p</h3>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113_ExperimentalPipeline_8Bits$</span></strong> for i in *sum_offspring.cleaned.dat; do echo $i; awk -F &quot;,&quot; &#39;{print $4/$3}&#39; $i &gt; $i&quot;_live_hybrid_ratio&quot; ; done
+
+python ~/research_scripts/graph_generation/bar_chart_from_csv.py -x Treatment -y &quot;Live Hybrid Ratio&quot; -t &quot;Ratio of Live Hybrids to Total Live - Sexual Selection (113)&quot; --pair --xticks=&quot;Control-Sympatry,Drift,A - L9-&gt;L7,B - L9-&gt;L9+3in,C - L5-&gt;L7&quot; --error 113_ratio_live_hybrids_gen1.png ../113b_ExperimentalPipeline_8Bits/Control_sum_offspring.cleaned.dat_live_hybrid_ratio ScenarioD_sum_offspring.cleaned.dat_live_hybrid_ratio ScenarioA_sum_offspring.cleaned.dat_live_hybrid_ratio ScenarioB_sum_offspring.cleaned.dat_live_hybrid_ratio ScenarioC_sum_offspring.cleaned.dat_live_hybrid_ratio
+</pre>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/mate_discrimination/output/113_ExperimentalPipeline_8Bits$</span></strong> for i in *sum_offspring.cleaned.dat; do echo $i; awk -F &quot;,&quot; &#39;{print $4/$5 &quot;,&quot; $6/$7}&#39; $i &gt; $i&quot;_hybrid_ratio&quot; ; done
+
+python ~/research_scripts/graph_generation/bar_chart_from_csv.py -x Treatment -y &quot;Live Hybrid Ratio&quot; -t &quot;Ratio of Live Hybrids to Total Live - Sexual Selection (113)&quot; --pair --legend=&quot;LiveHybrid,LiveNonHybrid&quot; --groups=5 --xticks=&quot;Control-Sympatry,Drift,A - L9-&gt;L7,B - L9-&gt;L9+3in,C - L5-&gt;L7&quot; --error 113_ratio_liveoffspring_gen1.png ../113b_ExperimentalPipeline_8Bits/Control_sum_offspring.cleaned.dat_hybrid_ratio ScenarioD_sum_offspring.cleaned.dat_hybrid_ratio ScenarioA_sum_offspring.cleaned.dat_hybrid_ratio ScenarioB_sum_offspring.cleaned.dat_hybrid_ratio ScenarioC_sum_offspring.cleaned.dat_hybrid_ratio</pre>
+
+<p><img alt="" src="./14.286.__-_Notes_-_Week_of_October_13_2014/113_ratio_live_hybrids_gen1.png" style="height:450px; width:600px" /><img alt="" src="./14.286.__-_Notes_-_Week_of_October_13_2014/113_ratio_liveoffspring_gen1.png" style="height:450px; width:600px" /></p>
+
+<h2>&nbsp;</h2>
+
+<h2>Sat Oct 28, 2014</h2>
+
+<h3>Log 12:01p</h3>
+
+<p>Set some runs going.</p>
+
+<ul>
+	<li>115 - forcing use of the choosyness, via the Config file.</li>
+	<li>116 - give them use of the choosyness only after they are separated.</li>
+</ul>

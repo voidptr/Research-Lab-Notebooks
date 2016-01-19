@@ -1,0 +1,259 @@
+<h1>Week of June 30, 2014</h1>
+
+<h2>Monday, Jun 30, 2014</h2>
+
+<h3>Log 08:10PM</h3>
+
+<p>On a plane. So, I sent Charles an email this morning, to the effect that I intend to add event-based reproductive isolation.</p>
+
+<ul>
+	<li>create event to segregate the birth chamber and birth zones.
+	<ul>
+		<li>centrally controlled via a single event and class</li>
+		<li>replace the lineage birth-chamber segregation code with the isolation zones.
+		<ul>
+			<li>Add support for using any divide instruction that uses sex. This means that div-sex-MSL will no longer be required. Take it out.</li>
+			<li>Initially, only include support in the mating types birth chamber. Add support for different birth chamber handlers at a later time.</li>
+		</ul>
+		</li>
+		<li>replace birth method 14 code with code that checks for the event-driven isolation setting.</li>
+		<li>Every isolation event replaces the previous one.</li>
+		<li>Isolation events, at least initially, will only support the inclusion of a number of birth zones, just like birth method 14</li>
+		<li>Remove zone count avida.cfg option.</li>
+		<li>Remove birth method 14 from avida.cfg, since it would now be redundant.</li>
+	</ul>
+	</li>
+	<li>Add option to track gene-flow between lineages.</li>
+	<li>Add event to print out gene-flow data in current population
+	<ul>
+		<li>Note to develop baseline for this data, set lineages, but don&#39;t separate the population. See what the baseline geneflow data is.</li>
+	</ul>
+	</li>
+</ul>
+
+<p>OTHER TODO</p>
+
+<ul>
+	<li>figure out how to compile and run debugger in Sublime Text. Look for a tutorial or a package</li>
+</ul>
+
+<h2>&nbsp;</h2>
+
+<h2>Tuesday, July 1, 2014</h2>
+
+<h3>Log (earlier)</h3>
+
+<p>In the car on the way to the meeting, thought about how to modify the mate selection stuff to make it multiple traits. Maybe use the multiple nop idea to set a trait.</p>
+
+<p>So, I want two dimensions, configurable trait to look at, and the degree. So, setting a value of arbitrary display trait.</p>
+
+<h3>&nbsp;</h3>
+
+<h3>Stickleback Meeting 1:05p</h3>
+
+<p>Drosophila Paper</p>
+
+<ul>
+	<li>Measuring fitness as response variable</li>
+	<li>Experimental design - interaction of sexual selection and natural selection</li>
+	<li>hypotheses - if you have sexual selection, you&#39;ll adapt more quickly (the good genes theory) because sexual selection is supposed to clear deleterious alleles. If you&#39;re selecting on a condition dependent trait, the ones in best condition</li>
+</ul>
+
+<p>Thoughts</p>
+
+<ul>
+	<li>add proper fitness measure (# of offspring produced)? Look at this! Look at what a precise definition is.</li>
+</ul>
+
+<h3>&nbsp;</h3>
+
+<h3>Lab Meeting 3pm</h3>
+
+<p>Not talking about anything useful. Angrymaking.</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Thursday Jul 3, 2014</h2>
+
+<h3>Log 2:28p</h3>
+
+<p>Surprise, surprise, Charles&#39;s suggestion is spurrious again. I liked him better when he didn&#39;t take an interest. He keeps sending me down useless bunnytrails.</p>
+
+<p>Ok, what I need to do is ADD a method to drop a geographic wall, similar to the birth zones thing.</p>
+
+<ul>
+	<li>no mating across the wall</li>
+	<li>no birthing across the wall</li>
+</ul>
+
+<h2>&nbsp;</h2>
+
+<h2>Friday Jul 4, 2014</h2>
+
+<h3>Log 9:13p</h3>
+
+<p>So, I was able to squeeze some programming in yesterday. So far, I am enjoying using Qt Creator. It&#39;s just a basic IDE, and it reads cmake files and compiles per the rules, and hooks into the debugger appropriately, etc.</p>
+
+<p>Below is a summary of what&#39;s in the branch.</p>
+
+<p><strong>Key features:</strong></p>
+
+<ul>
+	<li>Geographic Isolation
+	<ul>
+		<li><span style="color:#008000">&lt;DONE&gt; </span>MATE_BY_BIRTH_ZONE config option
+
+		<ul>
+			<li>enforces that sexual reproduction select mates from a pool based only on the birth zone</li>
+			<li>If there&#39;s only a single zone, well, it&#39;s all a big pool, so don&#39;t worry about it.</li>
+			<li><span style="color:#FFD700">TODO</span> - add support to all other mating types.</li>
+		</ul>
+		</li>
+		<li><span style="color:#008000">&lt;DONE&gt; </span>BIRTH_ZONES config option
+		<ul>
+			<li>You can only deposit offspring in the zone you are born in.
+			<ul>
+				<li>Initially implement as addendum to BIRTH_METHOD 4 (random well mixed)</li>
+				<li><span style="color:#FFD700">TODO</span> - add support to other birth placement types (BIRTH_METHODs)</li>
+				<li><span style="color:#FFD700">TODO</span> - make birth zone dimensions and shapes be configurable</li>
+				<li>Test that it hasn&#39;t disrupted placement vs the previous.</li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Gene-flow measurement
+	<ul>
+		<li><span style="color:#FF0000">[TODO] </span>PrintLineageCounts (modifications)
+		<ul>
+			<li>Print the lineages and their percentages in the populations.</li>
+			<li>Print the average level of mixture in the population.</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p><strong>Other code changes that need to be put in the branch</strong></p>
+
+<ul>
+	<li><span style="color:#008000">&lt;DONE&gt; </span>remove BIRTH_METHOD 14 (add birth zone support to BIRTH_METHOD 4)</li>
+	<li><span style="color:#008000">&lt;DONE&gt; </span>remove Raise and Lower Barrier events.
+	<ul>
+		<li>They aren&#39;t needed. Use SetConfig events instead.</li>
+	</ul>
+	</li>
+	<li><span style="color:#FF0000">[TODO]</span> add fractional (ratio) lineage tracking while putting the info in the offspring.</li>
+</ul>
+
+<p><strong>Previous changes that will remain in the branch</strong></p>
+
+<ul>
+	<li>SetLineageRange event. Useful for tracking</li>
+	<li>new instruction div-sex-MSL for lineage-based mate select</li>
+	<li>ALLOW_MATE_SELECT and div-sex-MS and div-sex-MSL working with MATING_TYPES 1</li>
+	<li>partial phenotype classification.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>The test configuration must be as follows</p>
+
+<ul>
+	<li>Config:
+	<ul>
+		<li>BIRTH_METHOD 4</li>
+		<li>BIRTH_ZONES 2</li>
+		<li>ALLOW_MATE_SELECT 0</li>
+		<li>MATE_BY_BIRTH_ZONE 1</li>
+		<li>MATING_TYPES 1</li>
+		<li>DISABLE_GENOTYPE_CLASSIFICATION<span style="color:#c0c0c0"> </span>2</li>
+	</ul>
+	</li>
+	<li>Events:
+	<ul>
+		<li>InjectRange with males and females, in lineages 5 and 7</li>
+		<li>@5k updates, SetConfig BIRTH_ZONES 1</li>
+		<li>PrintLineageCounts</li>
+	</ul>
+	</li>
+	<li>Instruction Set
+	<ul>
+		<li>Mating Types division instruction (div-sex-mating-types)</li>
+	</ul>
+	</li>
+</ul>
+
+<h3>&nbsp;</h3>
+
+<h3>Log 2:03a</h3>
+
+<p>I&#39;ve got the changes made, and preliminarily tested in the debugger. As an aside, the debugger with Cmake and Qt Creator was a little esoteric. I had to go in to the project tab (left side), and create a bunch of separate cbuild directories, passing the appropriate directives to each one (no arguments for release, Debug for debug, and RelWithDebInfo for optimized compilation plus debug symbols), and then re-run cmake. Annoying. But, now my breakpoints work, and my variable values are populating. The debug interface seems pretty standard and pleasant. So far, I have to say, I&#39;m pretty pleased with Qt Creator. It&#39;s exactly what I was looking for. The only thing missing (tabbed editing) is made up for by the little window with the list of open files on the left, that I can just click on, and it goes to the right place. It&#39;s nice.</p>
+
+<p>Anyway, it&#39;s compiling, and I&#39;m going to set it going for the 10k preliminary run, and make sure nothing is going awry. To be clear, I&#39;ve already observed a couple of lineage anomalies in the population dumps (multiple lineages in a single genotype), which I think are collisions. :/ I&#39;ll have to watch what happens when they start mating with each other after the wall drops.</p>
+
+<h3>&nbsp;</h3>
+
+<h3>Log 2:23a</h3>
+
+<p>Ok, Initial 10k run is complete. Let&#39;s try generating a flame graph and see what happens.</p>
+
+<p>And... oops. I don&#39;t have matplotlib installed on this computer. :/</p>
+
+<p>For the record, easy_install matplotlib fails to find the freetype headers. Solution is to add the links yourself</p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~</span>$</strong> sudo ln -s /usr/local/opt/freetype/include/freetype2 /usr/local/include/freetype</pre>
+
+<p>Found at: <a href="http://stackoverflow.com/questions/20572366/sudo-pip-install-matplotlib-fails-to-find-freetype-headers-os-x-mavericks">http://stackoverflow.com/questions/20572366/sudo-pip-install-matplotlib-fails-to-find-freetype-headers-os-x-mavericks</a></p>
+
+<h3>&nbsp;</h3>
+
+<h3>Log 2:43a</h3>
+
+<p>Well, fuck you too. Cant get it to work on my local machine. So, I made the graph on the hpcc.</p>
+
+<pre>
+<span style="color:#FF0000"><strong>caninoko@dev-intel14</strong></span>:<span style="color:#0000FF">~<strong>/tmp/testrun</strong></span>$ python ~/research_scripts/graph_generation/flamegraph/flamegraph.py $i&quot;_&quot;flamegraph.png 14 5 detail-?00.spop* detail-??00.spop* detail-???00.spop*</pre>
+
+<p><img alt="" src="./14.181.__-_Notes_-_Week_of_June_30_2014/_flamegraph.png" style="height:37px; width:68px" /></p>
+
+<p>Not exceptionally informative, but hey. At least it did a thing. And you can kinda see the sweep that happend right around then. So, yay! Um.</p>
+
+<p>Next steps:</p>
+
+<ul>
+	<li>Implement the enhanced PrintLineageCounts
+	<ul>
+		<li>Add fractional lineage tracking to offspring.</li>
+		<li>Add the printing of the lineage counts.
+		<ul>
+			<li>Within a lineage, print the average outside of lineage fraction</li>
+			<li>overall population, print the average blending level (is the population very blended, or is it segregated)</li>
+			<li>thing about this. I had some thoughts earlier, but they seem to have left my head. Key bit, though is that we can&#39;t categorize biracial as being primarily one or the other in the first generation of hybridization.</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>think about how mates are being chosen. look at the data outputs to see if mates are being chosen randomly. Like, are the females being very successful at targeting, or is everything just so far off that it might as well be random?</li>
+	<li>what is the gender balance? More males? (hope so!)</li>
+	<li>add resources to make sure sweeps don&#39;t happen willy nilly.
+	<ul>
+		<li>resources for one half are different from resources in the other half, resulting in adaptation...?</li>
+	</ul>
+	</li>
+	<li>Let them evolve and adapt together to all resources/tasks, and evolve to use the choosyness, and then drop the wall, thereby changing the adaptation profile</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

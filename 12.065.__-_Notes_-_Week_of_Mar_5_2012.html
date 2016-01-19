@@ -1,0 +1,297 @@
+<h1>Week of March 5, 2012</h1>
+
+<h2>Monday 3/5/12</h2>
+
+<h3>7:06 PM</h3>
+
+<p>STATUS</p>
+
+<ul>
+	<li>Yesterday and today, spent a considerable amount of time updating analyze.bash and doing the analysis on run 066 (mutation rate sweep). Two interesting points:
+	<ul style="list-style-type:circle">
+		<li>Lower mutation rates show the effect way more clearly!</li>
+		<li>The functional modularity doesn&rsquo;t seem to be following the same pattern with my new evolved separated ancestor than it did with the written separated ancestor (ignore points left of 10k updates on left graph)</li>
+	</ul>
+	</li>
+</ul>
+
+<p><img src="./12.065.__-_Notes_-_Week_of_Mar_5_2012/image001.png" style="height:163px; width:218px" />&nbsp;<img src="./12.065.__-_Notes_-_Week_of_Mar_5_2012/image003.png" style="height:170px; width:226px" /></p>
+
+<p>LOG</p>
+
+<ul>
+	<li>Copying down run 067 (fixed 066 so the thing went the whole 30k updates, not just 10k)</li>
+</ul>
+
+<pre>
+[<strong><span style="color:#FF0000"><strong>caninoko@dev-intel07</strong></span></strong>]:[18]:[<strong><span style="color:#0000FF"><strong>/mnt/scratch/caninoko/067</strong></span></strong>]:$ mkdir populations/; for i in *_??????; do if [ ! -e $i.tar.gz ] ; then mkdir $i/data/populations/; mv $i/data/detail* $i/data/populations/; mv $i/data/populations/ ./populations/$i; tar -cvf $i.tar.gz $i ; else : ; fi; done</pre>
+
+<ul>
+	<li>Submitted job 068_Mut_Rate_0.0007 (two parts)
+	<ul style="list-style-type:circle">
+		<li>Part 1: Lowest mutation rate using the evolved separated ancestor
+		<ul>
+			<li>Call it case A</li>
+		</ul>
+		</li>
+		<li>Part 2: four 5-run test cases &ndash; to see if we can figure out why the above two figures are so different:
+		<ul>
+			<li>B - Low mutation rate, written separated ancestor</li>
+			<li>C - Set high mutation rate (should be same as default), written separated ancestor</li>
+			<li>D - Default mutation rate, written separated ancestor</li>
+			<li>E - Default mutation rate, evolved separated ancestor</li>
+		</ul>
+		</li>
+		<li>The logic of part two is as follows
+		<ul>
+			<li>If C and D are different, WTF BUG BUG BUG</li>
+			<li>Else
+			<ul>
+				<li>if (D and E) or (A and B) are different, it must be the ancestor L
+				<ul style="list-style-type:circle">
+					<li>This would be very bad, and I don&rsquo;t understand this at all</li>
+				</ul>
+				</li>
+				<li>Else if (D and E) and (A and B) are the same, then I go phew,
+				<ul style="list-style-type:circle">
+					<li>But, if D does not look like 065 (right graph above) I get concerned that I introduced some kind of bug to the functional modularity calculation. L
+					<ul>
+						<li>If this is the case, re-run pieces of 065 and compare</li>
+					</ul>
+					</li>
+				</ul>
+				</li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+		<li><u>Figured it out. The reason the figures don&rsquo;t look the same is because there was a bigger distance between the XOR and EQU areas in my new ancestor organism. This caused the overlapping to take longer, since the gulf is harder to cross (there&rsquo;s a lot more potential for disruptive crap).</u></li>
+	</ul>
+	</li>
+	<li>Wooo! Found a bug in calculate_physical_modularity.py. Had to figure out a way to patch it on all the servers that are running the job. I pulled out the host list from dist_stat detail view:</li>
+</ul>
+
+<pre>
+[<strong><span style="color:#FF0000"><strong>caninoko@dev-intel07</strong></span></strong>]:[145]:[<strong><span style="color:#0000FF"><strong>~/evolution_of_modularity/068_Mut_Rate_0.0007/config/scripts</strong></span></strong>]:$ thingyhosts=(amd-059 amd-085 icx-028 icx-030 icx-034 icx-043 icx-044 icx-047 icx-061 icx-075 icx-078 icx-083 icx-094 icx-095 icx-100 icx-103 icx-189 scw-001 scw-010 scw-012 scw-017 scw-018 scw-025 scw-027 scw-030 scw-034 scw-035 scw-036 scw-038 scw-061 scw-062 scw-068 scw-073 scw-076 scw-077 scw-089 scw-096 scw-099 scw-101 scw-121 scw-125)
+
+[<strong><span style="color:#FF0000"><strong>caninoko@dev-intel07</strong></span></strong>]:[145]:[<strong><span style="color:#0000FF"><strong>~/evolution_of_modularity/068_Mut_Rate_0.0007/config/scripts</strong></span></strong>]:$ for name in ${thingyhosts[@]}; do ssh $name &quot;for i in /mnt/local/caninoko*; do cp /mnt/scratch/caninoko/calculate_physical_modularity.py \$i/scripts/calculate_physical_modularity.py; done&quot;; done
+
+[<strong><span style="color:#FF0000"><strong>caninoko@dev-intel07</strong></span></strong>]:[145]:[<strong><span style="color:#0000FF"><strong>~/evolution_of_modularity/068_Mut_Rate_0.0007/config/scripts</strong></span></strong>]:$ for name in ${thingyhosts[@]}; do echo $name; ssh $name &quot;for i in /mnt/local/caninoko*; do cat \$i/scripts/calculate_physical_modularity.py | grep daaa ; done&quot;; done</pre>
+
+<ul>
+	<li>Futher, there were some that finished before I got to them, so I figured out how to determine which ones were affected with NANs, and re-run the analysis on only those.</li>
+</ul>
+
+<pre>
+[<strong><span style="color:#FF0000"><strong>caninoko@dev-intel07</strong></span></strong>]:[185]:[<strong><span style="color:#0000FF">/mnt/scratch/caninoko/068</span></strong>]:$ for i in /mnt/scratch/caninoko/068/*; do if [ -e $i/data/ ] ; then for j in $i/data/*.csv.gz; do gunzip $j ; done ; for k in $i/data/*.csv ; do if [ `cat \$k | grep nan | wc -l` -gt 1 ] ; then echo $i; break ; fi ; done; fi; done | less</pre>
+
+<ul>
+	<li>above just prints out the directories</li>
+</ul>
+
+<pre>
+[<strong><span style="color:#FF0000">caninoko@dev-intel07</span></strong>]:[188]:[<strong><span style="color:#0000FF"><strong>/mnt/scratch/caninoko/068</strong></span></strong>]:$ for i in /mnt/scratch/caninoko/068/*; do if [ -e $i/data/ ] ; then for j in $i/data/*.csv.gz; do gunzip $j ; done ; for k in $i/data/*.csv ; do if [ `cat \$k | grep nan | wc -l` -gt 1 ] ; then echo $i; cd $i; cp ~/evo*/068*/config/scripts/* scripts/; ./scripts/analyze_single_run.bash; cd ../ break ; fi ; done; fi; done | less</pre>
+
+<h2>&nbsp;</h2>
+
+<h2>Tuesday 3/6/12</h2>
+
+<h3>1:13 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Job 068 and 068b finished. Tarring and copying down</li>
+</ul>
+
+<pre>
+mkdir populations/; for i in *_??????; do if [ ! -e $i.tar.gz ] ; then mkdir $i/data/populations/; mv $i/data/detail* $i/data/populations/; mv $i/data/populations/ ./populations/$i; tar -cvf $i.tar.gz $i ; else : ; fi; done</pre>
+
+<ul>
+	<li>Job 067 finished tarring up and copying down. Untarring</li>
+	<li>Copying 50gb of data from my home directory to atlantis, now that it is back up. Yay!</li>
+</ul>
+
+<p>LOG:</p>
+
+<ul>
+	<li>So, where am I now? What still needs doing.</li>
+	<li>I want to show:
+	<ul style="list-style-type:circle">
+		<li>Fluctuating environments speed up adaptation.
+		<ul>
+			<li>Functional modularity measure</li>
+			<li>New run at lower mutation rate, using written ancestor. (SUBMITTED)</li>
+		</ul>
+		</li>
+		<li>Hostile fluctuating environment creates gene regulatory structures on the fluctuating task, while leaving the backbone task compact
+		<ul>
+			<li>Physical modularity measure</li>
+			<li>New run at lower mutation rate on intertwined ancestor, to clearly show the separation (SUBMITTED)</li>
+		</ul>
+		</li>
+		<li>Regulatory structures are maintained through periods of benign fluctuation
+		<ul>
+			<li>(Is this true?)</li>
+			<li>Physical modularity measure</li>
+			<li>New runs at lower mutation rate, with switch-off, and longer period. (SUBMITTED)</li>
+			<li>I suspect this isn&rsquo;t true, because of how fast things come back to zero in the control runs&hellip; but maybe not&hellip;</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>Lab Mtg:</p>
+
+<ul>
+	<li>distance between tasks in control &ndash; just bring it back to the shorter distance, and mention it that longer distances increase the amount of time that it takes to combine the tasks, so we just picked a distance</li>
+	<li>add graphic (example) showing how the gap measures relate to actual organisms.</li>
+	<li>Look at using coefficient of variation (CV)</li>
+	<li>Measure effective mutation rate at different regions of the genomes.
+	<ul style="list-style-type:circle">
+		<li>Do it by lineages?</li>
+	</ul>
+	</li>
+	<li>Look at ???</li>
+	<li>Submit my phylogeny (cladeogram) script to the script repository (Luis&rsquo;s)</li>
+	<li>Look at source tree. (Git/Hg GUI)</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>Thoughts:</p>
+
+<ul>
+	<li>re-generate flame graphs for new low mutation rate runs.
+	<ul style="list-style-type:circle">
+		<li>Can use flame graph to show that there is a single population evolving back and forth (using the regulatory regions that evolved)
+		<ul>
+			<li>This is related to the effective mutation rates of regions in lineages. So, if I can show that they are all evolving it back and forth, and that the outlier regions are hotspots (where the evolution is happening), then WOOHOO I HAVE PROVEN MY POINT</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Ask Charles what other stuff I need to do</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>11:11 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>A summary of the currently relevant jobs
+	<ul style="list-style-type:circle">
+		<li>Job 066 &ndash; Mutation Rate Sweep (0.0075, 0.00375, 0.001875). Fluct env for 10k updates, then control for 20k updates (the latter phase was an error)
+		<ul>
+			<li>Evolved Separated Ancestor</li>
+		</ul>
+		</li>
+		<li>Job 067 &ndash; Repeat of job 066, with fluct for all 30k updates</li>
+		<li>Job 068 &ndash; Low mutation rate (0.00075) &ndash; companion to job 067
+		<ul>
+			<li>Evolved separated ancestor</li>
+		</ul>
+		</li>
+		<li>Job 068b &ndash; Quick error check because of weird shit I was seeing. Probably redundant now that I realized what the problem was.
+		<ul>
+			<li>Evolved separated ancestor &ndash; default mutation rate (should be 0.0075)</li>
+			<li>Written separated ancestor &ndash; default mutation rate (should be 0.0075)</li>
+			<li>Written separated ancestor &ndash; low mutation rate (0.00075)</li>
+		</ul>
+		</li>
+		<li>Job 069_Mutation_Rate_0.00075__Written_Ancestors
+		<ul>
+			<li>Written separated ancestor</li>
+			<li>30k updates</li>
+		</ul>
+		</li>
+		<li>Job 070_Test_Modularity_Contingency__Longer_Phases__Low_Mutation_Rate
+		<ul>
+			<li>Written separated ancestor</li>
+			<li>Evolved intertwined ancestor</li>
+			<li>90k updates (3 phases)</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Running analyze.bash on job 067, since this was before I was doing this work on the HPCC. :/ This will take a while.</li>
+	<li>Unzipped 068 and 068b. Re-running stage 3, since it looks like that failed for some reason</li>
+	<li>Zipping up run 01 of each treatment of job 068, so I can make flamegraphs.</li>
+</ul>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Running analyze.bash on job 068</li>
+	<li>Generating flame graphs for job 068</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/Devolab Research/evolution_of_modularity/raw_data/068/flamegraph_populations</strong></span></strong>$ for i in *_??????; do python ../../../../scripts/flamegraph/flamegraph.py --ylim_max 310 $i&quot;__flamegraph.png&quot; 14 5 $i/detail-?.spop* $i/detail-??.spop* $i/detail-???.spop* $i/detail-????.spop* $i/detail-?????.spop*; done</pre>
+
+<p><img src="./12.065.__-_Notes_-_Week_of_Mar_5_2012/image005.png" style="height:170px; width:226px" /><img src="./12.065.__-_Notes_-_Week_of_Mar_5_2012/image007.png" style="height:170px; width:226px" /></p>
+
+<p><img src="./12.065.__-_Notes_-_Week_of_Mar_5_2012/image009.png" style="height:450px; width:600px" /></p>
+
+<ul>
+	<li>oops, I screwed up when running the analysis of 068b. I conflated the 0075 and 00075 treatments into a single directory. The new analyze.bash only works on a single treatment at a time for the aggregation stuff. I need to pull them apart, and run the aggregation stages separately (stages 4-8).</li>
+	<li>Ok, job 068b is fully analyzed, as is job 068. Job 067&rsquo;s analysis is currently running, screened on atlantis. Going to bed now.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Sunday 3/11/12</h2>
+
+<h3>4:06 AM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Last few days, have been refining my analysis scripts. There is now analysis.py, which does much of what analysis.bash did, with the benefit of better looping and error checking, and control of what tasks are done when and how. Significant improvement.</li>
+	<li>Pulled out the graph making into its own script: &ldquo;makegraphs.py&rdquo;, which also lets me easily control when to include error bars, etc. Both of the above scripts live in the root directory with the data, are run from a treatment (need a better word, experiment?) sub directory.</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF">/Volumes/rosiec/research/Devolab Research/evolution_of_modularity/raw_data/067/TREATMENT-0.001875</span>$</strong> python ../makegraphs.py -e phys_mod_unity_scatter phys_mod_gaps phys_mod_gapmean phys_mod_gapstd
+
+<strong><span style="color:#40E0D0">rosiec@atlantis</span>:<span style="color:#0000FF">~/research/Devolab Research/evolution_of_modularity/raw_data/067/TREATMENT-0.001875</span>$</strong> python ../analyze.py aggregate_phys_mod</pre>
+
+<ul>
+	<li>Also tweaked extract_single_column_from_csv.py to produce NANs in place of empty data points and plot_from_csv.py to ignore NANs while calculating means, so as not to weight down the data means with bogus or empty data.</li>
+	<li>Bringing down the data from job 069. Half done.</li>
+	<li>Started job 071 &ndash; Clone of job 069, with updated scripts, and mutation rate of .001.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>2:49 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Updated analyze.py to test for where in the analysis state we are. Could use some further blahblah, but whatever. It does what I <strong>need</strong> right now.</li>
+	<li>Transferred and unzipped job 069, and set it analyzing. &ldquo;Collect&rdquo; actions are going right now in screen. When that&rsquo;s done, I can run aggregate on funct and phys modularity.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>8:49 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Analyzed 069. Still not quite what I was looking for. L</li>
+	<li>Job 071 is finished. I&rsquo;m copying it down now.</li>
+	<li>Started job 072, which is 071, with an even higher mutation rate (.002). The trick is to find a mutation rate where the control and noreward hit the modularity basement FASTER. :/</li>
+</ul>
+
+<p><img src="./12.065.__-_Notes_-_Week_of_Mar_5_2012/image011.png" style="height:170px; width:226px" /><img src="./12.065.__-_Notes_-_Week_of_Mar_5_2012/image013.png" style="height:170px; width:226px" /></p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

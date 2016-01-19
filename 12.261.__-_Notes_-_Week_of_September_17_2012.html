@@ -1,0 +1,82 @@
+<h1>Week of September 17, 2012</h1>
+
+<h2>Monday 9/17/12</h2>
+
+<h3>10:00 AM</h3>
+
+<p>LAB MTG NOTES:</p>
+
+<ul>
+	<li>Asking about how to determine what the population turn-over is.</li>
+	<li>Suggestions:
+	<ul style="list-style-type:circle">
+		<li>Add lineage label to those that receive punishment. Then check to see what the proportion of the population is descended from the lineage labeled organisms.</li>
+		<li>Do experiment where rather than setting merit to&nbsp; * -32, set merit to zero (make it a real kill). See if accepted mutation outcomes are the same. If so, then this is easier data to process. If not, then something else is going on. Something interesting about when the mutations are occurring. So, creating less stable offspring all the time&hellip; My guess is that the effect will be the same, but the bottleneck will be more severe.</li>
+		<li>Anyway, re-run the experiments with labeling.</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Sunday 9/23/12</h2>
+
+<h3>12:49 PM</h3>
+
+<p>Bathroom Thoughts &ndash; Attack Plan for bottleneck capture</p>
+
+<ul>
+	<li>Configure/Test
+	<ul style="list-style-type:circle">
+		<li>SHORT runs 10k updates</li>
+		<li>Configure to: (@C &agrave; @Cycle Start (punishment starts)
+		<ul>
+			<li>@C &ndash; 1u: count all flags that are in the population</li>
+			<li>@C: reset all flags</li>
+			<li>@C + 1u: set flag when organism does task</li>
+			<li>@C + 1u: count all flags in the population (for verification)</li>
+			<li>@C + 1u: count all task doers in the population (for verification)</li>
+		</ul>
+		</li>
+		<li>**Concern &ndash; how to verify the flag setting is actually working properly?
+		<ul>
+			<li>Store count of task doers at same time as flag is set, and then count the flags. Should match perfectly.</li>
+		</ul>
+		</li>
+		<li>**Question &ndash; how to conditionally set the flag on task doing&hellip; Should this be in the lineage labeling?</li>
+	</ul>
+	</li>
+	<li>Full Runs</li>
+	<li>Analyze Data</li>
+	<li>Re-do experiment with explicit bottlenecks at captured levels</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Going to go onto the HPCC and dust off the 082 run, which I believe is the proper one to model after, since my production runs culminated there.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>9:47 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Spent some of the afternoon adding code to Avida to allow me to set the lineage label as an action (sigh), filtered by task. Just copied the code to the HPCC. Going to try running a proof of concept.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>11:04 PM</h3>
+
+<ul>
+	<li>After a couple false starts, I got a set of 15-replicate proof of concept runs going. These will produce crap-tons of data. :/ Job 090.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

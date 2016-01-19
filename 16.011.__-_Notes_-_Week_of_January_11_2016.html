@@ -1,0 +1,224 @@
+
+<h1>Week of January 11, 2016</h1>
+
+<h2>Monday, Jan 11, 2016</h2>
+
+<h3>Log 4:37PM</h3>
+
+<p>Just had a quick chat with Mike about the HGT work and where I was and what my next set of plans are.</p>
+
+<p>Now, to formalize the relationship I expect to find <em>[this is a bunny trail --ed.]:&nbsp;</em>&nbsp;</p>
+
+<p>Higher bonuses (HGT_UPTAKE_BONUS_FRACTION)&nbsp;will overcome high probability of HGT recombination (HGT_UPTAKE_P).&nbsp;</p>
+
+<p><strong>Submitted Parameter Sweep Jobs, Part 1</strong></p>
+
+<p>Submitted jobs 201, performing a sweep of the bonus, from 0.1 - 32.0, at HGT_UPTAKE_P of 0.1.</p>
+
+<p>The following jobs have to wait until there&#39;s room in the queue.</p>
+
+<ul>
+	<li>202 - Homologous Match 1-5 (partly configured)</li>
+	<li>203 - Fragment Size 5-15 (not configured)</li>
+	<li>204 - Combinatorial HGT_UPTAKE_P 0.25,0.5,0.75 vs HGT_UPTAKE_BONUS_FRACTION 0.1 - 32.0 (partly configured)</li>
+</ul>
+
+<h2>Tuesday, Jan 12, 2016</h2>
+
+<h3>Log 11:39a</h3>
+
+<p><strong>Submitted Jobs and Pulled Down some Data</strong></p>
+
+<p>Woooo! The 201 runs finished (at 25 replicates, per), so now I can get a grip on the sweep stuff. Pulling it down to my computer now.</p>
+
+<p>Ok, was able to submit about half of 204 until I ran out of queue. Edited the run list file in anticipation of being able to submit more items. Probably tomorrow. Also reduced the run count to 25, which I had forgotten to do earlier for some reason. Ooops.</p>
+
+<h3>Log 3:33p</h3>
+
+<p><strong>Preliminary Bonus Parameter Sweep Figures (Run 201)</strong></p>
+
+<p>Ok, some figures!</p>
+
+<p><strong>All Bonus Levels</strong></p>
+
+<p><img src="./16.011.__-_Notes_-_Week_of_January_11_2016/2016_01_12_20_49_009.png" style="height:225px; width:300px" /><img src="./16.011.__-_Notes_-_Week_of_January_11_2016/2016_01_12_20_52_0410.png" style="height:225px; width:300px" /><img src="./16.011.__-_Notes_-_Week_of_January_11_2016/2016_01_12_21_20_071.png" style="height:225px; width:300px" /></p>
+
+<p><strong>Individual Bonus Levels</strong></p>
+
+<p><img src="./16.011.__-_Notes_-_Week_of_January_11_2016/2016_01_12_20_59_1515.png" style="height:225px; width:300px" /><img src="./16.011.__-_Notes_-_Week_of_January_11_2016/2016_01_12_21_01_081.png" style="height:225px; width:300px" /><img src="./16.011.__-_Notes_-_Week_of_January_11_2016/2016_01_12_21_13_297.png" style="height:225px; width:300px" /><img src="./16.011.__-_Notes_-_Week_of_January_11_2016/2016_01_12_21_13_156.png" style="height:225px; width:300px" /><img src="./16.011.__-_Notes_-_Week_of_January_11_2016/2016_01_12_21_06_445.png" style="height:225px; width:300px" /><img src="./16.011.__-_Notes_-_Week_of_January_11_2016/2016_01_12_21_05_194.png" style="height:225px; width:300px" /><img src="./16.011.__-_Notes_-_Week_of_January_11_2016/2016_01_12_21_03_433.png" style="height:225px; width:300px" /><img src="./16.011.__-_Notes_-_Week_of_January_11_2016/2016_01_12_21_02_042.png" style="height:225px; width:300px" /></p>
+
+<p>Obviously, there&#39;s something funny going on here around the &lt;1 boundary.</p>
+
+<h3>Lab Meeting Notes (3-5p)</h3>
+
+<p><strong>Bugs and Bunny-Trails</strong></p>
+
+<p>Indeed something is wrong around the &lt;1 boundary. Many things discussed, along with Charles shooting the shit about how my code might actually be right, and there&#39;s some other subtle thing going on. I disagree. I think it&#39;s a bug.</p>
+
+<p>Otherwise, Mike Wiser things there might be a relationship between the realized recombination rate in all the Probability runs. I&#39;ll look into it.</p>
+
+<h2>Wednesday, Jan 13, 2016</h2>
+
+<h3>Log 2:29p</h3>
+
+<p><strong>Relationship between Signal-Based Plasticity and Mutational Plasticity - A Link in Evolutionary Ancestry?</strong></p>
+
+<p>Chatted with Alex about his plasticity work, and we think we&#39;ve worked out a way that we can collaborate. I&#39;m going to send him my populations from run 082, and he&#39;ll try to use them as ancestors and measure how long it took for them to evolve plasticity, since he&#39;s seeing that his plastic organisms have intertwined and potentially mutationally plastic ancestors in their lineages. So, it&#39;s possible that in order to get plasticity, you ahve to go through a set of organisms that do what mine do.</p>
+
+<h2>Friday, Jan 15, 2016</h2>
+
+<h3>Log 2:27p</h3>
+
+<p>Didn&#39;t do anything yesterday. Just class then fucking off in the evening.</p>
+
+<p><strong>Fractional Bonuses Bug FOUND!</strong></p>
+
+<p>Figured out the dumb bug with fractional bonuses. It was always saving the new bonus as an int, so any fractional term was getting cut off, and thus it always sat at 1. Don&#39;t really know why 1.25 should act different than 1.5. Both should have cut off to 1. So... ?? <span style="background-color:rgb(249, 249, 249); color:rgb(44, 45, 48); font-family:slack-lato,applelogo,sans-serif; font-size:15px">&macr;\_(&#39;&#39;-)_/&macr;</span>. (the face should be represented via:&nbsp;&amp;#x30c4; but this doesn&#39;t work.)&nbsp;Running those runs again.</p>
+
+<p><strong>Recombination Rate</strong></p>
+
+<p>Per conversation during the lab meeting, I&#39;m going to plot the recombination rate and see if that&#39;s what they&#39;re mostly pegging to.</p>
+
+<h2>Saturday, Jan 16, 2016</h2>
+
+<h3>Log 12:29p</h3>
+
+<p><a href="http://localhost:8888/notebooks/Dropbox/School_Docs/Research/HGT/Analysis%20-%20205%20-%20HGT_Uptake_P%20Sweep%20-%20Var%20Length.ipynb#">http://localhost:8888/notebooks/Dropbox/School_Docs/Research/HGT/Analysis%20-%20205%20-%20HGT_Uptake_P%20Sweep%20-%20Var%20Length.ipynb#</a></p>
+
+<p><strong>Re-Do Prob Sweep with fixed Bonus code</strong></p>
+
+<p>Right, so I did a bunch of analysis and runs. In particular, I&#39;ve re-run the Probability Sweep using the fixed bonus code (Run 205), because, while I&#39;m not sure it has an important effect, better safe than sorry.</p>
+
+<p><strong>Genome Size - Bloating</strong></p>
+
+<p>Further, also based on eye-balling, I think the organisms are super-bloating when the HGT probability is low. In order to test the implications of this, I&#39;m submitting a probability sweep with fixed length (206). More analysis later.</p>
+
+<p><strong>Recombination Rate Bunny Trail</strong></p>
+
+<p>Regarding the recombination rate, they don&#39;t seem to be pegging it to anything in particular, based on the eyeballing. I&#39;m afraid that it would also be a huge bunny-trail to dig into this. Going to stick with the other stuff for now.</p>
+
+<h2>Sunday, Jan 17, 2016</h2>
+
+<h3>Log 2:55p</h3>
+
+<p>So, I fixed up the last bit of my analysis script set so that it dumps stuff out more nicely.&nbsp;</p>
+
+<p><strong>Uptake and Recombination Rates by Probability.</strong></p>
+
+<p><img src="./16.011.__-_Notes_-_Week_of_January_11_2016/2016_01_17_19_56_171.png" style="height:789px; margin-bottom:-130px; width:900px" /></p>
+
+<p>One thing to notice is that in P_0, bonus_U doesn&#39;t track perfectly&nbsp;exactly with hgtbonus_U. The reason for this is that with bonus_U, the boolean in the instruction that flags hgt is off. In the if-statement, this flag gets checked first, thus, the flow shortcuts after hitting the !hgt, and never pulls a random number to see if it should go into that block. So, even though the program flow appears to be the same, in the hgtbonus scenario, the random number does get pulled (even though it&#39;s always going to fail). This means that we end up with different random numbers for hgtbonus-P_0&nbsp;vs bonus-P_*. They mostly overlap each other in their error bars, so that&#39;s just fine. It&#39;s just worth noting. I could fix this by switching the order to check the probability number before checking enable/disable, but I&#39;m not sure that this would prove anything.</p>
+
+<p><strong>Ideal Probability Sweet-Spot</strong></p>
+
+<p>Otherwise, this confirms that I want to use the P = 0.1. It most clearly shows continued activity of the uptake when both uptake and bonus are enabled, but when there&#39;s no bonus, Uptake drops to very low levels.</p>
+
+<p><strong>Genome Length</strong></p>
+
+<p>The other thing of note is that I plotted out the size of the genomes based on the different probabilities of HGT occurring.</p>
+
+<p>I think they&#39;re trying to get as many HGT instructions in there as possible, when the risk is low.&nbsp;<em>Get it hot while the getting is good.</em>&nbsp;As soon as the prospect gets more risky, they don&#39;t bloat. This jives with the amount of HGT execution that goes on.</p>
+
+<p>So, you get a bonus.&nbsp;</p>
+
+<p><strong>P0</strong>:&nbsp;If it&#39;s low risk, DO IT A LOT. As a result,&nbsp;bloat your genome with it HUZZAH GALORE WOO PARTY, but you don&#39;t bloat as much as you possibly could, BECAUSE...</p>
+
+<p><strong>P0.001</strong>: You get a bonus, aaand there&#39;s a mild chance that it&#39;ll bite you. Not hard, not a lot, but enough to make you bloat a little extra. So, you have HGT Instruction Bloat + Disruption bloat as a result of the HGT Recombination biting. So, you&#39;re even fatter than you would be if you just had HGT_INST filling up your cooter.</p>
+
+<p><strong>P0.01</strong>: Ok, you still get a bonus, so you bloat with HGT Instructions. And, you&#39;re still disrupted by ... stuff. Are you qualitatively different from P0.001? Probably not.</p>
+
+<p><strong>P0.1</strong>: Ok, now we&#39;re starting to feel the bite. This is too much, so you cut back on the HGT_INST usage. There&#39;s still a fair bit of bloat. Is it HGT_INST or is it just other random crap?</p>
+
+<p><strong>P0.5</strong>: Fine, fuck you. I&#39;m bloated, but I&#39;m really not doing as much HGT_INST. So, this &nbsp;is the hard bit.</p>
+
+<p><strong>P1</strong>: OH SHIT NO. Not going to put HGT_INST in me. That&#39;s just dumbass shooting myself in the head. Also, not bloated, Nya Nya.&nbsp;</p>
+
+<p><strong>Control</strong>: Ok, there&#39;s no risk of HGT_INST hurting me, but it also can&#39;t make me swell because it&#39;s not tinkering. So, I might have quite a few HGT_INST in me, but I&#39;m not bloated. So, the HGT_INST might be getting executed A LOT, but they aren&#39;t happening because they&#39;re a lot of them in me. Kapisch?</p>
+
+<p><em><strong>TL;DR</strong></em>: HGT_INST-mediated disruption causes bloating of the genome, because it&#39;s disruptive, and you gotta work around it.</p>
+
+<p>So, the way to find out is to do a survey of the actual count of the HGT instructions in the genome. Either do a straight count, or also do a proportion. Unfortunately, I&#39;m not gathering this information, and I may have to extract it from the population files. :/&nbsp;&nbsp; &nbsp;</p>
+
+<p><img src="./16.011.__-_Notes_-_Week_of_January_11_2016/2016_01_17_20_07_251.png" style="height:375px; line-height:1.42857; width:500px" /><img src="./16.011.__-_Notes_-_Week_of_January_11_2016/2016_01_17_20_30_112.png" style="height:375px; line-height:1.42857; width:500px" /></p>
+
+<h3>Log 3:55p</h3>
+
+<p><strong>Extracting the living final populations from the .spop files.</strong></p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span>:<span style="color:#0000FF">~/horizontal_gene_transfer_basics/output/205_HGT_VarLength_ProbSweep</span>$</strong> for i in *_205*; do cd $i/data_*/; pwd; python ~/research_scripts/common/extract_line_on_condition.py 5 &quot;&gt;0&quot; detail-100000.spop &gt; living__detail-100000.spop ; cd ../../; done
+</pre>
+
+<p>This goes through, and finds all the lines in the file that have living exemplars. Next step is to pull the data over. I&#39;ll do that via rsync, since I can avoid copying over old files. This copy might take a while. :/</p>
+
+<pre>
+<strong><span style="color:rgb(255, 0, 0)">caninoko@dev-intel14</span>:<span style="color:rgb(0, 0, 255)">~/horizontal_gene_transfer_basics/output/205_HGT_VarLength_ProbSweep</span>$</strong> for i in *_205*; do cd $i/data_*/; pwd; gzip living__detail-100000.spop ; cd ../../; done
+</pre>
+
+<p>Gzipped, which deflates them about 5-fold. So, it won&#39;t be soooo terrible.</p>
+
+<pre>
+<strong><span style="color:#FFD700">rosiec@heimdall</span></strong>[1467]:<strong><span style="color:#0000FF">~/Dropbox/School_Docs/Research/HGT/raw_data</span></strong>$ rsync -crapv --exclude=&quot;avida&quot; --exclude=&quot;*spop&quot; --exclude=&quot;*cfg&quot; --exclude=&quot;*org&quot; --exclude=&quot;*.sh&quot; --exclude=&quot;.out&quot; --exclude=&quot;*arrayjobs.txt&quot; --exclude=&quot;lstring.out&quot; --exclude=&quot;run.log&quot; --exclude=&quot;checkpoint.blcr&quot; caninoko@hpcc.msu.edu:~/hor*/out*/205* ./
+</pre>
+
+<p>Copying. Going pretty fast. Next, I unzip them.</p>
+
+<pre>
+<strong><span style="color:#FFD700">rosiec@heimdall</span></strong>[1471]:<strong><span style="color:#0000FF">~/Dropbox/School_Docs/Research/HGT/raw_data/205_HGT_VarLength_ProbSweep</span></strong>$ for i in *_205*; do cd $i/data_*/; pwd; gunzip living__detail-100000.spop.gz ; cd ../../; done</pre>
+
+<p>This is going to suck up stupid amounts of Dropbox, so I&#39;m going to need to discard the local copies of the spops&nbsp;when I&#39;m done.</p>
+
+<p>This bit is going to take a custom script, which I&#39;ll write in iPython notebook. We&#39;ll see how that goes. I&#39;ll go in the 205 dataset. Brb.</p>
+
+<h3>Log 5:13p</h3>
+
+<p>Right, so here&#39;s more or less what I did, since I couldn&#39;t for the life of me figure out how to get it to work in the notebook.</p>
+
+<pre>
+<strong><span style="color:#FFD700">rosiec@heimdall</span></strong>[1548]:<strong><span style="color:#0000FF">~/Dropbox/School_Docs/Research/HGT/raw_data/205_HGT_VarLength_ProbSweep</span></strong>$ PROB=P_1_bonus; rm ${PROB}_HGT_instructions.csv; for i in *${PROB}_205*; do cd $i/data_*/; python2 ../../../../../research_scripts/common/count_instructions.py &quot;A&quot; living__detail-100000.spop &gt;&gt; ../../${PROB}_HGT_instructions.csv ; cd ../../; done</pre>
+
+<p>Ooops, scratch that. I was able to sorta get it working in the notebook. So refer to that for the specifics. Next is plotting it out, ideally in a bar chart of some sort.</p>
+
+<p><img src="./16.011.__-_Notes_-_Week_of_January_11_2016/2016_01_18_00_11_314.png" style="height:293px; width:828px" /></p>
+
+<h3>Log 9:19p</h3>
+
+<p>My 206 runs finished. Data is being pulled down, and I&#39;m pretty much just repeating the 205 analysis on them.</p>
+
+<p><a href="http://localhost:8888/notebooks/Dropbox/School_Docs/Research/HGT/Analysis%20-%20206%20-%20HGT_Uptake_P%20Sweep%20-%20Fixed%20Length.ipynb">http://localhost:8888/notebooks/Dropbox/School_Docs/Research/HGT/Analysis%20-%20206%20-%20HGT_Uptake_P%20Sweep%20-%20Fixed%20Length.ipynb</a></p>
+
+<p><strong>fitness, hgtbonus - uptake, recomb, bonus rates, just hgt - uptake, recomb, bonus rates.</strong></p>
+
+<h3><img src="./16.011.__-_Notes_-_Week_of_January_11_2016/2016_01_18_04_36_155.png" style="height:225px; width:300px" /><img src="./16.011.__-_Notes_-_Week_of_January_11_2016/2016_01_18_04_36_316.png" style="height:225px; width:300px" /><img src="./16.011.__-_Notes_-_Week_of_January_11_2016/2016_01_18_04_37_197.png" style="height:225px; width:300px" /></h3>
+
+<p><strong>HGT Uptake rates for the various treatments, at different recombination&nbsp;probabilities</strong></p>
+
+<p>Even at fixed length, P 0.1 is still the most promising pattern.</p>
+
+<p><img src="./16.011.__-_Notes_-_Week_of_January_11_2016/2016_01_18_04_38_188.png" style="height:789px; margin-bottom:-130px; width:900px" /></p>
+
+<p><strong>Genome Copied and Executed Lengths:</strong></p>
+
+<p><img src="./16.011.__-_Notes_-_Week_of_January_11_2016/2016_01_18_04_40_549.png" style="height:300px; width:400px" /></p>
+
+<p>Note the scale. The Y-axis (which is mislabeled, sorry) starts at 88. :P</p>
+
+<p><strong>Instructions and Proportions of Instructions</strong></p>
+
+<p><img src="./16.011.__-_Notes_-_Week_of_January_11_2016/2016_01_18_04_41_1610.png" style="height:293px; width:892px" /></p>
+
+<p>In general, I don&#39;t really know what the differences mean, except that in this case, obviously, the organisms are prevented from bloating. What that does to their various incentives, I have no idea.</p>
+
+<h3>Log 11:31p</h3>
+
+<p>Re-running the 201 run with the fixed Avida. Id like to set&nbsp;207 going (fixed-length version of 201), but 201 takes up 800q, even with only 25 replicates a piece.</p>
+
+<p><strong>Some conclusions about 206 - Fixed Length is Plucky; Sweet-spot is still good between 0.1 and 0.25. I prefer 0.1, because it doesn&#39;t completely destroy no-bonus.</strong></p>
+
+<p>Fixed-length seems to make them behave with more ingenuity. Despite being so much shorter, and having such a lower proportion of HGT_UPTAKE instructions (0.014 vs 0.05, 5-fold&nbsp;fewer), they manage to execute just as many HGT uptakes as the variable-length ancestor. An example of constraint potentiating evolution?</p>
+
+<p>Recombination rates peak at the 0.25 probability level. More than that, they use the instruction much less;&nbsp;less than that, the bonus gets used, but the recombination probability is very low, so it never shows. The recombination rate at P of 0.1 and 0.25 are quite similar, though the Uptake rate is quite decreased at 0.25. It&#39;s like some major tension point, or a maximization point. Some kind of balanced tension at that level. Probably just a coincidence.&nbsp;</p>
+
+<p><strong>Further Experiments</strong></p>
+
+<p>Do bonus sweeps around 0.1, 0.25 and 0.5, to see if we can bring up the HGT level with increased bonuses. If the bonus can encourage more use, then it&nbsp;should be visible with the straight 0.1 bonus sweep, and confirmed with the 0.25 and 0.5 Probability levels.&nbsp;</p>

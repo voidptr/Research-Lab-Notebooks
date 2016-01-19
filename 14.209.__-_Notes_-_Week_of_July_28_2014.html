@@ -1,0 +1,85 @@
+<h1>Week of July 28, 2014</h1>
+
+<h2>Monday, Jul 28, 2014</h2>
+
+<h3>Log 11:19AM (PST)</h3>
+
+<p>Sitting in a hotel room in Las Vegas, Nevada. Doing some work for the first time this week. Horrible. Horrible. I&#39;m polishing my experimental design, and stuffing it back into my head so I can possibly get some work done. I need to make some concrete goals of working, actual work for some set number of hours per day. I&#39;m going to shoot for three hours. I will keep a timesheet. That&#39;s 21 hours per week, which seems reasonable to start with.</p>
+
+<p>I&#39;ve created the <a href="http://127.0.0.1:5000/00.000._-_Big_Picture">big picture document</a>, which will live in the window tile to the right of whatever lab notebook it is that I&#39;m working on.</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Friday, August 1, 2014</h2>
+
+<h3>Log 7:52p (CST)</h3>
+
+<p>This is a log from the road. I&#39;m in central Oklahoma, trying to snatch a couple hours of work out of this road trip. I should be able to. :)</p>
+
+<p>Ok, so I need to write some python scripts to separate the organisms, as well as separate the raw outputs.</p>
+
+<p>I want to understand what my organisms are saying. Are they actually using the mate selection (target display c#) thing. The raw display information should be outputting it. I&#39;m going to ssh into the HPCC over PuppyTouch and see if that gets me some data.</p>
+
+<h3>&nbsp;</h3>
+
+<h3>8:53p</h3>
+
+<p>I was able to pull the data down from the HPCC.</p>
+
+<p>I plotted the female preference data for the colleciton of runs. It looks like they are indeed mostly using the target C.</p>
+
+<p><img alt="" src="./14.209.__-_Notes_-_Week_of_July_28_2014/111_female_mate_preference.png" style="border-style:solid; border-width:1px; height:197px; width:452px" /></p>
+
+<p>So, this plot is obviously less than ideal, mostly because I can&#39;t get matplot lib working. In any case, these are means that I&#39;m comparing, in the same runs, so the data isn&#39;t unrelated. They have to total 3600, so they&#39;re constrained. So, some kind of normalization has to happen there. Further, these aren&#39;t freely chosen. You&#39;re either one or the other, so they are related, in a way that I can&#39;t even begin to disambiguate, because I&#39;m terrible at stats. :/ Anyway, I can&#39;t draw min/max values, plus the confidence interval on my graph, because, duh, Excel. :/</p>
+
+<p>Anyway.</p>
+
+<p>Next, I wanted to see what values they are actually using for the matings. For that, I may need successful matings, so I can somehow pull out what each organism is doing. Finally, I ... feel like I want to pull out how the targeted C values vary based on phenotype. And I have no idea how feasible that is. I&#39;m just interested. Should I be interested? no idea. I can&#39;t seem to differentiate between bunnytrial and not.</p>
+
+<p>Ok. My hypothesis is clear. Let&#39;s pursue that for now. Moving forward. I need to separate the final organisms into groups so that I can then let them evolve independently under different trees. I need a quickie script for this, or use the condition script to separate my organisms. This will be a problem when looking at the population dump, which is organized by genotype, not organism, so organisms with a single genotype may be sitting on opposite sies of the wall, so I need to be able to account for that. My conditional output script assumes that there is a single values in the field, not multiple that may be comma separated.</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Saturday, August 2, 2014</h2>
+
+<h3>Log 3:23p (MST)</h3>
+
+<p>Just got done visiting with Angela.</p>
+
+<p>Ok, I&#39;m going to update my conditional line pull script to pull out the comma values and evaluate them independently.</p>
+
+<pre>
+<strong><span style="color:#FF0000">rosiec@Weir</span></strong>:<span style="color:#0000FF"><strong>~/Dropbox/School Docs/Research/mate_discrimination_2014/runs/111/basic1_111001/data1</strong></span>$ python ../../../../../research_scripts/common/extract_line_on_condition.py 18 &quot;&lt;1800&quot; detail-100000.spop &gt; detail-zone1.spop
+
+<span style="color:#FF0000"><strong>rosiec@Weir</strong></span>:<span style="color:#0000FF"><strong>~/Dropbox/School Docs/Research/mate_discrimination_2014/runs/111/basic1_111001/data1</strong></span>$ python ../../../../../research_scripts/common/extract_line_on_condition.py 18 &quot;&gt;1799&quot; detail-100000.spop &gt; detail-zone2.spop</pre>
+
+<p>So, I think that extracted appropriately.</p>
+
+<p>Now, I need to figure out how to get this to work within the scope of the scripts. :/ I&#39;ll need to add the extraction function to the run itself. Alternatively, I need to seed each run file with the content from scratch, maybe. But first, I need to load the detail file.</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Sunday August 3, 2014</h2>
+
+<h3>Log 12:02p (PST)</h3>
+
+<p>Had a long conversation last night with Kendall about why I&#39;m having such a hard time working. I came to the conclusion that it&#39;s that I&#39;m falling into these bunnytrails that I feel COMPELLED to follow, but I felt like Charles wanted me to bypass. I decided that Charles is wrong. The bunnytrails are how I am understanding the system that I&#39;m working in. If I don&#39;t understand the system, how the hell am I going to understand what my results mean? So, I&#39;m going to work to gather the data (and build the pipeline), but I&#39;m going to make note of all the bunnytrails and work on them as separate goals.</p>
+
+<p>So, for the short term, I&#39;m going to finish up the pipeline construction.</p>
+
+<ul>
+	<li>Run 1</li>
+	<li>Separate output into two halves</li>
+	<li>Run 2a/b - Sizes is 60x30 each, load the sub-population file.
+	<ul>
+		<li>Set size as WORLD_Y 30</li>
+	</ul>
+	</li>
+	<li>Run 3 - load the population files, offset from each other.</li>
+</ul>
+
+<h3>&nbsp;</h3>
+
+<h3>Log 1:18p</h3>
+
+<p>I&#39;ve figured out how load popuation works. Unforunately, it is incapable of ignoring the cell ID, so I&#39;ll just have to do a full-sized run for the 2a/b runs, and then do an offset load with the detail files. It&#39;s unfortunate, but I don&#39;t really know what the hell else to do. It should work with loading the offset cell_id of one over top of the other.</p>

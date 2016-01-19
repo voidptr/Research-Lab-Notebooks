@@ -1,0 +1,210 @@
+<h1>Week of June 09, 2014</h1>
+
+<h2>Monday, Jun 09, 2014</h2>
+
+<h3>Log 11:02AM</h3>
+
+<p>Ok, today, I&#39;m spending all day working on work. Work work work</p>
+
+<ul>
+	<li>Add barrier-dropping to the sexual reproduction events.
+	<ul>
+		<li>add an event to drop the wall</li>
+		<li>add code so that the event separates the organisms in the birth chamber</li>
+	</ul>
+	</li>
+</ul>
+
+<h3>&nbsp;</h3>
+
+<h3>Log 12:51pm</h3>
+
+<p>Sadly, I seem to have lost some code. :( :( :(</p>
+
+<p>All the code to add selecting on displayed merit is MISSING. This is after having a look at some of the birth chamber code and ... not being sure how the hell my stuff did anything, because in <span style="font-family:courier new,courier,monospace">cBirthChamber.cc</span> there&#39;s a method <span style="font-family:courier new,courier,monospace">getSelectionHandler(...)</span>, which picks a handler for how mates are chosen... and there&#39;s no code in there to specifically choose based on display-merit traits, only on the other ones. And you have to have mating types enabled. So... I have no clue how ..., and MY CODE IS GONE.</p>
+
+<p>So, not only am I going to have to re-implement, but I may have been doing it wrong before. D: I was so sure it was right, because I searched for all the places where <span style="font-family:courier new,courier,monospace">GetMatingDisplayA</span> or whatever were being used, but there&#39;s no entry (below) of<span style="font-family:courier new,courier,monospace"> cBirthMatingTypeGlobalHandler.cc</span></p>
+
+<pre>
+<code>.gitignore 
+avida-core/include/public/avida/core/Definitions.h 
+avida-core/source/actions/PrintActions.cc 
+avida-core/source/cpu/cHardwareCPU.cc 
+avida-core/source/cpu/cHardwareCPU.h 
+avida-core/source/main/cPhenotype.cc 
+avida-core/source/main/cPhenotype.h</code></pre>
+
+<p>So, incredibly frustrating.</p>
+
+<p>Ok, reimplementing.</p>
+
+<pre>
+<span style="color:#0000FF"><code>avida-core/include/public/avida/core/Definitions.h:197 </code></span>
+
+<tt>enum eMatePreferences {
+  MATE_PREFERENCE_RANDOM,
+  MATE_PREFERENCE_HIGHEST_DISPLAY_A,
+  MATE_PREFERENCE_HIGHEST_DISPLAY_B,
+<span style="background-color:#00FF00">  MATE_PREFERENCE_HIGHEST_DISPLAY_MERIT,</span>
+  MATE_PREFERENCE_HIGHEST_MERIT
+};</tt></pre>
+
+<pre>
+<span style="color:#0000FF"><code>avida-core/source/cpu/cHardwareCPU.h:1040 </code></span>
+
+  bool Inst_SetMatePreference(cAvidaContext&amp; ctx, int mate_pref);
+  bool Inst_SetMatePreferenceHighestDisplayA(cAvidaContext&amp; ctx);
+  bool Inst_SetMatePreferenceHighestDisplayB(cAvidaContext&amp; ctx);
+<span style="background-color:#00FF00">  bool Inst_SetMatePreferenceHighestDisplayMerit(cAvidaContext&amp; ctx);</span>
+  bool Inst_SetMatePreferenceRandom(cAvidaContext&amp; ctx);
+  bool Inst_SetMatePreferenceHighestMerit(cAvidaContext&amp; ctx);
+};
+
+<span style="color:#0000FF"><code>avida-core/source/cpu/cHardwareCPU.cc:436</code></span>
+</pre>
+
+<h3>&nbsp;</h3>
+
+<h3>Log 2ish</h3>
+
+<p>Aha! I found the old code! It was tucked away on edi. I&#39;ve brought it into the fold, and integrated it into my avida fork on github under its own branch, and merged it up with the latest master from the DevoSoft avida upstream.</p>
+
+<h3>&nbsp;</h3>
+
+<h3>Meeting w/ Charles 3pm</h3>
+
+<ul>
+	<li>Explained how my previous results comparing Highest Merit vs Highest Display Merit were wrong. :(
+	<ul>
+		<li>Will re-run the experiments after fixing the handler that does mating type mate selection to include all the different thingies. The code is located in <span style="font-family:courier new,courier,monospace">cBirthMatingTypeGlobalHandler.cc</span></li>
+		<li>Add a control against NOP instruction to make sure that it&#39;s there.</li>
+	</ul>
+	</li>
+	<li>Discussed how to raise and lower a geographic barrier.
+	<ul>
+		<li>Add new divide instruction: &quot;Divide-MateOnLineage&quot; that mirrors mate on label. It chooses mates based on lineage tags in the phenotypes.</li>
+		<li>Add new action that sets your lineage label of the population, selectively.</li>
+	</ul>
+	</li>
+	<li>Discussed new paper idea from Charles
+	<ul>
+		<li>most cited papers are review papers and methods papers</li>
+		<li>So, maybe we should write review papers for our lab</li>
+		<li>beacon mission is to bring together the perspectives of the different fields that do biology.
+		<ul>
+			<li>In my case, a modularity review paper might do quite nicely
+			<ul>
+				<li>Link in the concepts of linkage in population genetics from the evolutionary biology side.</li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<h3>&nbsp;</h3>
+
+<h3>Log 11:08p</h3>
+
+<p>Right, so getting on with it, I need to make some code modifications.</p>
+
+<ul>
+	<li>Add Highest Display Merit to <span style="font-family:courier new,courier,monospace">cBirthMatingTypeGlobalHandler.cc</span></li>
+	<li>Create new instruction: <code>Inst_HeadDivideMateSelectLineage</code>, modeled after <code>cHardwareCPU: bool Inst_HeadDivideMateSelect</code></li>
+</ul>
+
+<p>First, I&#39;m going to work the second issue. Branch mate_select_lineage</p>
+
+<pre>
+<code>avida-core/source/cpu/cHardwareCPU.cc - added instruction (div-sex-MSL) and function Inst_HeadDivideMateSelectLineage()
+avida-core/source/cpu/cHardwareCPU.h </code>- added function declaration
+avida-core/source/actions/cPopulationActions.cc - added cActionSetLineageLabelRange action, and registered it.</pre>
+
+<p>First, for testing the lineage label setting, set up an events file with the following</p>
+
+<pre>
+# Seed the population with a single organism
+u begin InjectRange default-heads.org 0 3500
+
+u 0 SetLineageLabelRange 0 99 3
+u 0 SetLineageLabelRange 100 199 5
+u 0 SetLineageLabelRange 200 299 7
+u 0 SetLineageLabelRange 300 1799 11
+
+u 1 PrintLineageCounts
+
+u 0:100:end PrintLineageCounts
+
+u 2 SetLineageLabelRange 0 3599 3
+
+u 1000 SetLineageLabelRange 0 1799 5
+u 1000 SetLineageLabelRange 1800 3599 7
+
+u 2000 SetLineageLabelRange 0 3599 11</pre>
+
+<p>Right, seems to work fine. But... there is something I hadn&#39;t really anticipated. If there&#39;s a sweep, it can easily kill off an unlucky lineage label. So... Now I have to think about that. How do I get them to not wipe each other out? The point is to get an approximation of a physical barrier. So, that means not letting them reproduce over those of a different lineage label. :/ I think this means adding a new reproduction mechanism, which constrains a well-mixed population to a smaller range. So, this will mean adding an option to BIRTH_METHOD (along with the corresponding code), as well as some supplementary options, about what size the constraint is. I&#39;m favoring half/third/etc.</p>
+
+<p>Also, there seems to be a bug in PrintLineageCounts, such that it seems to scramble which label goes in which column.</p>
+
+<p>So, today, I leave with the following TODO for mate_select_lineage:</p>
+
+<ul>
+	<li><span style="background-color:#FFFF00">Test MateSelectLineage</span></li>
+	<li><span style="background-color:#FFFF00">Add #14 BIRTH_METHOD plus option to constrain birth neighborhood size</span></li>
+</ul>
+
+<p>And, the following TODO for fixing Highest Display Merit:</p>
+
+<ul>
+	<li><span class="marker"><span style="background-color:#FFFF00">Add code to </span><span style="font-family:courier new,courier,monospace"><span style="background-color:#FFFF00">cBirthMatingTypeGlobalHandler.cc</span></span><span style="background-color:#FFFF00"> to handle </span><span style="font-family:courier new,courier,monospace"><span style="background-color:#FFFF00">HighestDisplayMerit</span></span></span></li>
+</ul>
+
+<h2>&nbsp;</h2>
+
+<h2>Tuesday June 10, 2014</h2>
+
+<h3>Lab Meeting 3pm</h3>
+
+<ul>
+	<li>EALib successfully compiled into EmScripten
+	<ul>
+		<li>Issues with compiling in configurations.
+		<ul>
+			<li>EALib only compiles in 15 seconds, so ... issues here are minimal.</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Cliff had a nice display of what happens when oyu have strongly linked selection traits.
+	<ul>
+		<li>If it&#39;s not sex-linked, the gene for selection makes it into the male population, so all offspring will carry it, instead of only half.</li>
+		<li>Jay insists this isn&#39;t sexy sons. I think it is, or at least an inverse sexy-sons. <span style="background-color:#FFFF00">TODO - look this up.</span></li>
+	</ul>
+	</li>
+</ul>
+
+<h4>Interspersed Development (Adding Birth_Method)</h4>
+
+<pre>
+avida-core/source/main/cAvidaConfig.h:368 - Added BIRTH_METHOD 14, and BIRTH_ZONES config option.
+<code>avida-core/include/public/avida/core/Definitions.h:81 </code>- added POSITION_OFFSPRING_BIRTH_ZONES to ePOSITION_OFFSPRING enum.
+avida-core/source/main/cPopulation.cc:5158 - Added handling of BIRTH_METHOD 14</pre>
+
+<ul>
+	<li>TODO remaining after meeting:
+	<ul>
+		<li>finish the cPopulation.cc code.</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

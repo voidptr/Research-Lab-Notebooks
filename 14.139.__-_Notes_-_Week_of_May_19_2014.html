@@ -1,0 +1,173 @@
+<h1>Week of May 19, 2014</h1>
+
+<h2>Monday, May 19, 2014</h2>
+
+<h3>Log 5pm ish?</h3>
+
+<p>Right, so nothing got done all last week after doing the basic analysis of results. And I can&rsquo;t even remember what the basic experiments were that I was supposed to be doing. :(</p>
+
+<p>Ok, let&rsquo;s try to reconstruct the conversation...</p>
+
+<ol>
+	<li>
+	<p>Basic as fuck experiments - sexual reproduction, with a changing environment.</p>
+	</li>
+	<li>
+	<p>Add sexual selection?</p>
+
+	<ol>
+		<li>
+		<p>I need to have a way for selection to work. So, my organisms have to be able to select based on merit, and then a task that does merit.</p>
+		</li>
+		<li>
+		<p>So, that means editing or adding an instruction so that it can do merit display</p>
+		</li>
+	</ol>
+	</li>
+</ol>
+
+<h4>Log Tuesday, May 20, 12:54am (after midnight)</h4>
+
+<p>I implemented a merit display instruction that they have to have in their genome before they can be selected for mating. <a href="https://github.com/devosoft/avida/wiki/Using-mating-types-%28separate-sexes%29">https://github.com/devosoft/avida/wiki/Using-mating-types-%28separate-sexes%29</a></p>
+
+<p>I edited:</p>
+
+<pre>
+<code>.gitignore 
+avida-core/include/public/avida/core/Definitions.h 
+avida-core/source/actions/PrintActions.cc 
+avida-core/source/cpu/cHardwareCPU.cc 
+avida-core/source/cpu/cHardwareCPU.h 
+avida-core/source/main/cPhenotype.cc 
+avida-core/source/main/cPhenotype.h
+</code></pre>
+
+<p>It looks like half of the females are using it by 20k generations.</p>
+
+<p>I&rsquo;m going to run a couple of experiments, just with the basic swap thing, making sure it all works.</p>
+
+<p>The first set of runs is just the basic thing, with selection based on direct merit.</p>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@edi</span></strong><code>:</code><strong><span style="color:#0000FF">~/__research/sexual_selection/configs/102_Merit_Sexual_Selection</span></strong><code>$ val=control; for i in {102001..102030}; do cp -r config/ output/val&quot;_&quot;i ; cd output/val&quot;_&quot;i ; echo ./avida -s i -set EVENT_FILE events.cfg | batch ; cd .. ; cd .. ; echo ; done rosiec@edi:~/__research/sexual_selection/configs/102_Merit_Sexual_Selection$ val=noreward; for i in {102001..102030}; do cp -r config/ output/val&quot;_&quot;i ; cd output/val&quot;_&quot;i ; echo ./avida -s i -set EVENT_FILE events_noreward.cfg | batch ; cd .. ; cd .. ; echo ; done rosiec@edi:~/__research/sexual_selection/configs/102_Merit_Sexual_Selection$ val=punish; for i in {102001..102030}; do cp -r config/ output/val&quot;_&quot;i ; cd output/val&quot;_&quot;i ; echo ./avida -s i -set EVENT_FILE events_punish.cfg | batch ; cd .. ; cd .. ; echo ; done
+</code></pre>
+
+<p>The second batch is based on an instruction that displays merit, instead of merit directly.</p>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@edi</span></strong><code>:</code><strong><span style="color:#0000FF">~/__research/sexual_selection/configs/103_Merit_Display_Sexual_Selection</span></strong><code>$ val=control; for i in {103001..103030}; do cp -r config/ output/val&quot;_&quot;i ; cd output/val&quot;_&quot;i ; echo ./avida -s i -set EVENT_FILE events.cfg | batch ; cd .. ; cd .. ; echo ; done rosiec@edi:~/__research/sexual_selection/configs/103_Merit_Display_Sexual_Selection$ val=noreward; for i in {103001..103030}; do cp -r config/ output/val&quot;_&quot;i ; cd output/val&quot;_&quot;i ; echo ./avida -s i -set EVENT_FILE events_noreward.cfg | batch ; cd .. ; cd .. ; echo ; done rosiec@edi:~/__research/sexual_selection/configs/103_Merit_Display_Sexual_Selection$ val=punish; for i in {103001..103030}; do cp -r config/ output/val&quot;_&quot;i ; cd output/val&quot;_&quot;i ; echo ./avida -s i -set EVENT_FILE events_punish.cfg | batch ; cd .. ; cd .. ; echo ; done
+</code></pre>
+
+<p>Ok, for the meeting tomorrow, I want to talk about</p>
+
+<ul>
+	<li>
+	<p>architecture of avida</p>
+	</li>
+	<li>
+	<p>sexual selection in Avida</p>
+	</li>
+	<li>
+	<p>experimental design</p>
+
+	<ul>
+		<li>
+		<p>sexual organisms evolve with a variety of merit-based display traits in common environment</p>
+		</li>
+		<li>
+		<p>wall drops down, preventing organisms from mating across the wall</p>
+		</li>
+		<li>
+		<p>organisms are allowed to evolve</p>
+		</li>
+		<li>
+		<p>wall is raised. do organisms mate-discriminate against heterospecifics?</p>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<h2>&nbsp;</h2>
+
+<h2>Tuesday May 20, 2014</h2>
+
+<h3>Meeting w/ Stickleback/Avida experiments</h3>
+
+<ul>
+	<li>
+	<p>discussing the effects of sexual selection on</p>
+	</li>
+	<li>
+	<p>build the &ldquo;buildDisplay&rdquo; instruction, which applies what&rsquo;s in your registers into the display. Let females do a similar thing and select for the built display.</p>
+
+	<ul>
+		<li>
+		<p><strong>There is a concern that you would have phenotype matching, and we don&rsquo;t want to constrain.</strong></p>
+		</li>
+	</ul>
+	</li>
+	<li>
+	<p><strong>post my slides to google docs so that others can see.</strong></p>
+	</li>
+	<li>
+	<p><strong>look at my noisy discrimination rate. lower the noise to 1%.</strong></p>
+	</li>
+</ul>
+
+<h2>&nbsp;</h2>
+
+<h2>Friday May 23, 2014</h2>
+
+<h3>Interlude</h3>
+
+<p>My runs weren&rsquo;t working on the HPCC for a FUCK TON of stupid fucking reasons and a series of annoying coincidences. I think my runs will now work in the usual fashion, by using dist_run_beta. HOORAY.</p>
+
+<h3>&nbsp;</h3>
+
+<h3>Log 7:00pm</h3>
+
+<p>After a pretty frustrating week of my runs not working, I was able to get some runs to go. Of particular interest is run 107.</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong><code>:</code><strong><span style="color:#0000FF">~/sexual_selection_and_evolvability/output/107_Merit_Display_Sexual_Selection/summary</span></strong><code>$ python ~/research_scripts/quickplot.py --ylog -y &quot;Fitness - Merit Display Sexual Selection&quot; -x &quot;Updates x100&quot; --title &quot;Log Fitness&quot; --error fitnesses average.dat 4 &quot;../control_*/data/&quot; control average.dat 4 &quot;../punish_*/data/&quot; punish average.dat 4 &quot;../noreward_*/data/&quot; noreward
+</code></pre>
+
+<p><img alt="" src="./14.139.__-_Notes_-_Week_of_May_19_2014/twcTLo.jpg" style="height:600px; width:800px" /></p>
+
+<p>These runs compare the effect of the different changing environment regimes vs a control (not a good one, sadly) in a context of sexual selection against displayed merit. The controls are fixed in the next set of runs (108 and 109). 109 uses the same seeds as 108. 108 is the direct merit selection, and 109 is the merit display selection. The fixed controls will only reward half of the tree (the starting half) the whole time, instead of double the reward (oops). I think the weird error bars have to do with the log display. So, once my shit is comparable, I&rsquo;ll be able to remove that. Maybe fix it at some point. meh.</p>
+
+<p><em>Interestingly, the noreward/punish regimes behave pretty similarly.</em></p>
+
+<p>So, when 108 and 109 are done, I&rsquo;ll be able to directly compare the merit display vs direct merit selection.</p>
+
+<p>Argh, why am I doing these experiments? Is it for my explorations of sexual selection? Right now, I just feel like I am literally going through the motions, and have entirely lost the plot. D: Pulling my hair out. But I&rsquo;m DOING something, which is better than wasting my time on other random shit. Anyway, those other runs are going, and should be done in the next couple hours.</p>
+
+<p><strong>TODO: FIGURE OUT WHAT/WHY I AM DOING THE ABOVE.</strong></p>
+
+<p>----</p>
+
+<p>Next separate set of thoughts: stickleback. I need to think about an appropriate display for the sticklebackavidians to use to select their mates. During the meeting, Jason and Jen expressed concern about locking in phenotypic matching as the selection method. I can see what they are getting at, though I suspect they got it accidentally. <strong>So, how to build up a random enough set of traits that can be chosen among, or have them built up separately so that phenotypic matching isn&rsquo;t automatic?</strong></p>
+
+<h3>&nbsp;</h3>
+
+<h3>Log 9:24p</h3>
+
+<p>My 108 job got finished. Looks like 109 will be done in about half an hour, if the gods are good.</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong><code>:</code><strong><span style="color:#0000FF">~/sexual_selection_and_evolvability/output/108_Merit_Display_Sexual_Selection/summary</span></strong><code>$ python ~/research_scripts/quickplot.py --title &quot;Fitness - Merit Display Sexual Selection (108)&quot; -x &quot;Updates x100&quot; -y &quot;Fitness&quot; --error 108_fitnesses average.dat 4 &quot;../control_/data/&quot; control average.dat 4 &quot;../punish_/data/&quot; punish average.dat 4 &quot;../noreward_*/data/&quot; noreward
+</code></pre>
+
+<p><img alt="" src="./14.139.__-_Notes_-_Week_of_May_19_2014/4OVtc6.jpg" style="height:600px; width:800px" /></p>
+
+<p>Right, so it looks pretty much as expected.</p>
+
+<h3>&nbsp;</h3>
+
+<h3>Log 10:55p</h3>
+
+<p>The 108b (109) run completed.</p>
+
+<p><img alt="" src="./14.139.__-_Notes_-_Week_of_May_19_2014/t6j2sx.jpg" style="height:600px; width:800px" /></p>
+
+<p>Also looks pretty much as expected. No surprises there. In conclusion, Merit vs Merit Display act pretty much the same.</p>

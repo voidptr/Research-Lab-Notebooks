@@ -1,0 +1,61 @@
+<h1>Week of September 10, 2012</h1>
+
+<h2>Monday 9/10/12</h2>
+
+<h3>10:00 AM</h3>
+
+<p>LAB MTG NOTES:</p>
+
+<ul>
+	<li>Talk to evolutionary education folks about evolight to see what kinds of pedagogical challenges this would address.</li>
+	<li>Evolving High/low epistasis</li>
+</ul>
+
+<ul>
+	<li>run them through the test CPU (nonviable)</li>
+	<li>instruction sets of various types</li>
+	<li>sexual recombination lowers epistasis</li>
+	<li>single point uniform crossover gives low epistasis</li>
+	<li>instructions have a chance of failing lowers epistasis/high robustness</li>
+	<li>high mutation rates lowers epistasis</li>
+</ul>
+
+<ul>
+	<li>Look at bottlenecking to see if it is responsible for the accepted mutation rate. So, figure out how many I&rsquo;m killing through the changing environments bottlenecks, and repeat the kill rate through a random bottleneck.</li>
+</ul>
+
+<p style="margin-left:.5in">&nbsp;</p>
+
+<h2>Sunday 9/16/12</h2>
+
+<h3>11:22 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Figuring out what the actual organismal turnover rate has been for my different treatments so that I can pull out the appropriate bottleneck rate. Will try to pull this out of the population files, using update_born as a proxy.</li>
+</ul>
+
+<pre>
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span><strong>:<span style="color:#0000FF">~/__research/devolab_research/evolution_of_modularity/raw_data/082/populations/control_intertwined_820001</span></strong>$ for i in *.spop.gz; do targetname=`echo $i | cut -d &quot;.&quot; -f1`; echo $i $targetname; python ../../../../../scripts/common/extract_line_on_condition.py --output &quot;still_alive__&quot;$targetname.spop 5 &quot;&gt;0&quot; $i; done
+
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span><strong>:<span style="color:#0000FF">~/__research/devolab_research/evolution_of_modularity/raw_data/082/populations/control_intertwined_820001</span></strong>$ echo &quot;update,population_size,mean_update_born,median,var,std,ste&quot; &gt; c_i__population_born.csv; for i in {0..2000}; do output=`python ../../../../../scripts/common/extract_single_column_to_csv.py --separator &quot; &quot; -c 12 still_alive__detail-$i&quot;00.spop&quot;`; count=`cat still_alive__detail-$i&quot;00.spop&quot; | wc -l`; echo $i&quot;00,&quot;$count&quot;,&quot;$output; done &gt;&gt; c_i__population_born.csv
+
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span><strong>:<span style="color:#0000FF">~/__research/devolab_research/evolution_of_modularity/raw_data/082/populations/control_intertwined_820001</span></strong>$ python ../../../../../scripts/common/extract_single_column_to_csv.py --separator &quot;,&quot; --header 3 *_i__population_born.csv &gt; average_population_born.csv
+
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span><strong>:<span style="color:#0000FF">~/__research/devolab_research/evolution_of_modularity/raw_data/082/populations/control_intertwined_820001</span></strong>$ python ../../../../../scripts/common/extract_single_column_to_csv.py --separator &quot;,&quot; --header 4 *_i__population_born.csv &gt; median_population_born.csv</pre>
+
+<ul>
+	<li>Then plot</li>
+</ul>
+
+<pre>
+<span style="color:#EE82EE"><strong>rosiec@George-Hammond</strong></span><strong>:<span style="color:#0000FF">/Volumes/rosiec/__research/devolab_research/evolution_of_modularity/raw_data/082/populations</span></strong>$ python ../../../../scripts/graph_generation/plot_from_csv.py -o -a --xtick_multiplier 100 --title &quot;Update Population Born - Mean &amp; Median&quot; --ylabel &quot;Population Born&quot; --xlabel &quot;Update&quot; --data_members 2 --legend &quot;control mean, control median,no reward mean, noreward median,punish mean, noreward median&quot; ~/Desktop/testing___averageborn.png control_intertwined_820001/average_population_born.csv control_intertwined_820001/median_population_born.csv noreward_intertwined_820001/average_population_born.csv noreward_intertwined_820001/median_population_born.csv punish_intertwined_820001/average_population_born.csv punish_intertwined_820001/median_population_born.csv</pre>
+
+<p style="margin-left:.5in"><img src="./12.254.__-_Notes_-_Week_of_September_10_2012/iNovje.png" style="height:324px; width:432px" /></p>
+
+<ul>
+	<li>And this is fucking weird. :/ :( But it means that the average born on date perfectly overlaps. And yes, I doublechecked that my data is correct. I think this means that I don&rsquo;t have enough granularity. How can I go about checking this!?</li>
+</ul>
+
+<p>&nbsp;</p>

@@ -1,0 +1,81 @@
+<h1>Week of September 01, 2014</h1>
+
+<h2>Monday, Sep 01, 2014</h2>
+
+<h3>Log 10:25PM</h3>
+
+<p>Updated Avida to not be strict with not using zeroes for target C. Then, made an environment where doing a different task is punished. So, they should specialize.</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Tuesday, Sep 2, 2014</h2>
+
+<h3>Lab Meeting 4:26p</h3>
+
+<p>Described my issues with them not using my thingy, or only using it when it defaults to zero, and possibly not speciating, but instead doing a stochastic choice of tasks.</p>
+
+<p>- Check on the speciation thing. Build up a flame graph. :/</p>
+
+<p>Suggestions</p>
+
+<p>- Email Matt Rupp about the braided configs for the deep branches</p>
+
+<p>- Cheat. Evolve different populations using different resources. Then put them together under the ADD regime, and see if they can coexist. Use the flame graph to track the thing.</p>
+
+<h2>&nbsp;</h2>
+
+<h3 class="item_body_heading_3">Later (retroactive update)</h3>
+
+<p>I tried a bunch of different stuff.</p>
+
+<p>Here&#39;s the update so far.</p>
+
+<h4 class="item_body_heading_2">Speciation via Limited Resources</h4>
+
+<p>exact_c_match_test</p>
+
+<p>I tried a bunch of parameters for trying to get the organisms to use the thing. I tried pushing them to speciate using limited resources, and a couple of different inflows. The takeaway is that when you disallow the default zero value, they don&#39;t use it. Like, hardcore, don&#39;t use it. And, they use it even less if the resources are really limited, even if zero is allowed. So, bust.</p>
+
+<p><img alt="" src="./14.244.__-_Notes_-_Week_of_September_01_2014/mating_preference.png" style="height:300px; width:400px" /><img alt="" src="./14.244.__-_Notes_-_Week_of_September_01_2014/phenotype_diversity.png" style="height:300px; width:400px" /><img alt="" src="./14.244.__-_Notes_-_Week_of_September_01_2014/average_task_count.png" style="height:300px; width:400px" /></p>
+
+<h4 class="item_body_heading_2">Speciation via task switching costs.</h4>
+
+<p>hard_specialist</p>
+
+<p>This set of experiments involves using the task switching costs built in to Avida.</p>
+
+<p>Takeaway, they really don&#39;t like to fucking use it. Also, I dropped the bits to 3, instead of four, and it makes virtually no difference.</p>
+
+<pre>
+python ../../../../research_scripts/quickplot.py mating_preference_hs female_mate_preference_data.dat 11 ../data1_allow_zero_inflow_100_switching_cost_1000/ 0ok_infl_100_sc_1k female_mate_preference_data.dat 11 ../data1_allow_zero_inflow_9_switching_cost_1000/ 0ok_infl_9_sc_1k female_mate_preference_data.dat 11 ../data1_no_zero_inflow_9_switching_cost_1000 no0_infl_9_sc_1k female_mate_preference_data.dat 11 ../data1_no_zero_inflow_9_switching_cost_1000_3bits_save_detail/ no0_infl_9_sc_1k_3bit
+
+python ../../../../research_scripts/quickplot.py phenotype_diversity_hs phenotype_count.dat 3 ../data1_allow_zero_inflow_100_switching_cost_1000/ 0ok_infl_100_sc_1k phenotype_count.dat 3 ../data1_allow_zero_inflow_9_switching_cost_1000/ 0ok_infl_9_sc_1k phenotype_count.dat 3 ../data1_no_zero_inflow_9_switching_cost_1000 no0_infl_9_sc_1k phenotype_count.dat 3 ../data1_no_zero_inflow_9_switching_cost_1000_3bits_save_detail/ no0_infl_9_sc_1k_3bit
+
+python ../../../../research_scripts/quickplot.py average_task_count_hs phenotype_count.dat 6 ../data1_allow_zero_inflow_100_switching_cost_1000/ 0ok_infl_100_sc_1k phenotype_count.dat 6 ../data1_allow_zero_inflow_9_switching_cost_1000/ 0ok_infl_9_sc_1k phenotype_count.dat 6 ../data1_no_zero_inflow_9_switching_cost_1000 no0_infl_9_sc_1k phenotype_count.dat 6 ../data1_no_zero_inflow_9_switching_cost_1000_3bits_save_detail/ no0_infl_9_sc_1k_3bit</pre>
+
+<p><img alt="" src="./14.244.__-_Notes_-_Week_of_September_01_2014/mating_preference_hs.png" style="height:300px; width:400px" /><img alt="" src="./14.244.__-_Notes_-_Week_of_September_01_2014/phenotype_diversity_hs.png" style="height:300px; width:400px" /><img alt="" src="./14.244.__-_Notes_-_Week_of_September_01_2014/average_task_count_hs.png" style="height:300px; width:400px" /></p>
+
+<h4 class="item_body_heading_2">Speciation via Braided Resources</h4>
+
+<p>deep_branches</p>
+
+<p>Takeaway, deep branches don&#39;t do it either. :/</p>
+
+<p>&nbsp; 301&nbsp; python ../../../../research_scripts/quickplot.py mating_preference_db female_mate_preference_data.dat 11 ../data1_no_zero_braided_resources_no_switching_cost/ no_zero__braided_resources female_mate_preference_data.dat 11 ../data1_yes_zero_braided_resources_no_switching_cost/ allow_zero__braided_resources<br />
+&nbsp; 302&nbsp; open mating_preference_db.<br />
+&nbsp; 303&nbsp; open mating_preference_db.png<br />
+&nbsp; 304&nbsp; python ../../../../research_scripts/quickplot.py phenotype_diversity_db phenotype_count.dat 3 ../data1_no_zero_braided_resources_no_switching_cost/ no_zero__braided_resources phenotype_count.dat 3 ../data1_yes_zero_braided_resources_no_switching_cost/ allow_zero__braided_resources<br />
+&nbsp; 305&nbsp; open phenotype_diversity_db.png<br />
+&nbsp; 306&nbsp; python ../../../../research_scripts/quickplot.py average_task_count phenotype_count.dat 6 ../data1_no_zero_braided_resources_no_switching_cost/ no_zero__braided_resources phenotype_count.dat 6 ../data1_yes_zero_braided_resources_no_switching_cost/ allow_zero__braided_resources</p>
+
+<p><img alt="" src="./14.244.__-_Notes_-_Week_of_September_01_2014/mating_preference_db.png" style="height:300px; width:400px" /><img alt="" src="./14.244.__-_Notes_-_Week_of_September_01_2014/phenotype_diversity_db.png" style="height:300px; width:400px" /><img alt="" src="./14.244.__-_Notes_-_Week_of_September_01_2014/average_task_count.png" style="height:300px; width:400px" /></p>
+
+<p>No-zero</p>
+
+<p><img alt="" src="./14.244.__-_Notes_-_Week_of_September_01_2014/flamegraph.png" style="height:300px; width:400px" /></p>
+
+<p>Allow Zero:</p>
+
+<p><img alt="" src="./14.244.__-_Notes_-_Week_of_September_01_2014/0ok_flamegraph.png" style="height:300px; width:400px" /></p>
+
+<p>&nbsp;</p>

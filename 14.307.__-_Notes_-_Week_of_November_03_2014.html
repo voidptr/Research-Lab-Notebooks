@@ -1,0 +1,224 @@
+<h1>Week of November 03, 2014</h1>
+
+<h2>Monday, Nov 03, 2014</h2>
+
+<h3>Log 01:09PM</h3>
+
+<p>New weekly log!</p>
+
+<p>This weekend, I spent a ton of time working on the qsub script. It now emails you when you submit a job. It&#39;s sitting in there right now, in sullen preparation for the checkpointing, which is really not going well. Here&#39;s photos of the algorithm.</p>
+
+<p>I&#39;m not going to implement this right now, though, since it&#39;s kindof a pain in the ass, and I don&#39;t want to devote my entire block of working time to it. So, back-burner until next week.</p>
+
+<p><img alt="" src="./14.307.__-_Notes_-_Week_of_November_03_2014/Checkpointing.jpg" style="height:695px; width:900px" /></p>
+
+<h3>&nbsp;</h3>
+
+<h3>Research</h3>
+
+<p>Ok, I&#39;m fucking re-doing these, because my directory was a mess. I need to understand what the hell was happening.</p>
+
+<p>Some features:</p>
+
+<ul>
+	<li>Inst Set -- modified to have the random display preference only have a redundancy of .5 (down from default 1). So, this should clean up the signal a bit.</li>
+	<li>&nbsp;</li>
+</ul>
+
+<p>Following runs are Split deadly ranges (0-150,150-255) - 50% probability</p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/deadly_range</span>$</strong> ./avida -set ENVIRONMENT_FILE environment_braidedresources.cfg -set CONT_REC_REGS 0 -set MODULE_NUM 10 -set DISPLAY_C_DEADLY_RANGE_PROB 0.5 -set MODULE_NUM 10 -set DISPLAY_C_DEADLY_RANGE_BEGIN 0 -set DISPLAY_C_DEADLY_RANGE_END 150 -set DATA_DIR data__braided_10ptCO_NonContig_Prob50_deadly0-150
+</pre>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/deadly_range</span>$</strong> ./avida -set ENVIRONMENT_FILE environment_braidedresources.cfg -set CONT_REC_REGS 0 -set MODULE_NUM 10 -set DISPLAY_C_DEADLY_RANGE_PROB 0.5 -set MODULE_NUM 10 -set DISPLAY_C_DEADLY_RANGE_BEGIN 150 -set DISPLAY_C_DEADLY_RANGE_END 255 -set DATA_DIR data__braided_10ptCO_NonContig_Prob50_deadly150-255</pre>
+
+<p>Following runs are Split deadly ranges (0-150,150-255) - 90% probability</p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/deadly_range</span>$</strong> ./avida -set ENVIRONMENT_FILE environment_braidedresources.cfg -set CONT_REC_REGS 0 -set MODULE_NUM 10 -set DISPLAY_C_DEADLY_RANGE_PROB 0.9 -set MODULE_NUM 10 -set DISPLAY_C_DEADLY_RANGE_BEGIN 0 -set DISPLAY_C_DEADLY_RANGE_END 150 -set DATA_DIR data__braided_10ptCO_NonContig_Prob90_deadly0-150</pre>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/deadly_range</span>$</strong> ./avida -set ENVIRONMENT_FILE environment_braidedresources.cfg -set CONT_REC_REGS 0 -set MODULE_NUM 10 -set DISPLAY_C_DEADLY_RANGE_PROB 0.9 -set MODULE_NUM 10 -set DISPLAY_C_DEADLY_RANGE_BEGIN 150 -set DISPLAY_C_DEADLY_RANGE_END 255 -set DATA_DIR data__braided_10ptCO_NonContig_Prob90_deadly150-255
+</pre>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/deadly_range</span>$</strong> python ~/Dropbox/School_Docs/Research/research_scripts/quickplot.py -x Updates --xtick_multiplier=100 -y &quot;Females Using Display C&quot; -t &quot;Female Display C Preference Data&quot; female_preference_data \
+female_mate_preference_data.dat 11 &quot;data__braided_10ptCO_NonContig_Prob50_deadly0-150/&quot; &quot;50pct0-150&quot; \
+female_mate_preference_data.dat 11 &quot;data__braided_10ptCO_NonContig_Prob50_deadly150-255/&quot; &quot;50pct150-255&quot; \
+female_mate_preference_data.dat 11 &quot;data__braided_10ptCO_NonContig_Prob90_deadly0-150/&quot; &quot;90pct0-150&quot; \
+female_mate_preference_data.dat 11 &quot;data__braided_10ptCO_NonContig_Prob90_deadly150-255/&quot; &quot;90pct150-255&quot;
+</pre>
+
+<p><img alt="" src="./14.307.__-_Notes_-_Week_of_November_03_2014/non-mating_female_preference_data.png" style="height:600px; width:800px" /></p>
+
+<p>To keep an eye on it, generate a plot of the Display C trait adoption by the females. This regenerates the above graph, but periodically.</p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/deadly_range</span>$</strong> for i in {0..100}; do python ~/Dropbox/School_Docs/Research/research_scripts/quickplot.py -x Updates --xtick_multiplier=100 -y &quot;Females Using Display C&quot; -t &quot;Female Display C Preference Data&quot; female_preference_data female_mate_preference_data.dat 11 &quot;data__braided_10ptCO_NonContig_Prob50_deadly0-150/&quot; &quot;50pct0-150&quot; female_mate_preference_data.dat 11 &quot;data__braided_10ptCO_NonContig_Prob50_deadly150-255/&quot; &quot;50pct150-255&quot; female_mate_preference_data.dat 11 &quot;data__braided_10ptCO_NonContig_Prob90_deadly0-150/&quot; &quot;90pct0-150&quot; female_mate_preference_data.dat 11 &quot;data__braided_10ptCO_NonContig_Prob90_deadly150-255/&quot; &quot;90pct150-255&quot;; sleep 30; done</pre>
+
+<p>And the below, generates a histogram graph for every updated thingy in each of the run directories. This is done for every directory.</p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/deadly_range/data__braided_10ptCO_NonContig_Prob50_deadly150-255</span>$</strong> for i in {1..100}; 
+do \
+while [ ! -f mating_display_c_histogram-$i&quot;000&quot;.dat ]; do sleep 5; done; 
+cat mating_display_c_histogram-$i&quot;000&quot;.dat; 
+tail -1 mating_display_c_histogram-$i&quot;000&quot;.dat | cut -d &quot; &quot; -f 6- &gt; choosy_female_only.dat; 
+python ~/Dropbox/School_Docs/Research/research_scripts/graph_generation/histogram_from_csv.py -t &quot;Histogram 50% no-repro if display C from 150-255&quot; -x &quot;Display Trait C Value&quot; -y &quot;# of display&quot; -s &quot; &quot; 150-255_90pct_choosy_female_only_mating_display_c.png choosy_female_only.dat;
+done;</pre>
+
+<p>50% non-mating</p>
+
+<p><img alt="" src="./14.307.__-_Notes_-_Week_of_November_03_2014/0-150_50pct_choosy_female_only_mating_display_c.png" style="height:450px; width:600px" /><img alt="" src="./14.307.__-_Notes_-_Week_of_November_03_2014/150-255_50pct_choosy_female_only_mating_display_c.png" style="height:450px; width:600px" /></p>
+
+<p>90% non-mating</p>
+
+<p><img alt="" src="./14.307.__-_Notes_-_Week_of_November_03_2014/0-150_90pct_choosy_female_only_mating_display_c.png" style="height:450px; width:600px" /><img alt="" src="./14.307.__-_Notes_-_Week_of_November_03_2014/150-255_90pct_choosy_female_only_mating_display_c.png" style="height:450px; width:600px" /></p>
+
+<p>So, it does shove over when the penalty is big enough, BUT:</p>
+
+<p>Ok, I&#39;ve modified Avida to actually BE deadly in those ranges:</p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/deadly_range</span>$</strong> ./avida_actuallydeadly -set ENVIRONMENT_FILE environment_braidedresources.cfg -set CONT_REC_REGS 0 -set MODULE_NUM 10 -set DISPLAY_C_DEADLY_RANGE_PROB 0.5 -set MODULE_NUM 10 -set DISPLAY_C_DEADLY_RANGE_BEGIN 0 -set DISPLAY_C_DEADLY_RANGE_END 150 -set DATA_DIR data__braided_10ptCO_NonContig_Prob50_actuallydeadly0-150</pre>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/deadly_range</span>$</strong> ./avida_actuallydeadly -set ENVIRONMENT_FILE environment_braidedresources.cfg -set CONT_REC_REGS 0 -set MODULE_NUM 10 -set DISPLAY_C_DEADLY_RANGE_PROB 0.5 -set MODULE_NUM 10 -set DISPLAY_C_DEADLY_RANGE_BEGIN 150 -set DISPLAY_C_DEADLY_RANGE_END 255 -set DATA_DIR data__braided_10ptCO_NonContig_Prob50_actuallydeadly150-255</pre>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/deadly_range</span>$</strong> for i in {0..100}; do python ~/Dropbox/School_Docs/Research/research_scripts/quickplot.py -x Updates --xtick_multiplier=100 -y &quot;Females Using Display C&quot; -t &quot;Female Display C Preference Data - Actually Deadly&quot; actually_deadly_female_preference_data \
+female_mate_preference_data.dat 11 &quot;data__braided_10ptCO_NonContig_Prob50_actuallydeadly0-150/&quot; &quot;50pct0-150&quot; \
+female_mate_preference_data.dat 11 &quot;data__braided_10ptCO_NonContig_Prob50_actuallydeadly150-255/&quot; &quot;50pct150-255&quot;; sleep 30; done</pre>
+
+<p><img alt="" src="./14.307.__-_Notes_-_Week_of_November_03_2014/actually_deadly_female_preference_data.png" style="height:600px; width:800px" /></p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/deadly_range</span>$</strong> for i in {0..100}; do python ~/Dropbox/School_Docs/Research/research_scripts/quickplot.py -x Updates --xtick_multiplier=100 -y &quot;Shannon Diversity of Phenotypes (by task)&quot; -t &quot;Shannon Diversity of Phenotypes (by task)&quot; shannon_diversity \
+phenotype_count.dat 3 &quot;data__braided_10ptCO_NonContig_Prob50_deadly0-150/&quot; &quot;nomate50pct0-150&quot; \
+phenotype_count.dat 3 &quot;data__braided_10ptCO_NonContig_Prob50_deadly150-255/&quot; &quot;nomate50pct150-255&quot; \
+phenotype_count.dat 3 &quot;data__braided_10ptCO_NonContig_Prob90_deadly0-150/&quot; &quot;nomate90pct0-150&quot; \
+phenotype_count.dat 3 &quot;data__braided_10ptCO_NonContig_Prob90_deadly150-255/&quot; &quot;nomate90pct150-255&quot; \
+phenotype_count.dat 3 &quot;data__braided_10ptCO_NonContig_Prob50_actuallydeadly0-150/&quot; &quot;dead50pct0-150&quot; \
+phenotype_count.dat 3 &quot;data__braided_10ptCO_NonContig_Prob50_actuallydeadly150-255/&quot; &quot;dead50pct150-255&quot;; sleep 30; done</pre>
+
+<p><img alt="" src="./14.307.__-_Notes_-_Week_of_November_03_2014/shannon_diversity.png" style="height:578px; width:772px" /></p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/deadly_range/data__braided_10ptCO_NonContig_Prob50_actuallydeadly0-150</span>$</strong> for i in {1..100}; 
+do \
+while [ ! -f mating_display_c_histogram-$i&quot;000&quot;.dat ]; do sleep 5; done; 
+cat mating_display_c_histogram-$i&quot;000&quot;.dat; 
+tail -1 mating_display_c_histogram-$i&quot;000&quot;.dat | cut -d &quot; &quot; -f 6- &gt; choosy_female_only.dat; 
+python ~/Dropbox/School_Docs/Research/research_scripts/graph_generation/histogram_from_csv.py -t &quot;Histogram 50% dead if display C from 0-150 - Update $i 000&quot; -x &quot;Display Trait C Value&quot; -y &quot;# of display&quot; -s &quot; &quot; 0-150_50pct_choosy_female_only_mating_display_c.png choosy_female_only.dat;
+done;</pre>
+
+<p><img alt="" src="./14.307.__-_Notes_-_Week_of_November_03_2014/0-150_50pctdead_choosy_female_only_mating_display_c.png" style="height:450px; width:600px" /><img alt="" src="./14.307.__-_Notes_-_Week_of_November_03_2014/150-255_50pctdead_choosy_female_only_mating_display_c.png" style="height:450px; width:600px" /></p>
+
+<p>So, easily shoves over at 50% deadly. I could drop it to less. But I think this is a dead end, since it was only proving that my shit worked. :P</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Tuesday Nov 4, 2014</h2>
+
+<h3>Log 4:18p</h3>
+
+<p>Got a good suggestion from Charles about how to do my checkpointing, have a job, that is held, then release (unhold) each one as needed. I was 90% sure that wasn&#39;t possible, but it IS</p>
+
+<ul>
+	<li>qsub -h -- submit a job in a held state</li>
+	<li>qrls -t range -- release a particular sub-job</li>
+	<li>qdel -t range -- delete a particular set of sub-jobs</li>
+	<li>qhold -t range -- hold a particular sub-job. I won&#39;t need this one.</li>
+</ul>
+
+<h2>&nbsp;</h2>
+
+<h2>Thursday Nov 6, 2014</h2>
+
+<h3>Log 5:40p</h3>
+
+<p>Right, so I have no idea what to do next here. I need to collect my thoughts.</p>
+
+<p>Do next:</p>
+
+<ul>
+	<li>Re-run runs with 10co points, non-contiguous, printing average task info, lower redundancy.</li>
+	<li>do the new checkpointing thingy on dist_qsub. Do this first.</li>
+</ul>
+
+<h4>Checkpointing</h4>
+
+<p>dist_qsub.py</p>
+
+<ul>
+	<li>output DELETE.ME</li>
+	<li>qsub DELETE.ME</li>
+	<li>qsub -n CP_1_$JOBNAME -h /mnt/research/cpDELETE.ME
+	<ul>
+		<li>name is CP_1_$JOBNAME</li>
+		<li>&quot;config&quot; equivalent for cpDELETE.ME contains a copy of cpDELETE.ME</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>DELETE.ME (running in array job)</p>
+
+<ul>
+	<li>output command.sh</li>
+	<li>copy working_dir/config to node tmp dir</li>
+	<li>cr_run command.sh &amp;</li>
+	<li>check loop of status.PID
+	<ul>
+		<li>if done:
+		<ul>
+			<li>copy output to final location</li>
+			<li>qdel -t range the checkpoint sub-job that corresponds with this array ID</li>
+		</ul>
+		</li>
+		<li>If checkpoint time:
+		<ul>
+			<li>cr_checkpoint (with job kill)</li>
+			<li>stash all files to tmp/scratch array ID</li>
+			<li>qrls -t range - the checkpoint sub-job (extract via the naming scheme) -- it&#39;s already populated with cpDELETE.ME</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>cpDELETE.ME (running in array job)</p>
+
+<ul>
+	<li>figure out the name of the root job (based on my name) and which iteration I am.</li>
+	<li>cp content of scratch to appropriate tmp directory on node.</li>
+	<li>cr_restart checkpoint.blcr &amp;</li>
+	<li>check loop of status.PID
+	<ul>
+		<li>if done:
+		<ul>
+			<li>copy output to final location</li>
+			<li>qdel -t range job found that corresponds to the checkpoint job (via naming scheme)</li>
+		</ul>
+		</li>
+		<li>if checkpoint time:
+		<ul>
+			<li>cr_checkpoint (with job kill)</li>
+			<li>stash all files to tmp/scratch array ID</li>
+			<li>find the ID of the next checkpoint job</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

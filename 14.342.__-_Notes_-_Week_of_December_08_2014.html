@@ -1,0 +1,125 @@
+<h1>Week of December 08, 2014</h1>
+
+<h2>Monday, Dec 08, 2014</h2>
+
+<h3>Log 01:04PM</h3>
+
+<p>Look! A new notebook!</p>
+
+<h3>Log 2:39p</h3>
+
+<p>Ok, I&#39;m going to make some updates to Noodle to include support for iPython notebook as a companion to the notebooks. I&#39;m also going to add support for starting the iPython server at the same time as the noodle server. Then, include a link to the iPython notebook server root from the home page, and make a module to create a notebook from inside the noodle, and import the HTML version of the pynb.</p>
+
+<h3>Log 3:48p</h3>
+
+<p>Ok, I&#39;ve successfully gotten noodle to start up an instance of iPython notebook main kernel alongside the noodle server. This is fine, though feels slightly awkward. Right now, from the index, you can open up the iPython Notebook server home link.</p>
+
+<p>Todo:</p>
+
+<ul>
+	<li>Button to create new iPython Notebook inside my NoodleNotebook content directory, and paste in a link.
+	<ul>
+		<li>For now, this can be done manually.</li>
+		<li>Later this will be a button in the inimitable (yet, very imitable) style of the date/time.</li>
+	</ul>
+	</li>
+</ul>
+
+<p>The big old unfortunate aspect of iPython is that you can&#39;t work with analyzing remote data. So, I have to figure out the cleanest way to get my stuff in. :/</p>
+
+<p>I think the way may be to import a link to the notebooks that are stored as part of the contents of a week&#39;s noodle notebook. So, I dragged the content in, using the drag-drop plugin, so now there&#39;s <a href="./14.342.__-_Notes_-_Week_of_December_08_2014/2012.csv">2012.csv</a> in the directory with the ipynb file. Recall that I can shift-click the link (below to open up the notebook).</p>
+
+<p><a href="http://localhost:8888/notebooks/14.342.__-_Notes_-_Week_of_December_08_2014/AnalyzeMatingRateJointProb.ipynb">http://localhost:8888/notebooks/14.342.__-_Notes_-_Week_of_December_08_2014/AnalyzeMatingRateJointProb.ipynb</a></p>
+
+<p>Separately, now that it&#39;s open in a popup, I can edit the things. I&#39;ve already dragged in 2012, so I can do the example code.</p>
+
+<h3>Log 4:15p</h3>
+
+<p>Okie, tweaked how images are handled by putting in a check to see if something is indeed an image before flagging it as such in the content-type. Now, if you shift-click a random data-file inside a notebook directory, it&#39;ll check if it&#39;s an image. If it&#39;s not, it&#39;ll just dump it to the screen. So, I can actually pop up a window with the .csv data and have it show up.</p>
+
+<h3>Log 5:02p</h3>
+
+<p>Ok, I&#39;m going to try to do this natively.</p>
+
+<p><a href="./14.342.__-_Notes_-_Week_of_December_08_2014/122_Drift_HM_sum_matings_ratio_gen1.dat">122_Drift_HM_sum_matings_ratio_gen1.dat</a> <a href="./14.342.__-_Notes_-_Week_of_December_08_2014/121_Drift_HM_sum_matings_ratio_gen1.dat">121_Drift_HM_sum_matings_ratio_gen1.dat</a> <a href="./14.342.__-_Notes_-_Week_of_December_08_2014/120_Drift_HM_sum_matings_ratio_gen1.dat">120_Drift_HM_sum_matings_ratio_gen1.dat</a> <a href="./14.342.__-_Notes_-_Week_of_December_08_2014/122_Drift_HM_joint_probability.csv">122_Drift_HM_joint_probability.csv</a> <a href="./14.342.__-_Notes_-_Week_of_December_08_2014/121_Drift_HM_joint_probability.csv">121_Drift_HM_joint_probability.csv</a> <a href="./14.342.__-_Notes_-_Week_of_December_08_2014/120_Drift_HM_joint_probability.csv">120_Drift_HM_joint_probability.csv</a></p>
+
+<h3>Log 5:11p</h3>
+
+<p>In service of adding useful data, I&#39;m going to extract the choosyness rate of 2a and 2b. Doing this for all 120 and 122 as well.</p>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel14</span></strong>:<strong><span style="color:#0000FF">~/mate_discrimination/output/121_NonFixedLength_HardAndSoftMatch</span></strong>$
+roots=( Drift_HM )
+for root in ${roots[@]}
+do
+&nbsp;&nbsp;&nbsp; rm ${root}_female_preference.csv
+&nbsp;&nbsp;&nbsp; for k in ${root}_??????;
+&nbsp;&nbsp;&nbsp; do
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if [ -e $k&quot;/&quot;*_step2a/female_mate_preference_data.dat ];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; then
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if [ -e $k&quot;/&quot;*_step2b/female_mate_preference_data.dat ];
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; then
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; echo $k;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd $k/*_step2a/;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tail -1 female_mate_preference_data.dat | cut -d &quot; &quot; -f 11- | tr -d &#39; &#39; &gt; female_mate_preference_data_2a.dat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd ../../;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd $k/*_step2b/;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tail -1 female_mate_preference_data.dat | cut -d &quot; &quot; -f 11- | tr -d &#39; &#39; &gt; female_mate_preference_data_2b.dat
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cd ../../;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+                paste -d&quot;,&quot; $k/*2a/female_mate_preference_data_2a.dat $k/*2b/female_mate_preference_data_2b.dat &gt;&gt; ${root}_female_preference.csv
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fi
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fi
+&nbsp;&nbsp;&nbsp;&nbsp; done
+done</pre>
+
+<p><a href="./14.342.__-_Notes_-_Week_of_December_08_2014/120_Drift_HM_female_preference.csv">120_Drift_HM_female_preference.csv</a> <a href="./14.342.__-_Notes_-_Week_of_December_08_2014/121_Drift_HM_female_preference.csv">121_Drift_HM_female_preference.csv</a> <a href="./14.342.__-_Notes_-_Week_of_December_08_2014/122_Drift_HM_female_preference.csv">122_Drift_HM_female_preference.csv</a></p>
+
+<p>All pulled down. :D</p>
+
+<h3>Log 5:26p</h3>
+
+<p>Potential problem. I&#39;m pulling down the last line, which may not conform to the correct update. :/</p>
+
+<h4>TODO</h4>
+
+<ul>
+	<li>Scrub/regenerate the data and include the datapoint source (seed #).</li>
+</ul>
+
+<h2>Tuesday, Dec 9, 2014</h2>
+
+<h3>Log 6:09p</h3>
+
+<p>Attempts at an abstract outline</p>
+
+<blockquote>
+<ul>
+	<li>Sexual selection important for speciation</li>
+	<li>Post-zygotic isolation is not a strong force in recently diverged populations.</li>
+	<li>Post-zygotic isolation only comes into play after sufficient genetic divergence has occurred.</li>
+	<li>Pre-zygotic isolation has several possible mechanisms
+	<ul>
+		<li>Allopatry</li>
+		<li>Altered breeding season</li>
+		<li>Lack of conspecific identification</li>
+		<li>Lowered sexual fitness based on divergent sexual traits (sexual selection)</li>
+	</ul>
+	</li>
+	<li>Post-zygotic isolation primarily occurrs in lowered sexual fitness of hybrids, not in viability or fecundity.</li>
+	<li>Model the effect of drift on selected traits in allopatry, resulting in significant amounts of pre-zygotic isolation as a result of sexually-selected trait divergence.</li>
+</ul>
+</blockquote>
+
+<p>I also want to do some simplifying experiments, with differential task rewards.</p>
+
+<h2>Thursday, Dec 11, 2014</h2>
+
+<h3>Log 3:58p</h3>
+
+<p>Aaaand the last couple days have been a bust. :/ My next step is to dig into pandas and ipython notebook and see if I can figure out how to do the multiple regression. But first, I need to replicate my previous efforts.</p>
+
+<p>---</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

@@ -1,0 +1,315 @@
+
+<!-- saved from url=(0116)https://dl.dropboxusercontent.com/content_link/Ttjl9QBIiQGni9EN99VW1jTVU0WNA3c7adYOIR07V0Gwh3qBwpqsFsCq7GmijgOz/file -->
+<h2>Previously...&nbsp;</h2>
+
+<p>Spent a ton of stupid time exploring the latest in Jupyter (iPython notebooks) and BeakerNotebooks. Most of that time, I can consider wasted.</p>
+
+<h2>Thursday, Dec 24, 2015</h2>
+
+<h3>Log 11:30AM</h3>
+
+<p>Ok, but seriously, there&#39;s some kind of horrible problem here, and I don&#39;t understand it, and it freaks me out. :( It&#39;s something to do with how lists are formed, and what happens with a copy and paste, and it breaks the back-end. :(</p>
+
+<p>But, seriously, this is some bullshit, and I can&#39;t figure it out.&nbsp;</p>
+
+<p>Either way, I ripped out the iPython Notebook integration. Now I&#39;m just going to be allowing the user to start it, and there&#39;s a link in the home-page.</p>
+
+<p>Todos:</p>
+
+<ul>
+	<li>Git integration and version control of the autosaved file
+	<ul>
+		<li>Rolling version compression, to avoid balooning.&nbsp;</li>
+	</ul>
+	</li>
+	<li>Possibly update the back-end version of CKEditor, if there&#39;s some feature I want, or some incompatibility.
+	<ul>
+		<li>Might also consider migrating to ProseMirror when it becomes available, since it seems to have a more congenial license.</li>
+	</ul>
+	</li>
+	<li>Create desktop shortcuts to launch the URL of this week&#39;s&nbsp;notebook, as I have done in the past.</li>
+	<li>Consider setting up some kind of automated archive so the files don&#39;t all show up in stupid-order.&nbsp;</li>
+	<li>Consider sorting the files by date
+	<ul>
+		<li>Maybe add some sortable arrows, etc.</li>
+	</ul>
+	</li>
+	<li>Re-visit saving the files as MD, depending on where flask_flatpages is now</li>
+	<li>Consider moving away from flask_flatpages, since it seems to ... suck? Be broken in some way that I don&#39;t understand?</li>
+</ul>
+
+<h2>Saturday, Dec 26, 2015</h2>
+
+<h3>Log 00:29a</h3>
+
+<p>Right, so, before bed, outlining what I&#39;m doing tomorrow. I am going to shoot for a solid day of work. Start by opening up the development environment, reading over my logs, and picking up where I left off on my HGT work. I mean, it looks like most everything is there to do the work. I&#39;ll diagram it on paper, if I have to.</p>
+
+<h2>Saturday, Dec 26, 2015</h2>
+
+<h3>Log 09:30a</h3>
+
+<p>Umm, yeah, ok I&#39;ve already wasted a couple hours this morning dicking around on the internet. Time to spend five minutes doing a code-slog.</p>
+
+<p>These log entries are the primary pointers to the work I accomplished on the HGT stuff before I got derailed by the Diversity work. But recrimination is for losers.</p>
+
+<div><a href="http://127.0.0.1:5000/14.020.__-_Notes_-_Week_of_January_20_2014.html">http://127.0.0.1:5000/14.020.__-_Notes_-_Week_of_January_20_2014.html</a></div>
+
+<div><a href="http://127.0.0.1:5000/14.027.__-_Notes_-_Week_of_January_27_2014.html">http://127.0.0.1:5000/14.027.__-_Notes_-_Week_of_January_27_2014.html</a></div>
+
+<div><a href="http://127.0.0.1:5000/14.034.__-_Notes_-_Week_of_February_03_2014.html">http://127.0.0.1:5000/14.034.__-_Notes_-_Week_of_February_03_2014.html</a><br />
+&nbsp;</div>
+
+<p><span style="font-size:1.17em">Log 09:54a</span></p>
+
+<p>I&#39;ve fixed the error where my old stuff wasn&#39;t loading because there seems to be an annoying bug with flask_flatpages where if there&#39;s no meta-data, it just ... fucks up. Anyway, this means that I can probably just rip out the code that adds that stupid blank line at the beginning, which was just a workaround for this. Ok, that&#39;s now done. Back to work</p>
+
+<h3>Log 10:13a</h3>
+
+<p>How to make it work, per my notes:</p>
+
+<p>Jan 20:</p>
+
+<blockquote>
+<p>Ok, so made a copy of avida.cfg to avida_HGT_on.cfg. Only thing I changed was to enable HGT. Everything else was left as in defaults:</p>
+
+<pre>
+<code>682 ### HGT_GROUP ### 
+683 # Horizontal gene transfer settings 
+684 ENABLE_HGT 1                    # Whether HGT is enabled; 0=false (default), </code></pre>
+</blockquote>
+
+<p>Jan 27:</p>
+
+<blockquote>
+<p>Beside that, the config files you need to set up for HGT are as follows:</p>
+
+<p>Add a line to environment.cfg</p>
+
+<pre>
+<code>RESOURCE  GenomeFragments:hgt=1
+</code></pre>
+
+<p>Change the following lines in avida.cfg. Specifically, you have to enable both HGT_COMPETENCE_P and HGT_INSERTION_MUT_P to ensure that insertions (rather than purely replacements) happen. If HGT_COMPETENCE_P is zero, then NOTHING HAPPENS. It is the governing probability.</p>
+
+<pre>
+<code>682 ### HGT_GROUP ### 
+683 # Horizontal gene transfer settings 
+684 ENABLE_HGT 1                    # Whether HGT is enabled; 0=false (default), 
+685                                 # 1=true. 
+686 HGT_SOURCE 0                    # Source of HGT fragments; 0=dead organisms (default), 
+687                                 # 1=parent. 
+688 HGT_FRAGMENT_SELECTION 0        # Method used to select fragments for HGT mutation; 0=random (default), 
+689                                 # 1=trimmed selection 
+690                                 # 2=random placement. 
+691 HGT_FRAGMENT_SIZE_MEAN 10       # Mean size of fragments (default=10). 
+692 HGT_FRAGMENT_SIZE_VARIANCE 2    # Variance of fragments (default=2). 
+693 HGT_MAX_FRAGMENTS_PER_CELL 100  # Max. allowed number of fragments per cell (default=100). 
+694 HGT_DIFFUSION_METHOD 0          # Method to use for diffusion of genome fragments; 0=none (default). 
+695 HGT_COMPETENCE_P 0.0075         # Probability that an HGT &#39;natural competence&#39; mutation will occur on divide (default=0.0). 
+696 HGT_INSERTION_MUT_P 0.1         # Probability that an HGT mutation will result in an insertion (default=0.0). 
+697 HGT_CONJUGATION_METHOD 0        # Method used to select the receiver and/or donor of an HGT conjugation; 
+698                                 # 0=random from neighborhood (default); 
+699                                 # 1=faced. 
+700 HGT_CONJUGATION_P 0.0           # Probability that an HGT conjugation mutation will occur on divide (default=0.0). 
+701 HGT_FRAGMENT_XFORM 0            # Transformation to apply to each fragment prior to incorporation into offspring&#39;s genome; 0=none (default), 
+702                                 # 1=random shuffle, 
+703                                 # 2=replace with random instructions.
+</code></pre>
+
+<p>And finally, add the appropriate print action to the events.cfg</p>
+
+<pre>
+<code>u 0:100:end PrintHGTData</code></pre>
+</blockquote>
+
+<p>Feb 3:</p>
+
+<blockquote>
+<h3>HGT Code Analysis</h3>
+
+<ul>
+	<li>
+	<p>\(Avida2Driver.cc\) - Point mutation probability is altered by adding&nbsp;<code>DIV_LGT_PROB</code>. (line 80)</p>
+	</li>
+	<li>
+	<p>\(cAvidaConfig.h\) - Config options&nbsp;<code>DIV_LGT_PROB</code>,&nbsp;<code>DIVIDE_LGT_PROB</code>,&nbsp;<code>DIVIDE_POISSON_LGT_MEAN</code>,&nbsp;<code>LGT_FILL_MODE</code>, and&nbsp;<code>LGT_SOURCE_REGION</code></p>
+	</li>
+	<li>
+	<p>\(cHardwareBase.cc\) - Applying LGT mutations (starting line 346);&nbsp;<code>doLGTMutation()</code>&nbsp;(line 765)</p>
+
+	<ul>
+		<li>
+		<p>This is where the majority of the mutation actioning code is located.</p>
+		</li>
+	</ul>
+	</li>
+	<li>
+	<p>\(cMutationRates.cc\) - Declaration and storage of the values set in the configuration options. (starting line 43).</p>
+	</li>
+	<li>
+	<p>\(cMutationRates.h\) - inline&nbsp;<code>TestDivideLGT()</code>&nbsp;methods. (line 133), accessors, etc.</p>
+	</li>
+	<li>
+	<p>\(cOrganism.h\) - Convenience methods pointing to \(cMutationRates\). (line 317)</p>
+	</li>
+	<li>
+	<p>\(cOrgInterface.h\) - virtual declaration of&nbsp;<code>GetLGTFragment()</code>. (line 106)</p>
+	</li>
+	<li>
+	<p>\(cPopulationInterface.h\) - derives from cOrgInterface. Includes sub-declaration of&nbsp;<code>GetLGTFragment().</code></p>
+
+	<ul>
+		<li>
+		<p>You don&rsquo;t need this declaration, so I don&rsquo;t know why it&rsquo;s there. Stupid. Futher, it seems to silently cover the virtual method \(cOrgInterface\).</p>
+		</li>
+	</ul>
+	</li>
+	<li>
+	<p>\(cPopulationInterface.cc\) - implementation of&nbsp;<code>GetLGTFragment()</code>&nbsp;(line 158)</p>
+
+	<ul>
+		<li>
+		<p><em>This method will need to be changed to be able to draw down resources.</em></p>
+		</li>
+		<li>
+		<p>kinda baffled why there are method bodies in a class with the word Interface in its name. Is it because it&rsquo;s not a software interface, as much as the place where the population interfaces with the environment? weird. don&rsquo;t like it.</p>
+		</li>
+	</ul>
+	</li>
+	<li>
+	<p>\(cTestCPUInterface.h\) - same song and dance. derives from \(cOrgInterface.h\).</p>
+	</li>
+</ul>
+
+<p>So, it looks incredibly simple. Most of the work and code is done in&nbsp;<code>cHardwareBase</code>. To add the appropriate resource-drawing code, I&rsquo;ll need to have a look at what other resource users are doing. In the HGT code, the resource drawing code is in&nbsp;<code>cPopulationInterface.cc</code>. It looks like the LGT code is always available</p>
+
+<p>So, at minimum, merging will require:</p>
+
+<ul>
+	<li>
+	<p>connecting to the resource code (<code>cPopulation.cc, cPopulationCell.cc, cEnvironment.cc, cResource.h</code>), if a fragment resource is requested via config options (such as&nbsp;<code>LGT_SOURCE_REGION</code>&nbsp;option).</p>
+	</li>
+	<li>
+	<p>adding appropriate stats (<code>cStats.h</code>&nbsp;and&nbsp;<code>.cc</code>)</p>
+	</li>
+</ul>
+
+<p>Optionally, to bring the full vestment of previous features:</p>
+
+<ul>
+	<li>
+	<p>engaging the ACTIONS (<code>PopulationActions.cc</code>)</p>
+	</li>
+	<li>
+	<p>implement the HGTDonation concept. This may already be implemented in some LGT code, but I&rsquo;m not sure.</p>
+	</li>
+</ul>
+</blockquote>
+
+<p>&nbsp;Right, so having said all that, I had begun an initial implementation, and combined some things, and succeeded in doing some runs. Now, I need to replicate some of those runs.</p>
+
+<h3>Log 10:36a</h3>
+
+<p>Ok, I&#39;ve opened up QT Creator, and I&#39;m creating an Avida project from the cmake lists file. The directory is:</p>
+
+<pre>
+[<span style="color:#696969"><strong>19736:23914 0:704</strong></span>] <strong><span style="color:#40E0D0">10:34:52 Sat Dec 26</span></strong> [<strong><span style="color:#FFD700">rosiec@heimdall</span></strong>: <span style="color:#008080">+2</span>] <strong><span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/Authoritative_GitHub_Forked_avida</span></strong></pre>
+
+<ol>
+	<li>Open existing project
+	<ol>
+		<li>Select cmake lists file</li>
+	</ol>
+	</li>
+	<li>Allow cmake to process the desktop thing, click next and what not, no arguments, finish.</li>
+	<li>Project is created, click &quot;Build&quot; menu, &quot;build project avida-main&quot;
+	<ol>
+		<li>Open up the compile output window.</li>
+	</ol>
+	</li>
+	<li>Cross fingers (???)</li>
+	<li>Profit!&nbsp;</li>
+</ol>
+
+<h3>Log 1:19p</h3>
+
+<p>Spent some time re-upping my development environment, because QT Creator sucks more than I remember. I installed a bunch</p>
+
+<ul>
+	<li>Eclipse CPP</li>
+	<li>CLion</li>
+	<li>CodeBlocks</li>
+	<li>CodeLite</li>
+</ul>
+
+<p>Currently trhing CLion. Had to tikner abit with the font size to get hidpi to work. Had to copy the theme before it let me edit the font, and select a checkbox that it warned me against before it would work. Also, the build window and its little dialog windows are still a tiny print, but the menus and most of the widgets and icons finally resized. Trying to build now.</p>
+
+<h2>Sunday, Dec 27, 2015</h2>
+
+<h3>Log 1:08p</h3>
+
+<p>Yeah, so CLion looks pretty nice, and like it&#39;ll do what I want. a couple of glitchy things, but nothin serious. And it lets me define the working directory, which is muuuuch nicer than the alternative.</p>
+
+<p>Anyway, last night, spent some time thinking about the design for the instruction, etc. I want to use other Dave&#39;s (not Bryson) reservoir code, with an instruction that uses it. Bryson&#39;s LGT code is just kinda stupid and superfluous so I&#39;m just going to ignore it.</p>
+
+<p>It turns out I&#39;ve already got some code for my HGT action, which will be an instruction.</p>
+
+<p>I&#39;ve also dug around and found that I missed a few references. So I am documenting them here.</p>
+
+<ul>
+	<li>
+	<p style="margin-right:5pt"><span id="docs-internal-guid-bf9bd1f5-e514-f36d-6a94-15d147a3203f"><span style="background-color:rgb(249, 242, 244); color:rgb(199, 37, 78); font-family:verdana">cEnvironment.cc</span><span> - triggering of the init of the HGT resources (line 555)</span></span></p>
+
+	<ul>
+		<li>
+		<p style="margin-right:10pt"><span id="docs-internal-guid-bf9bd1f5-e514-f36d-6a94-15d147a3203f"><span>call to </span><span style="background-color:rgb(249, 242, 244); color:rgb(199, 37, 78); font-family:verdana">SetHGTMetabolize(...)</span><span> which is the setter for the resource. Following all the usages out there, this just generally sets the fact that there are resources. </span><span style="background-color:rgb(255, 255, 0)">I&#39;m going to need to create an action to populate the resources from the events file (see cActionDiffuseHGTGenomeFragments).</span></span></p>
+		</li>
+	</ul>
+	</li>
+	<li>
+	<p style="margin-right:5pt"><span id="docs-internal-guid-bf9bd1f5-e514-f36d-6a94-15d147a3203f"><span style="background-color:rgb(249, 242, 244); color:rgb(199, 37, 78); font-family:verdana">cPopulationCell.cc::AddGenomeFragments(...)</span><span> (line 502) - takes a genome and puts fragments in the cell.</span></span></p>
+	</li>
+	<li>
+	<p style="margin-right:5pt"><span id="docs-internal-guid-bf9bd1f5-e514-f36d-6a94-15d147a3203f"><span style="background-color:rgb(249, 242, 244); color:rgb(199, 37, 78); font-family:verdana">cPopulation.cc</span><span> - line 2167 - call to </span><span style="background-color:rgb(249, 242, 244); color:rgb(199, 37, 78); font-family:verdana">AddGenomeFragments</span><span> from within </span><span style="background-color:rgb(249, 242, 244); color:rgb(199, 37, 78); font-family:verdana">KillOrganism</span><span>. <s>But it doesn&#39;t even check to see if the option was turned on, if it should be getting fragments from here. </s></span><s><span style="background-color:rgb(255, 255, 0)">BUG. TODO FIX</span></s></span> fixed</p>
+	</li>
+	<li>
+	<p style="margin-right:5pt"><span id="docs-internal-guid-bf9bd1f5-e514-f36d-6a94-15d147a3203f"><span style="background-color:rgb(249, 242, 244); color:rgb(199, 37, 78); font-family:verdana">cPopulationActions.cc</span><span> - </span><span style="background-color:rgb(249, 242, 244); color:rgb(199, 37, 78); font-family:verdana">cActionDiffuseHGTGenomeFragments(...)</span><span> (line 5046) </span></span></p>
+
+	<ul>
+		<li>
+		<p style="margin-right:10pt"><span id="docs-internal-guid-bf9bd1f5-e514-f36d-6a94-15d147a3203f"><span>an action that I can copy for my populating of the HGT resource.</span></span></p>
+		</li>
+		<li>&nbsp;</li>
+	</ul>
+	</li>
+</ul>
+
+<h3>Log 5:44p</h3>
+
+<p>Ok, started some work. Fixed the bug above.</p>
+
+<ul>
+	<li>PopulationActions.cc - cActionInsertHGTGenomeFragments - line 5065
+	<ul>
+		<li>began implementation of this bit. <span style="background-color:#FFD700">TODO, read in a population file, and randomly select a genome from it and insert it.</span></li>
+	</ul>
+	</li>
+</ul>
+
+<h3>Log 9:39p</h3>
+
+<ul>
+	<li>Added&nbsp;<code>cActionInsertHGTGenomeFragments</code> to PopulationActions to add fragments from a file of genomes, ideally cultivated from a detail population dump.&nbsp;</li>
+</ul>
+
+<h3>Log 11:43p</h3>
+
+<p>Finished adding the action, but there are some significant todos because some of my shit is getting garbage collected and I&#39;m not sure how to make it stop. :( Like, I shove ints into an array, and they .... disappear randomly! Woo! So, I am just having it do it again if that happens, grabbing a new random number, but I&#39;m afraid this will break cross-platform replicability with the random number generator, since it might garbage collect at different points on different systems, causing a different set of random numbers to get generated. :( In any case, I&#39;m reasonably sure the reservoirs are getting filled with fragments.</p>
+
+<p>Next step is to flesh out the HGT Uptake instruction code.</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

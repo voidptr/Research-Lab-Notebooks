@@ -1,0 +1,120 @@
+
+<h1>Week of December 28, 2015</h1>
+
+<h2>Monday, Dec 28, 2015</h2>
+
+<h3>Log 01:03PM</h3>
+
+<p>Right, so spent some time cleaning up last night&#39;s code, replacing annoying bits of APTO with std functions. All better, fewer random de-allocations.</p>
+
+<p>I&#39;m going to try out some other IDEs and see if they&#39;re better than CLion, which I&#39;ve tried out for a day or so, and found to be pretty stable, but interface-buggy.</p>
+
+<h3>Log 9:05p</h3>
+
+<p>Right, so I messed with all the others, plus KDevelop, and all of them suck, or can&#39;t work directly with CMake files. :( So, CLion it is, at least for now.</p>
+
+<p>One thing I failed to mention is an addition to the events file that must be included in order to read from an spop file for the fragments.</p>
+
+<pre>
+u 0:100:end InsertHGTGenomeFragments detail-100000.spop
+</pre>
+
+<h3>Log 9:40p</h3>
+
+<p>Reviewed the various uptake instructions. They are defined as follows:</p>
+
+<ul>
+	<li><code>cHardwareCPU.cc</code>
+
+	<ul>
+		<li>Line 10789 -&nbsp;<code>InstUptakeHGT()</code>&nbsp;- base implementation of HGT Uptake, controlled by paramters. Shoves the HGT fragment into a queue, awaiting cell division.
+
+		<ul>
+			<li><code>Inst_Uptake_HGT_Bonus</code>, ...<code>noBonus</code>, ...<code>noHGT</code>... sit right below, and just call the base above.</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li><code>cHardwareBase.cc</code>
+	<ul>
+		<li>Line 835 -&nbsp;<code>doHGTUptakenMutation()</code>&nbsp;- called at divide, I guess, calls the reservoir of HGT Uptaken and shoves them in during divide.</li>
+	</ul>
+	</li>
+</ul>
+
+<p><span style="background-color:rgb(255, 215, 0)">TODO</span></p>
+
+<ul>
+	<li>add config option for when to apply HGT mutation (on divide, or at execution time)
+	<ul>
+		<li>Changes to onDivide code, search for &quot;doHGTUptakenMutation&quot;</li>
+	</ul>
+	</li>
+	<li>add config option for how to insert the fragment (there may already be something that governs a similar issue&nbsp;<code>LGT_FILL_MODE</code>)
+	<ul>
+		<li>copy&nbsp;<code>LGT_FILL_MODE</code>&nbsp;to&nbsp;<code>HGT_FILL_MODE</code>&nbsp;to keep the systems separate, because screw Bryson&#39;s half-assed thing.
+		<ul>
+			<li>Fix it in doHGTUptakenMutation where it uses&nbsp;<code>LGT_FILL_MODE</code></li>
+		</ul>
+		</li>
+		<li>add code for where to insert the fragment (homologous, random, etc.)</li>
+	</ul>
+	</li>
+</ul>
+
+<h2>Wednesday, Dec 30, 2015</h2>
+
+<h3>Log 11:14pI</h3>
+
+<p>Poked a bit yesterdy at the instructions.</p>
+
+<p>Uh, I think I must have lost some stuff. Will have to look in the dropbox.</p>
+
+<h2>Thursday, Dec 31, 2015</h2>
+
+<h3>Log 2:56p</h3>
+
+<p>Obvs, recovered my stuff, but I hate that. Makes me paranoid.</p>
+
+<p>Worked on the HGT stuff. Filled in 95% of the last bits. Todo are some stats gathering, and some kind of bug with the bonus, where it&#39;s not applying, somehow. Or something is happening. Dunno.</p>
+
+<h3>Log 3:47p</h3>
+
+<p>Fixed it. Added some more stats gathering. Should now be feature complete, and non-obvious-bug&nbsp;free. Deploying and will now tinker locally.</p>
+
+<h2>Saturday, Jan 2, 2016</h2>
+
+<h3>Log 10:20a</h3>
+
+<p>Down by the pool, setting up the HGT runs on the HPCC, including a parameter sweep.</p>
+
+<h3>Log 1:03p</h3>
+
+<p>Submitted some jobs to the HPCC, doing a sweep of parameters for the probability value, using each instruction. A total of 8*4 jobs.&nbsp;</p>
+
+<ul>
+	<li>1, .75, .5, .25, .1, .01, .001, 0</li>
+	<li>Control, HGT, Bonus, HGT+Bonus</li>
+</ul>
+
+<p>Looks like the HPCC has reinstated some limits on array jobs. Annoyed. Looks like 1000 jobs total. I&#39;m going to have to bitch at somebody about it. :(</p>
+
+<h2>Sunday, Jan 3, 2016</h2>
+
+<h3>Log 07:48a</h3>
+
+<p>All the jobs are now complete, and I&#39;m pulling the data down. Initially, I got an iPython Notebook running in a venv on the HPCC, but it looks like it&#39;s not the latest version, and getting things to run from over there is just not feasible because I still have to install all the frelling libraries. So, fuckit. I&#39;m just copying the data over. It&#39;s a lot of little files, so it shouldn&#39;t be a big deal.</p>
+
+<p>Based on a cursory look at the run.logs, it looks like all the runs finished. So, yay!</p>
+
+<p>Setting up an iPy to take a look at the data.</p>
+
+<p><a href="http://localhost:8888/notebooks/Dropbox/School_Docs/Research/HGT/1_3_2016_Averages.ipynb">http://localhost:8888/notebooks/Dropbox/School_Docs/Research/HGT/1_3_2016_Averages.ipynb</a></p>
+
+<h3>Log 12:19p</h3>
+
+<p>Wooo, worked pretty steadily. Got some acceptable figures of what&#39;s going on within iPy.</p>
+
+<p><img src="./15.362.__-_Notes_-_Week_of_December_28_2015/2016_01_03_16_25_282.png" style="height:281px; width:404px" /></p>
+
+<p>So, the takeaway is that the sweet spot for fitness seems to be 0.01 probability of HGT.</p>

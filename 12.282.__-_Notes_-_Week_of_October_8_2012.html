@@ -1,0 +1,155 @@
+<h1>Week of October 8, 2012</h1>
+
+<h2>Tuesday 10/8/12</h2>
+
+<h3>12:31 PM</h3>
+
+<h4>PREFACE:</h4>
+
+<p>For whatever reason, work has been incredibly hard for me to get motivated about. I really don&rsquo;t want to do it. This is probably related to the rest of it, which is that I don&rsquo;t want to do *anything*. So, for the past month (past summer?), I&rsquo;ve gotten virtually nothing done. My research has stalled, and I feel like crap about it.</p>
+
+<p>&nbsp;</p>
+
+<h4>RESEARCH-WISE:</h4>
+
+<p>Recently, I decided to procrastinate further by updating everything to Avida 3. This appears to have been a mistake. I have discovered that my runs no longer perform the way that they used to. Specifically, EQU is being lost very early in the evolutionary process. So, I need to figure this out. To that end, I will need to replicate runs that I had done before, with same configs and seeds and see if I get the same results. This is a critical first step to being able to continue with Avida 3.</p>
+
+<p>&nbsp;</p>
+
+<h4>PLAN:</h4>
+
+<ul>
+	<li>Set up identical runs to 082, where I&rsquo;ve confirmed that EQU is not evolving away.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Thursday 10/11/12</h2>
+
+<h3>1:47 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Looked at the config files to do the replicates, and it TURNS OUT I FUCKED UP. Yay!
+	<ul style="list-style-type:circle">
+		<li>The correct mutation rate option DIV_MUT_RATE not DIVIDE_MUT_RATE. Sigh.</li>
+	</ul>
+	</li>
+	<li>Re-ran the runs in question (097-099).</li>
+	<li>Analyzing now.</li>
+	<li>Writing an easy master analysis script to dump out plots. I stuck it in the root of scripts, and it invokes analyze.py and plot_from_csv.py</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FFD700">rosiec@Thor</span>:<span style="color:#0000FF">~/Volumes/AtlantisSSH/__research/devolab_research/evolution_of_modularity/raw_data/097_Bottlenecking_Collection__update_to_avida3__initial_config_tests__fixed_lineage_counts__fixed_mutation_rate</span>$</strong> python ../../../scripts/quickplot.py fitness average.dat 4 &quot;control_intertwined_970*/data/&quot; control&quot;punish_intertwined_970*/data/&quot; punish</pre>
+
+<p><img alt="" src="./12.282.__-_Notes_-_Week_of_October_8_2012/Vlfk2T.png" style="height:324px; width:432px" /></p>
+
+<ul>
+	<li>Or, you can make it more complex to include multiple data sources, aggregated as desired, error bars, custom xticks labels and titles.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FFD700">rosiec@Thor</span>:<span style="color:#0000FF">~/Volumes/AtlantisSSH/__research/devolab_research/evolution_of_modularity/raw_data/097_Bottlenecking_Collection__update_to_avida3__initial_config_tests__fixed_lineage_counts__fixed_mutation_rate</span>$</strong> python ../../../scripts/quickplot.py -i 6 --title &quot;Tasks and Lineage Counts Timeseries &ndash; 097 Initial Config&quot; --xlabel &quot;Updates&quot; --xtick_multiplier 100 --ylabel &quot;Counts&quot; --data_members 2 tasks_lineages tasks.dat 3 &quot;control_intertwined_970*/data/&quot; control_tasks lineage_counts.dat 4 &quot;control_intertwined_970*/data/&quot; control_lineage_counts tasks.dat 3 &quot;noreward_intertwined_970*/data/&quot; noreward_tasks lineage_counts.dat 4 &quot;noreward_intertwined_970*/data/&quot; noreward_lineage_counts tasks.dat 3 &quot;punish_intertwined_970*/data/&quot; punish_tasks lineage_counts.dat 4 &quot;punish_intertwined_970*/data/&quot; punish_lineage_counts</pre>
+
+<p><img src="./12.282.__-_Notes_-_Week_of_October_8_2012/vYFg4b.png" style="height:304px; width:405px" /></p>
+
+<ul>
+	<li>Ok, now that I&rsquo;ve got that working (!!! :D) I&rsquo;ll do quick analysis plots of the other runs (098, 099).</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FFD700">rosiec@Thor</span>:<span style="color:#0000FF">~/Volumes/AtlantisSSH/__research/devolab_research/evolution_of_modularity/raw_data/098_Bottlenecking_Collection__update_to_avida3__no_sterilize_unstable__fixed_lineage_counts__fixed_mutation_rate</span></strong>$ python ../../../scripts/quickplot.py -i 6 --title &quot;Tasks and Lineage Counts Timeseries - 098 No Sterilize Unstable&quot; --xlabel &quot;Updates&quot; --xtick_multiplier 100 --ylabel &quot;Counts&quot; --data_members 2 tasks_lineages tasks.dat 3 &quot;control_intertwined_9*/data/&quot; control_tasks lineage_counts.dat 4 &quot;control_intertwined_9*/data/&quot; control_lineage_counts tasks.dat 3 &quot;noreward_intertwined_9*/data/&quot; noreward_tasks lineage_counts.dat 4 &quot;noreward_intertwined_9*/data/&quot; noreward_lineage_counts tasks.dat 3 &quot;punish_intertwined_9*/data/&quot; punish_tasks lineage_counts.dat 4 &quot;punish_intertwined_9*/data/&quot; punish_lineage_counts
+
+<strong><span style="color:#FFD700">rosiec@Thor</span>:<span style="color:#0000FF">~/Volumes/AtlantisSSH/__research/devolab_research/evolution_of_modularity/raw_data/098_Bottlenecking_Collection__update_to_avida3__no_sterilize_unstable__fixed_lineage_counts__fixed_mutation_rate</span></strong>$ python ../../../scripts/quickplot.py -i 6 --title &quot;Tasks and Lineage Counts Timeseries - 099 No Fixed Length or Sterilize Unstable&quot; --xlabel &quot;Updates&quot; --xtick_multiplier 100 --ylabel &quot;Counts&quot; --data_members 2 tasks_lineages tasks.dat 3 &quot;control_intertwined_9*/data/&quot; control_tasks lineage_counts.dat 4 &quot;control_intertwined_9*/data/&quot; control_lineage_counts tasks.dat 3 &quot;noreward_intertwined_9*/data/&quot; noreward_tasks lineage_counts.dat 4 &quot;noreward_intertwined_9*/data/&quot; noreward_lineage_counts tasks.dat 3 &quot;punish_intertwined_9*/data/&quot; punish_tasks lineage_counts.dat 4 &quot;punish_intertwined_9*/data/&quot; punish_lineage_counts</pre>
+
+<p>&nbsp;</p>
+
+<p><img src="./12.282.__-_Notes_-_Week_of_October_8_2012/M9uj49.png" style="height:243px; width:324px" />&nbsp;<img src="./12.282.__-_Notes_-_Week_of_October_8_2012/MddvNe.png" style="height:243px; width:323px" /></p>
+
+<ul>
+	<li>And they all look virtually the same! :D</li>
+	<li>Ok, the next step is the count the bottlenecking and address the actual remaining scientific questions.
+	<ul style="list-style-type:circle">
+		<li>Figure out what scientific question I&rsquo;m trying to answer</li>
+		<li>????</li>
+		<li>Profit?</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Sunday 10/14/12</h2>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Up this morning, and thought about a couple problems. Here are my thoughts:
+	<ul style="list-style-type:circle">
+		<li>WRT bottlenecking, interpreting lineage data is difficult because where and how the bottleneck is defined to be depends on the end-point one is measuring from. For example, if one is measuring from time point B (looking back into the past to find a bottleneck.), one could find the bottleneck to be at time point T<sub>A</sub>. But say you looked back from time T<sub>B&rsquo;</sub> (a time later than T<sub>B</sub>), the bottleneck point may end up being time point&nbsp; T<sub>A&rsquo;</sub> (a time later than T<sub>A</sub>), after divergence from a lineage that became extinct between time T<sub>B</sub> and T<sub>B&rsquo;</sub>. This issue would mostly affect asexual organisms, because there is no interbreeding to preserve genetic material.</li>
+		<li>BUT! I don&rsquo;t care about that, because I&rsquo;ve got a fixed T<sub>B</sub> time point. The point before the next bottlenecking event. So, because T<sub>B</sub> is fixed, T<sub>A</sub> will be consistently defined.</li>
+	</ul>
+	</li>
+	<li>With all that in mind, what I want to find out is whether an instant-kill</li>
+</ul>
+
+<p style="margin-left:.5in">bottleneck behaves differently than a very low fitness bottleneck. I think it does behave differently, because I see that there are organisms that derive from those penalized by the low-fitness bottleneck hanging around until timepoint T<sub>B</sub>. This <s>wouldn&rsquo;t happen ever if the bottleneck instant-killed everything.</s> <s>Actually, maybe not. They might have had offspring before the kill event that were not themselves penalized.</s> Argh. That offspring would not get marked as having been penalized, and the lineage marker would not show them as having been penalized-organism descendants. So, we should be able to easily tell if there is a difference between instant-kill and fitness penalized bottlenecking modes.</p>
+
+<p style="margin-left:.5in">&nbsp;</p>
+
+<ul>
+	<li>With that in mind, I&rsquo;m going to measure purely the lineage markers now, with quickplot! :D
+	<ul style="list-style-type:circle">
+		<li>Also, I&rsquo;m going to do run 100, which is sterilize unstable, and fixed length. These kinds of organisms are way easier to analyze. Also, 50 replicates each, and 200k updates. This is more in line with my previous set of runs.</li>
+	</ul>
+	</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FFD700">rosiec@Thor</span>:<span style="color:#0000FF">~/Volumes/AtlantisSSH/__research/devolab_research/evolution_of_modularity/raw_data/098_Bottlenecking_Collection__update_to_avida3__no_sterilize_unstable__fixed_lineage_counts__fixed_mutation_rate</span></strong>$ python ../../../scripts/quickplot.py --error --title &quot;Lineage Counts - 098 No Sterilize Unstable&quot; --xlabel &quot;Updates&quot; --xtick_multiplier 100 --ylabel &quot;Counts&quot; lineage_counts lineage_counts.dat 4 &quot;control_intertwined_9*/data/&quot; control lineage_counts.dat 4 &quot;noreward_intertwined_9*/data/&quot; noreward lineage_counts.dat 4 &quot;punish_intertwined_9*/data/&quot; punish</pre>
+
+<p><img src="./12.282.__-_Notes_-_Week_of_October_8_2012/BK9jBT.png" style="height:324px; width:432px" /></p>
+
+<h3>10:46 PM</h3>
+
+<p>STATUS</p>
+
+<ul>
+	<li>Earlier, performed a set of test runs to gauge the difference between a kill and a penalty. Qualitatively, the lineages behave very differently. If there is a single kill event, the lineages bounce back immediately, both in numbers, and in task performance, even when there is no reward (not shown). If there are multiple kill events (kill every 50 updates), the task performance is depressed during the kill period, but returns upon reward. Further, the lineages still hang around a bit.</li>
+</ul>
+
+<p><img src="./12.282.__-_Notes_-_Week_of_October_8_2012/NHpyK1.png" style="height:198px; width:264px" /><img src="./12.282.__-_Notes_-_Week_of_October_8_2012/8fv1oL.png" style="height:186px; width:247px" /></p>
+
+<ul>
+	<li>So, it isn&rsquo;t really clear that I can use the kill events as a cleaner substitute.</li>
+	<li>Run 100 finished, which is fixed length, and sterilize unstable. The lineage counts are as follows:</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FFD700">rosiec@Thor</span>:<span style="color:#0000FF">~/Volumes/AtlantisSSH/__research/devolab_research/evolution_of_modularity/raw_data/100_Bottlenecking_Collection__final_config</span></strong>$ python ../../../scripts/quickplot.py --error --title &quot;Lineage Counts - Job 100&quot; --xlabel &quot;Updates&quot; --xtick_multiplier 100 --ylabel &quot;Counts&quot; lineage_counts lineage_counts.dat 4 &quot;control_intertwined_*/data/&quot; control lineage_counts.dat 4 &quot;noreward_intertwined_*/data/&quot; noreward lineage_counts.dat 4 &quot;punish_intertwined_*/data/&quot; punish</pre>
+
+<p>&nbsp;</p>
+
+<p><img src="./12.282.__-_Notes_-_Week_of_October_8_2012/cNtUq2.png" style="height:174px; width:232px" /></p>
+
+<p><img src="./12.282.__-_Notes_-_Week_of_October_8_2012/1SDnE2.png" style="height:324px; width:432px" /></p>
+
+<p><img src="./12.282.__-_Notes_-_Week_of_October_8_2012/g6RoFO.png" style="height:222px; width:296px" /></p>
+
+<p><img src="./12.282.__-_Notes_-_Week_of_October_8_2012/WBtiuM.png" style="height:324px; width:432px" /></p>
+
+<pre>
+<strong><span style="color:#FFD700">rosiec@Thor</span>:<span style="color:#0000FF">~/Volumes/AtlantisSSH/__research/devolab_research/evolution_of_modularity/raw_data/100_Bottlenecking_Collection__final_config</span></strong>$ python ../../../scripts/quickplot.py --error --title &quot;Lineage Counts - Job 100 - Punish&quot; --xlabel &quot;Updates&quot; --xtick_multiplier 100 --ylabel &quot;Counts&quot; lineage_counts__punish lineage_counts.dat 3 &quot;punish_intertwined_*/data/&quot; NoEQU lineage_counts.dat 4 &quot;punish_intertwined_*/data/&quot; EQU</pre>
+
+<p>&nbsp;</p>
+
+<p><img src="./12.282.__-_Notes_-_Week_of_October_8_2012/UBFm8w.png" style="height:163px; width:218px" /><img src="./12.282.__-_Notes_-_Week_of_October_8_2012/66USbt.png" style="height:164px; width:218px" /></p>
+
+<p><img src="./12.282.__-_Notes_-_Week_of_October_8_2012/IRZhCj.png" style="height:324px; width:432px" /></p>
+
+<ul>
+	<li>The way to interpret the above graphs is to consider it along with the tasks figure above. So, just about 3000-3500 organisms are performing EQU at the end of each reward cycle. Those are flagged to be lineage 1 at n002 updates. Then, 98 updates go by, and then we count how many of each lineage there are. <s>This is probably the peak values. If we had measured immediately after setting the label, then it would be up near the top of the figure (see the task figure). After that, keep measuring. The bottom of each blue is the minimal count of organisms whose ancestors HAD BEEN PERFORMING THE TASK AND THUS GOT DINGED at the end of the punishment cycle. These are the ones that adapted and survived. Corresponding are the black peaks and troughs. So, the bit that we don&rsquo;t see is that the black ones, those organisms whose ancestors were NOT performing the task when it was punished balloon up from about 50 organisms to about 2500 at their peak, during punishment. Then, when reward returns,</s> &nbsp;Gah. This is tough to interpret. I think I need to write a print action to record combined lineage and task counts. :(</li>
+	<li>So once I have the above figured out, next is to figure out the average accepted mutation rate. This can be extracted by looking at the lineages of the final population, and calculating the</li>
+</ul>

@@ -1,0 +1,245 @@
+<h1>Week of September 29, 2014</h1>
+
+<h2>Monday, Sep 29, 2014</h2>
+
+<h3>Log 07:22PM</h3>
+
+<p>Ok, so I&#39;ve generated the data.</p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@13-67-42</span></strong>:<span style="color:#0000FF"><strong>~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/experimental_setup/data3_wholelogic9/mates</strong></span>$ awk &#39;{if (($16 &gt; 0) &amp;&amp; (($11 &gt; 1799 &amp;&amp; $22 &lt; 1800) || ($11 &lt; 1800 &amp;&amp; $22 &gt; 1799))) print $2,$3,$4,$5,$8,$11,&quot;---&gt;&quot;,$13,$14,$15, $16,$19,$22}&#39; mates-1000.dat</pre>
+
+<p>This snippet reads the raw matings and identifies those between groups that are choosy but still cross borders.</p>
+
+<p>The output shows 11 matings, out of 55 (as counted by the mating output. What&#39;s weird, though, is that this is 1000 updates later. WTF. The raw is not supposed to work like that.</p>
+
+<h3 class="item_body_heading_3">&nbsp;</h3>
+
+<h3 class="item_body_heading_3"><em>Later...</em></h3>
+
+<p>Ok, I changed the output to dump the successful matings at every update. Then, I combined the output, and ran it through awk to pull the relevant lines. It&#39;s not looking good.</p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@13-67-42</span></strong>:<span style="color:#0000FF"><strong>~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/experimental_setup/data3_wholelogic9/mates</strong></span>$ awk &#39;{if (($16 &gt; 0) &amp;&amp; (($11 &gt; 1799 &amp;&amp; $22 &lt; 1800) || ($11 &lt; 1800 &amp;&amp; $22 &gt; 1799))) print $2,$3,$4,$5,$8,$11,&quot;---&gt;&quot;,$13,$14,$15, $16,$19,$22}&#39; mates-all.dat | wc -l
+   14964 
+
+<strong><span style="color:#EE82EE">rosiec@13-67-42</span></strong>:<span style="color:#0000FF"><strong>~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/experimental_setup/data3_wholelogic9/mates</strong></span>$ cat mates-all.dat | wc -l
+&nbsp;&nbsp; 39801</pre>
+
+<p>This means about half the matings are happening across the border. :/</p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@13-67-42</span></strong>:<span style="color:#0000FF"><strong>~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/experimental_setup/data3_wholelogic9/mates</strong></span>$ for i in {1..9}; do ia=$((i * 100)); ia2=$((ia - 1)); k=$((ia2)); j=$((ia + 101)); echo $k $j;  awk -v i=&quot;$k&quot; -v j=&quot;$j&quot; &#39;{if (($13 &gt; i &amp;&amp; $13 &lt; j)) print $2,$3,$4,$5,$8,$11,&quot;---&gt;&quot;,$13,$14,$15, $16,$19,$22}&#39; mates-all.dat | wc -l; done</pre>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@13-67-42</span></strong>:<span style="color:#0000FF"><strong>~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/experimental_setup/data3_wholelogic9/mates</strong></span>$ for i in {1..9}; do ia=$((i * 100)); ia2=$((ia - 1)); k=$((ia2)); j=$((ia + 101)); echo $k $j;  awk -v i=&quot;$k&quot; -v j=&quot;$j&quot; &#39;{if (($13 &gt; i &amp;&amp; $13 &lt; j) &amp;&amp; ($16 &gt; 0) &amp;&amp; (($11 &gt; 1799 &amp;&amp; $22 &lt; 1800) || ($11 &lt; 1800 &amp;&amp; $22 &gt; 1799))) print $2,$3,$4,$5,$8,$11,&quot;---&gt;&quot;,$13,$14,$15, $16,$19,$22}&#39; mates-all.dat | wc -l; done</pre>
+
+<p>The above prints out a time-series by 100 updates of the matings. There doesn&#39;t seem to be a pattern over time. Just a steady distribution of about half the matings being across the border.</p>
+
+<p>One thing I noticed, though, is that many choosy females are mating with non-choosy males that are expressing display traits... is this intended behavior?</p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@13-67-42</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/experimental_setup/data3_wholelogic9/mates</span>$</strong> awk &#39;{if ((($16 &gt; 0) &amp;&amp; ($5 &lt; 1)) &amp;&amp; (($11 &gt; 1799 &amp;&amp; $22 &lt; 1800) || ($11 &lt; 1800 &amp;&amp; $22 &gt; 1799))) print $2,$3,$4,$5,$8,$11,&quot;---&gt;&quot;,$13,$14,$15, $16,$19,$22}&#39; mates-all.dat | wc -l
+    3507
+<strong><span style="color:#EE82EE">rosiec@13-67-42</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/experimental_setup/data3_wholelogic9/mates</span>$</strong> awk &#39;{if ((($16 &gt; 0) &amp;&amp; ($5 &gt; 0)) &amp;&amp; (($11 &gt; 1799 &amp;&amp; $22 &lt; 1800) || ($11 &lt; 1800 &amp;&amp; $22 &gt; 1799))) print $2,$3,$4,$5,$8,$11,&quot;---&gt;&quot;,$13,$14,$15, $16,$19,$22}&#39; mates-all.dat | wc -l
+   11457
+<strong><span style="color:#EE82EE">rosiec@13-67-42</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/experimental_setup/data3_wholelogic9/mates</span>$</strong> awk &#39;{if (($16 &gt; 0) &amp;&amp; (($11 &gt; 1799 &amp;&amp; $22 &lt; 1800) || ($11 &lt; 1800 &amp;&amp; $22 &gt; 1799))) print $2,$3,$4,$5,$8,$11,&quot;---&gt;&quot;,$13,$14,$15, $16,$19,$22}&#39; mates-all.dat | wc -l
+   14964
+</pre>
+
+<p>First output: Choosy females mating with non-choosy males over the wall. Second: Choosy mating with choosy, over the wall. Third: The total mating over the wall.</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Tuesday, Sept 30, 2014</h2>
+
+<h3>Log 1:16a</h3>
+
+<p>After napping over it, I realize I need some controls, because I can&#39;t know what to expect here. I&#39;ll post a picture of my notebook in a minute, wherein I describe my experimental regime. I think maybe the second phase of separated evolution going longer might not be a bad thing.</p>
+
+<h3>&nbsp;</h3>
+
+<h3>Stickleback Meeting 11:17a</h3>
+
+<p>Biological controls. Measure the mating rate of the population prior to allopatry (splitting the populations) for each of the runs.</p>
+
+<p>Mention to Cliff about the linkage of the preference trait to the sex trait being important in adoption of the preference trait, or easing of loss.</p>
+
+<p>----&gt; schedule paper reading as part of my research time.</p>
+
+<p><img alt="" src="./14.272.__-_Notes_-_Week_of_September_29_2014/2222.jpeg" style="height:1155px; width:865px" /></p>
+
+<h3>&nbsp;</h3>
+
+<h3>Log 2:58p</h3>
+
+<p><span style="font-family:courier new,courier,monospace">Scenario A:<br />
+Event: <span style="background-color:rgb(255, 160, 122)">I</span>, <span style="background-color:rgb(255, 255, 0)">II<span style="color:#FF0000">a</span>,</span> <span style="background-color:rgb(255, 255, 0)">II<span style="color:#00FF00">b</span></span>, <span style="background-color:#00FF00">III</span> Joined, Allopatry, Rejoined<br />
+Env:&nbsp;&nbsp; <span style="background-color:#DAA520">I</span>, <span style="background-color:#DDA0DD">II</span><span style="color:#FF0000"><span style="background-color:#DDA0DD">a</span></span>, <span style="background-color:#DDA0DD">II</span><span style="color:#00FF00"><span style="background-color:#DDA0DD">b</span></span>, <span style="background-color:#DAA520">I</span> WL9, L9SplitTree, WL9</span></p>
+
+<pre>
+./avida -set EVENT_FILE <span style="background-color:#FFA07A">events_I.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DAA520">environment_I_*.cfg</span> -set DATA_DIR data__A_step1; \
+cp data__A_step1/detail-100000.spop ./detail-final.spop; \
+./avida -set EVENT_FILE <span style="background-color:#FFFF00">events_II<span style="color:#FF0000">a</span>.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DDA0DD">environment_II</span><span style="color:#FF0000"><span style="background-color:#DDA0DD">a</span></span><span style="background-color:#DDA0DD">_*.cfg</span> -set DATA_DIR data__A_step2a; \
+./avida -set EVENT_FILE <span style="background-color:#FFFF00">events_II</span><span style="color:#00FF00"><span style="background-color:#FFFF00">b</span></span><span style="background-color:#FFFF00">.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DDA0DD">environment_II</span><span style="color:#00FF00"><span style="background-color:#DDA0DD">b</span></span><span style="background-color:#DDA0DD">_*.cfg</span> -set DATA_DIR data__A_step2b; \
+cat data__A_step2a/detail-100000.spop &gt; detail-combined.spop; \
+tail -n +24 data__A_step2b/detail-100000.spop &gt;&gt; detail-combined.spop; \
+./avida -set EVENT_FILE <span style="background-color:#00FF00">events_III.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DAA520">environment_I_*.cfg</span> -set DATA_DIR data__A_step3; \
+cp data__A_step1/detail-100000.spop detail-combined.spop; \
+./avida -set EVENT_FILE <span style="background-color:#00FF00">events_III.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DAA520">environment_I_*.cfg</span> -set DATA_DIR data__A_step4;</pre>
+
+<p>&nbsp;</p>
+
+<p><span style="font-family:courier new,courier,monospace">Scenario B:<br />
+Event: <span style="background-color:#FFA07A">I</span>, <span style="background-color:rgb(255, 255, 0)">II<span style="color:#FF0000">a</span>,</span> <span style="background-color:rgb(255, 255, 0)">II<span style="color:#00FF00">b</span></span>, <span style="background-color:#00FF00">III</span> Joined, Allopatry, Rejoined<br />
+Env:&nbsp;&nbsp; <span style="background-color:#DAA520">I</span>, <span style="background-color:#008080">III</span><span style="color:#FF0000"><span style="background-color:#008080">a</span></span>, <span style="background-color:#008080">III</span><span style="color:#00FF00"><span style="background-color:#008080">b</span></span>, <span style="background-color:#008000">IV</span> WL9, WL9+3LSplitTree, WL9+W3L</span><br />
+&nbsp;</p>
+
+<pre>
+./avida -set EVENT_FILE <span style="background-color:#FFA07A">events_I.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DAA520">environment_I_*.cfg</span> -set DATA_DIR data__B_step1; \
+cp data__B_step1/detail-100000.spop ./detail-final.spop; \
+./avida -set EVENT_FILE <span style="background-color:#FFFF00">events_II<span style="color:#FF0000">a</span>.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#008080">environment_III</span><span style="color:#FF0000"><span style="background-color:#008080">a</span></span><span style="background-color:#008080">_*.cfg</span> -set DATA_DIR data__B_step2a; \
+./avida -set EVENT_FILE <span style="background-color:#FFFF00">events_II</span><span style="color:#00FF00"><span style="background-color:#FFFF00">b</span></span><span style="background-color:#FFFF00">.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#008080">environment_III</span><span style="color:#00FF00"><span style="background-color:#008080">b</span></span><span style="background-color:#008080">_*.cfg</span> -set DATA_DIR data__B_step2b; \
+cat data__B_step2a/detail-100000.spop &gt; detail-combined.spop; \
+tail -n +24 data__B_step2b/detail-100000.spop &gt;&gt; detail-combined.spop; \
+./avida -set EVENT_FILE <span style="background-color:#00FF00">events_III.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#008000">environment_IV_*.cfg</span> -set DATA_DIR data__B_step3; \
+cp data__B_step1/detail-100000.spop detail-combined.spop; \
+./avida -set EVENT_FILE <span style="background-color:#00FF00">events_III.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DAA520">environment_I_*.cfg</span> -set DATA_DIR data__B_step4;</pre>
+
+<p>&nbsp;</p>
+
+<p><span style="font-family:courier new,courier,monospace">Scenario C:<br />
+Event: <span style="background-color:#FFA07A">I</span>, <span style="background-color:rgb(255, 255, 0)">II<span style="color:#FF0000">a</span>,</span> <span style="background-color:rgb(255, 255, 0)">II<span style="color:#00FF00">b</span></span>, <span style="background-color:#00FF00">III</span> Joined, Allopatry, Rejoined<br />
+Env:&nbsp;&nbsp; <span style="background-color:#A9A9A9">V</span>, <span style="background-color:#DDA0DD">II</span><span style="color:#FF0000"><span style="background-color:#DDA0DD">a</span></span>, <span style="background-color:#DDA0DD">II</span><span style="color:#00FF00"><span style="background-color:#DDA0DD">b</span></span>, <span style="background-color:#DAA520">I</span></span><span style="font-family:courier new,courier,monospace"> LowerL9, L9SplitTree, WL9</span></p>
+
+<pre>
+./avida -set EVENT_FILE <span style="background-color:#FFA07A">events_I.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#A9A9A9">environment_V_*.cfg</span> -set DATA_DIR data__C_step1; \
+cp data__C_step1/detail-100000.spop ./detail-final.spop; \
+./avida -set EVENT_FILE <span style="background-color:#FFFF00">events_II<span style="color:#FF0000">a</span>.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DDA0DD">environment_II</span><span style="color:#FF0000"><span style="background-color:#DDA0DD">a</span></span><span style="background-color:#DDA0DD">_*.cfg</span> -set DATA_DIR data__C_step2a; \
+./avida -set EVENT_FILE <span style="background-color:#FFFF00">events_II</span><span style="color:#00FF00"><span style="background-color:#FFFF00">b</span></span><span style="background-color:#FFFF00">.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DDA0DD">environment_II</span><span style="color:#00FF00"><span style="background-color:#DDA0DD">b</span></span><span style="background-color:#DDA0DD">_*.cfg</span> -set DATA_DIR data__C_step2b; \
+cat data__C_step2a/detail-100000.spop &gt; detail-combined.spop; \
+tail -n +24 data__C_step2b/detail-100000.spop &gt;&gt; detail-combined.spop; \
+./avida -set EVENT_FILE <span style="background-color:#00FF00">events_III.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DAA520">environment_I_*.cfg</span> -set DATA_DIR data__C_step3; \
+cp data__C_step1/detail-100000.spop detail-combined.spop; \
+./avida -set EVENT_FILE <span style="background-color:#00FF00">events_III.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#A9A9A9">environment_V_*.cfg</span> -set DATA_DIR data__C_step4;</pre>
+
+<p>&nbsp;</p>
+
+<p><span style="font-family:courier new,courier,monospace">Control 1 - Same Env:</span><br />
+<span style="font-family:courier new,courier,monospace">Event: <span style="background-color:#FFA07A">I</span>, <span style="background-color:rgb(255, 255, 0)">II<span style="color:#FF0000">a</span>,</span> <span style="background-color:rgb(255, 255, 0)">II<span style="color:#00FF00">b</span></span>, <span style="background-color:#00FF00">III</span> Joined, Allopatry, Rejoined</span><br />
+<span style="font-family:courier new,courier,monospace">Env:&nbsp;&nbsp; <span style="background-color:#DAA520">I</span>, <span style="background-color:#DAA520">I</span>, <span style="background-color:#DAA520">I</span>, <span style="background-color:#DAA520">I</span> WL9, WL9, WL9</span></p>
+
+<pre>
+./avida -set EVENT_FILE <span style="background-color:#FFA07A">events_I.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DAA520">environment_I_*.cfg</span> -set DATA_DIR data__Control1_step1; \
+cp data__Control1_step1/detail-100000.spop ./detail-final.spop; \
+./avida -set EVENT_FILE <span style="background-color:#FFFF00">events_II<span style="color:#FF0000">a</span>.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DAA520">environment_I_*.cfg</span> -set DATA_DIR data__Control1_step2a; \
+./avida -set EVENT_FILE <span style="background-color:#FFFF00">events_II</span><span style="color:#00FF00"><span style="background-color:#FFFF00">b</span></span><span style="background-color:#FFFF00">.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DAA520">environment_I_*.cfg</span> -set DATA_DIR data__Control1_step2b; \
+cat data__Control1_step2a/detail-100000.spop &gt; detail-combined.spop; \
+tail -n +24 data__Control1_step2b/detail-100000.spop &gt;&gt; detail-combined.spop; \
+./avida -set EVENT_FILE <span style="background-color:#00FF00">events_III.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DAA520">environment_I_*.cfg</span> -set DATA_DIR data__Control1_step3; \
+cp data__Control1_step1/detail-100000.spop detail-combined.spop; \
+./avida -set EVENT_FILE <span style="background-color:#00FF00">events_III.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DAA520">environment_I_*.cfg</span> -set DATA_DIR data__Control1_step4;</pre>
+
+<p>&nbsp;</p>
+
+<p><span style="font-family:courier new,courier,monospace">Control 2 - Same Env:<br />
+Event: <span style="background-color:#FFA07A">I</span>, <span style="background-color:#00FFFF">IV</span><span style="color:#FF0000"><span style="background-color:#00FFFF">a</span></span>, <span style="background-color:#00FFFF">IV</span><span style="color:#00FF00"><span style="background-color:#00FFFF">b</span></span>, <span style="background-color:#00FF00">III</span></span> <span style="font-family:courier new,courier,monospace">Joined, Allopatry (no mut), Rejoined</span><br />
+<span style="font-family:courier new,courier,monospace">Env:&nbsp;&nbsp; <span style="background-color:#DAA520">I</span>, <span style="background-color:#DAA520">I</span>, <span style="background-color:#DAA520">I</span>, <span style="background-color:#DAA520">I</span> WL9, WL9, WL9</span></p>
+
+<pre>
+./avida -set EVENT_FILE <span style="background-color:#FFA07A">events_I.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DAA520">environment_I_*.cfg</span> -set DATA_DIR data__Control2_step1; \
+cp data__Control2_step1/detail-100000.spop ./detail-final.spop; \
+./avida -set EVENT_FILE <span style="background-color:#00FFFF">events_IV<span style="color:#FF0000">a</span>.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DAA520">environment_I_*.cfg</span> -set DATA_DIR data__Control2_step2a; \
+./avida -set EVENT_FILE <span style="background-color:#00FFFF">events_IV<span style="color:#00FF00">b</span>.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DAA520">environment_I_*.cfg</span> -set DATA_DIR data__Control2_step2b; \
+cat data__Control2_step2a/detail-100000.spop &gt; detail-combined.spop; \
+tail -n +24 data__Control2_step2b/detail-100000.spop &gt;&gt; detail-combined.spop; \
+./avida -set EVENT_FILE <span style="background-color:#00FF00">events_III.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DAA520">environment_I_*.cfg</span> -set DATA_DIR data__Control2_step3; \
+cp data__Control2_step1/detail-100000.spop detail-combined.spop; \
+./avida -set EVENT_FILE <span style="background-color:#00FF00">events_III.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DAA520">environment_I_*.cfg</span> -set DATA_DIR data__Control2_step4;</pre>
+
+<p>&nbsp;</p>
+
+<p><span style="font-family:courier new,courier,monospace">Control 3 - Same Env:<br />
+Event: <span style="background-color:#FFA07A">I</span>, <span style="background-color:#E6E6FA">V</span>, <span style="background-color:#00FF00">III</span></span> <span style="font-family:courier new,courier,monospace">Joined, Still Joined, Rejoined</span><br />
+<span style="font-family:courier new,courier,monospace">Env:&nbsp;&nbsp; <span style="background-color:#DAA520">I</span>, <span style="background-color:#DAA520">I</span>, <span style="background-color:#DAA520">I</span> WL9, WL9, WL9</span></p>
+
+<pre>
+./avida -set EVENT_FILE <span style="background-color:#FFA07A">events_I.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DAA520">environment_I_*.cfg</span> -set DATA_DIR data__Control3_step1; \
+cp data__Control3_step1/detail-100000.spop ./detail-final.spop; \
+./avida -set EVENT_FILE <span style="background-color:#E6E6FA">events_V.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DAA520">environment_I_*.cfg</span> -set DATA_DIR data__Control3_step2; \
+cat data__Control3_step2/detail-100000.spop &gt; detail-combined.spop; \
+./avida -set EVENT_FILE <span style="background-color:#00FF00">events_III.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DAA520">environment_I_*.cfg</span> -set DATA_DIR data__Control3_step3; \
+cp data__Control3_step1/detail-100000.spop detail-combined.spop; \
+./avida -set EVENT_FILE <span style="background-color:#00FF00">events_III.cfg</span> -set ENVIRONMENT_FILE <span style="background-color:#DAA520">environment_I_*.cfg</span> -set DATA_DIR data__Control3_step4;</pre>
+
+<h2>&nbsp;</h2>
+
+<h2>Wed Oct 1, 2014</h2>
+
+<h3>Log 11:57a</h3>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/experimental_setup</span>$</strong> cp data__A_step1/detail-100000.spop detail-combined.spop; ./avida -set EVENT_FILE events_III.cfg -set ENVIRONMENT_FILE environment_I_*.cfg -set DATA_DIR data__A_step4;
+<strong><span style="color:#EE82EE">
+rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/experimental_setup/data__A_step4/mates</span>$</strong> rm matings_timeseries.dat; for i in {0..999}; do echo $i; awk -v i=&quot;$i&quot; &#39;{if (($13 == i) &amp;&amp; ($16 &gt; 0) &amp;&amp; (($11 &gt; 1799 &amp;&amp; $22 &lt; 1800) || ($11 &lt; 1800 &amp;&amp; $22 &gt; 1799))) print $2,$3,$4,$5,$8,$11,&quot;---&gt;&quot;,$13,$14,$15, $16,$19,$22}&#39; mates-$i&quot;.dat&quot; | wc -l &gt;&gt; matings_timeseries.dat ; done;
+<span style="color:#EE82EE">
+</span><strong><span style="color:#EE82EE">rosiec@13-67-42</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/experimental_setup/data__A_step3/mates</span>$</strong> rm matings_timeseries.dat; for i in {0..999}; do awk -v i=&quot;$i&quot; &#39;{if (($13 == i) &amp;&amp; ($16 &gt; 0) &amp;&amp; (($11 &gt; 1799 &amp;&amp; $22 &lt; 1800) || ($11 &lt; 1800 &amp;&amp; $22 &gt; 1799))) print $2,$3,$4,$5,$8,$11,&quot;---&gt;&quot;,$13,$14,$15, $16,$19,$22}&#39; mates-$i&quot;.dat&quot; | wc -l &gt;&gt; matings_timeseries.dat ; done;
+<strong><span style="color:#EE82EE">
+rosiec@13-67-42</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/experimental_setup</span>$</strong> python ../../../research_scripts/quickplot.py scenarioA_matings matings_timeseries.dat 1 data__A_step3/mates/ postsep matings_timeseries.dat 1 data__A_step4/mates/ presep</pre>
+
+<p><img alt="" src="./14.272.__-_Notes_-_Week_of_September_29_2014/scenarioA_matings.png" style="height:300px; width:400px" /></p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@13-67-42</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/experimental_setup/data__A_step3/mates</span>$</strong> rm total_matings_perupdate.dat; for i in {0..999}; do cat mates-$i&quot;.dat&quot; | wc -l &gt;&gt; total_matings_perupdate.dat; done
+
+<strong><span style="color:#EE82EE">rosiec@13-67-42</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/experimental_setup/data__A_step4/mates</span>$</strong> rm total_matings_perupdate.dat; for i in {0..999}; do cat mates-$i&quot;.dat&quot; | wc -l &gt;&gt; total_matings_perupdate.dat; done</pre>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@13-67-42</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/experimental_setup</span>$</strong> python ../../../research_scripts/quickplot.py scenarioA_matings_total \
+total_matings_perupdate.dat 1 data__A_step4/mates/ presep_total \
+matings_timeseries.dat 1 data__A_step4/mates/ presep_overwall \
+total_matings_perupdate.dat 1 data__A_step3/mates/ postsep_total \
+matings_timeseries.dat 1 data__A_step3/mates/ postsep_overwall
+
+<strong><span style="color:#EE82EE">rosiec@13-67-42</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/experimental_setup</span></strong>$ python ../../../research_scripts/quickplot.py --end_at=200 scenarioA_matings_200u total_matings_perupdate.dat 1 data__A_step4/mates/ presep_total matings_timeseries.dat 1 data__A_step4/mates/ presep_overwall total_matings_perupdate.dat 1 data__A_step3/mates/ postsep_total matings_timeseries.dat 1 data__A_step3/mates/ postsep_overwall</pre>
+
+<p><img alt="" src="./14.272.__-_Notes_-_Week_of_September_29_2014/scenarioA_matings_total.png" style="height:300px; width:400px" /><img alt="" src="./14.272.__-_Notes_-_Week_of_September_29_2014/scenarioA_matings_200u.png" style="height:300px; width:400px" /></p>
+
+<p>Yeah, so no discernible effect preventing them from mating.</p>
+
+<h3 class="item_body_heading_3">&nbsp;</h3>
+
+<h3 class="item_body_heading_3"><em><strong>Later</strong></em></h3>
+
+<p>Rearranged some things so my runs are actually correct. :/</p>
+
+<p>Then, as below, linked everything so there&#39;s no file duplication, but I can have separate run directories. This is so I can do my runs concurrently. It may run slightly slower, but still way faster than running them serially.</p>
+
+<pre>
+<strong><span style="color:#EE82EE">rosiec@Weir</span>:<span style="color:#0000FF">~/Dropbox/School_Docs/Research/AvidaDev/avida_dev_sexual_selection_testing/experimental_setup/ScenarioB</span>$</strong> for i in ../*.cfg; do ln -s $i ./; done; for i in ../*.org; do ln -s $i ./; done; ln -s ../avida ./</pre>
+
+<h2>&nbsp;</h2>
+
+<h2>Saturday Oct 4, 2014</h2>
+
+<h3>Log 11:29p</h3>
+
+<p>-Scenario B isn&#39;t finished. So... waiting to generate that data.</p>
+
+<p>Had a look at my data. I&#39;m seeing a series of weird thigns that I don&#39;t understand.</p>
+
+<p><img alt="" src="./14.272.__-_Notes_-_Week_of_September_29_2014/scenarioA_matings_200u.png" style="height:150px; width:200px" /><img alt="" src="./14.272.__-_Notes_-_Week_of_September_29_2014/scenarioC_matings_200u.png" style="height:150px; width:200px" /><img alt="" src="./14.272.__-_Notes_-_Week_of_September_29_2014/control1_matings_200u.png" style="height:150px; width:200px" /><img alt="" src="./14.272.__-_Notes_-_Week_of_September_29_2014/control2_matings_200u.png" style="height:150px; width:200px" /><img alt="" src="./14.272.__-_Notes_-_Week_of_September_29_2014/Control3_matings_200u.png" style="height:150px; width:200px" /></p>
+
+<p>Not a lot of differences.</p>
+
+<p>Things I learned:</p>
+
+<p>- mating before and after is a bad strategy for controls, because the mating rate changes over time, generally toward the MORE MATING, so any difference could be washed out by mating more overall at later time points.</p>
+
+<p>- there is probably something wrong because I&#39;m seeing matings at update 0, which makes ZERO sense. The content of the birth chamber should be EMPTY at this time point. Baffled.</p>
+
+<p><img alt="" src="./14.272.__-_Notes_-_Week_of_September_29_2014/postsep_overwall_matings_50u.png" style="height:600px; width:800px" /></p>
+
+<p>Here&#39;s the money shot. This is the measure of post-allopatry over-the-wall mating before 50 updates. Control 3 is the relevant one because it treats things as if they were never separated. Control 1 is really a treatment, for allopatry in identical environments. Scenario A is loss of resources (loss of adaptation), Scenario B is gain of new resources (new adaptation).</p>
+
+<p>Compared to the control</p>

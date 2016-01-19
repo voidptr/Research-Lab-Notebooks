@@ -1,0 +1,327 @@
+<h1>Week of April 9, 2012</h1>
+
+<h2>Monday 4/9/12</h2>
+
+<h3>12:30 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>EvoMod: Job 082 (fixed length 200k experiment) finished. Compressing on the server for transfer.</li>
+	<li>ChangeEnv: Jobs 001-005 finished. They don&rsquo;t follow the EvoMod pattern in two ways (seeds are 1001-1030, because dist_run doesn&rsquo;t like leading zeroes and treats them as octal, yielding the wrong number of runs), and (control_inter control_sep, etc.):
+	<ul>
+		<li>Leading Zeroes: Prior to moving stuff down, I renamed the directories to have the leading zeroes, a thus conform to the six digit numbering scheme I love so much:</li>
+	</ul>
+	</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel07</span></strong>:<strong><span style="color:#0000FF">/mnt/scratch/caninoko/changing_env/005</span></strong>$ RUN=5; for j in control_glactose control_glucose control_both noreward_both punish_both; do for i in {01..30}; do mv $j&quot;_&quot;$RUN&quot;0&quot;$i $j&quot;_00&quot;$RUN&quot;0&quot;$i; done ; done</pre>
+
+<ul>
+	<li>Differing Secondaries: I modified &ldquo;separate_and_compress_HPCC.py&rdquo; to be able to define different primary, secondary, and tertiary separation components. For ChangeEnv, the invocation is:</li>
+</ul>
+
+<pre>
+<strong><span style="color:#FF0000">caninoko@dev-intel07</span></strong>:<strong><span style="color:#0000FF"><strong>/mnt/scratch/caninoko/changing_env/003</strong></span></strong>$ ~/scripts/separate_and_compress_HPCC.py -s both,glucose,glactose</pre>
+
+<ul>
+	<li>Summary of current jobs of interest:
+	<ul>
+		<li>EvoMod 082 &ndash; Separated and Intertwined Ancestors; Control, Noreward, and Punishment; 50 runs each; 200k updates; 1k cycles; 0.00075 mutation rate; Paired Seeds 082001 - 082050;<strong> Enforce Exact Copy; Mutate on Divide.</strong>
+
+		<ul>
+			<li>The point was to have fixed length organisms, so that I could more easily analyze the information content. The runs should be identical to 079 (+080 reanalysis).</li>
+		</ul>
+		</li>
+		<li>ChangeEnv 001-006 &ndash; Intertwined Ancestor; Control_Glucose, Control_Glactose, Control_Both, Noreward_Both, Punish_Both; 30 runs each, 50k updates, <strong>CYCLE VARIES</strong>, 0.00075 mutation rate; Paired Seeds 00x001-00x030; Enforce Exact Copy, Mutate on Divide
+		<ul>
+			<li>These are meant to replicate a set of wet-lab experiments performed by Mark Kauth and &hellip;???... where they switched nutrients back and forth in differing phase times. Runs 001-006 survey the phase lengths in powers of two.</li>
+			<li>All runs are:
+			<ul>
+				<li>001 &ndash; 420u cycle</li>
+				<li>002 &ndash; 840u</li>
+				<li>003 &ndash; 1680u</li>
+				<li>004 &ndash; 3360u</li>
+				<li>005 &ndash; 6720u</li>
+				<li>006 &ndash; 13440u</li>
+			</ul>
+			</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Created a new research directory on Atlantis to house the new line:</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@atlantis</span></strong>:<strong><span style="color:#0000FF">~/research/devolab_research/changing_environments</span></strong>$</pre>
+
+<p>LOG:</p>
+
+<ul>
+	<li>Transferring EvoMod 082, and ChangeEnv 001-005 (006 is still running).</li>
+	<li>Performing &ldquo;calculate_mutation_metrics.py&rdquo; on every data directory. Sigh. I REALLY need to add this to &ldquo;analyze_single_run.py&rdquo; on the HPCC.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0">rosiec@atlantis</span></strong>:<strong><span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/082/SEPARATED</span></strong>$ ../../../../scripts/evolution_of_modularity_pipelines/analyze.py -l ../../../../scripts sanitize
+
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED</span></strong>$ ../../../../scripts/evolution_of_modularity_pipelines/analyze.py -l ../../../../scripts sanitize
+
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF"><strong>~/research/devolab_research/evolution_of_modularity/raw_data/082/SEPARATED</strong></span></strong>$ for i in *_??????; do echo $i ; if [ -e $i/data/ ] ; then cd $i/data ; rm mutation_metrics.csv ; python ../../../../../../scripts//evolution_of_modularity_pipelines/calculate_mutation_metrics.py 5 6 8 lineage.dat ./phenotype/ &gt; mutation_metrics.csv ; cd ../../ ; else echo &quot;Data Directory Not Foud&quot; ; fi ; done
+
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED</span></strong>$ for i in *_??????; do echo $i ; if [ -e $i/data/ ] ; then cd $i/data ; rm mutation_metrics.csv ; python ../../../../../../scripts//evolution_of_modularity_pipelines/calculate_mutation_metrics.py 5 6 8 lineage.dat ./phenotype/ &gt; mutation_metrics.csv ; cd ../../ ; else echo &quot;Data Directory Not Foud&quot; ; fi ; done</pre>
+
+<ul>
+	<li>Now, summing and averaging the content. (Had to do a fair bit of cleaning up L)</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF"><strong>~/research/devolab_research/evolution_of_modularity/raw_data/082/SEPARATED</strong></span></strong>$ ../../../../scripts/evolution_of_modularity_pipelines/analyze.py -l ../../../../scripts/ aggregate_phys_mod aggregate_funct_mod tasks fitness coalescent aggregate_mutation_metrics
+
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED</span></strong>$ ../../../../scripts/evolution_of_modularity_pipelines/analyze.py -l ../../../../scripts/ aggregate_phys_mod aggregate_funct_mod tasks fitness coalescent aggregate_mutation_metrics</pre>
+
+<ul>
+	<li>Now, generate some graphs.</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED</span></strong>$ python ../../../../scripts/generate_graphs_from_raw_data/bar_chart_from_csv.py --legend --title &quot;Dominant Lineage Mutation Profile - Intertwined Ancestor&quot; -y &quot;Mean Mutations per Generation&quot; -x &quot;Treatment&quot; --column_labels &quot;Degenerate Mutations, Coding Mutations&quot; &quot;3,1&quot; mean_mutations_per_generation.png control___mean_dominant_lineage_mutation_metrics.csv noreward___mean_dominant_lineage_mutation_metrics.csv punish___mean_dominant_lineage_mutation_metrics.csv
+
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/SEPARATED</strong></span></strong>$ python ../../../../scripts/generate_graphs_from_raw_data/bar_chart_from_csv.py --legend --title &quot;Dominant Lineage Mutation Profile - Separated Ancestor&quot; -y &quot;Mean Mutations per Generation&quot; -x &quot;Treatment&quot; --column_labels &quot;Degenerate Mutations, Coding Mutations&quot; &quot;3,1&quot; mean_mutations_per_generation.png control___mean_dominant_lineage_mutation_metrics.csv noreward___mean_dominant_lineage_mutation_metrics.csv punish___mean_dominant_lineage_mutation_metrics.csv
+
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED</span></strong>$ ../../../../scripts/evolution_of_modularity_pipelines/makegraphs.py -e -l ../../../../scripts/ tasks fitness phys_mod_gapmean phys_mod_gapstd funct_mod
+
+<strong><span style="color:#008000">rosiec@malp</span></strong>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/SEPARATED</strong></span></strong>$ ../../../../scripts/evolution_of_modularity_pipelines/makegraphs.py -e -l ../../../../scripts/ tasks fitness phys_mod_gapmean phys_mod_gapstd funct_mod</pre>
+
+<ul>
+	<li>For some reason, parts of the data are causing a failure to generate the functional and physical modularity graphs. I added some partial tests to analyze.py, but I can&rsquo;t seem to pin point it. Running the offending &ldquo;plot_from_csv.py&rdquo; command with debug messages turned on indicates that there is at least one line which is short on data, but I can&rsquo;t figure out which one.&nbsp; Will modify the plotting script to dump out the file that&rsquo;s the problem. :/</li>
+	<li>LATER: Ok, as usual, the problem is that when aggregating the individual data files, the lengths of the lines (which means the number of samples that were stuffed into a single line) does not agree between runs of a treatment. Most will be 4001 values per line, but there&rsquo;ll be a few that are only a 2000 values in a line. This fucks everything up. <s>I need to think about how to deal with this, or validate it ahead of time</s>. But for now, I&rsquo;m taking a fucking break.
+	<ul>
+		<li><s>Also, need to fix that analyze.py dumps out the name of every directory &hellip; I tink during the funct_mod aggregation.</s></li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>9:11 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Modified &ldquo;analyze.py&rdquo; and &ldquo;test_progress&rdquo; to test against an expected set of samples, which are defined by &ndash;e option. Also added &ndash;T option, which defines which tests to run. In most cases, 6 and 8 are sufficient.</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/SEPARATED/empty_data_directories</strong></span></strong>$ ../../../../../scripts/evolution_of_modularity_pipelines/analyze.py -T 6,8 -e 4001 -l ../../../../../scripts test_progress | grep control | sort</pre>
+
+<ul>
+	<li>Sent Charles a weekly status:</li>
+</ul>
+
+<blockquote>
+<p>Evolution of Modularity<br />
+- Met w/ Art about his experiments. Looking at trying my scenarios using his seed organisms.<br />
+- Submitted some runs with Exact Copy and Mutate on divide, to get some non-screwed up fixed-length organisms. Currently working on analysis for the population variation measures.</p>
+
+<p>Switching Environments<br />
+- Chatted with Mark Kauth @ Lenski Lab about the changing environments experiments he did with Jeff Barrick last summer. He was testing evolved fitness differences in E. Coli between changing environments vs controls in different cycle lengths. I am trying some preliminary runs with (attempted) equivalent settings in Avida. The main issue that I have is that of nailing down an equivalent mutation rate. Art was extremely skeptical of whether there even is such a thing. How do we usually handle this? Feedback is appreciated.</p>
+</blockquote>
+
+<h2>&nbsp;</h2>
+
+<h2>Tuesday 4/10/12</h2>
+
+<h3>12:19 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Next steps are to do the basic analyses on ChangeEnv 001-006</li>
+	<li>First, though, I&rsquo;m going to organize my scripts. In particular, I&rsquo;m going to revise analysis.py to include some general analysis libraries, and call them easily with the right parameters.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Wednesday 4/11/12</h2>
+
+<h3>12:05 AM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Finished the preliminary new analysis script + libraries. Looks good. Less code, easier to add/modify. Yay</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED</span></strong>$ ../../../../scripts/analysis/analyze.py -g control noncoding_mutations_timeseries c*_??????/data/
+
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED</strong></span></strong>$ ../../../../scripts/analysis/analyze.py -g control noncoding_mutations_average ./</pre>
+
+<ul>
+	<li>Finally TODO:
+	<ul>
+		<li><s>I need to add content validation to new &ldquo;analyze.py&rdquo; script, such that it checks that there are the right number of samples in each input file when doing the aggregation step.</s>
+
+		<ul>
+			<li><s>Add this in integrity testing</s></li>
+		</ul>
+		</li>
+		<li><s>I need to make an equivalent new &ldquo;makegraphs.py&rdquo; script, like &ldquo;analyze.py&rdquo;</s></li>
+		<li><s>I need to update &ldquo;plot_barchar_from_csv.py&rdquo; to also take in separate files for each bar and stack/pair them, rather than only allowing stacking from multiple columns in the same file.</s>
+		<ul>
+			<li><s>This is probably going to be gross like &ldquo;plot_from_csv.py&rdquo;, but such is life.</s></li>
+			<li>Update &ldquo;plot_from_csv.py&rdquo; so that it sucks less. :/</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>7:02 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Today was spent polishing up the analyze.py script, and creating a project specific evomod_analyze.bash script, which does all the fine analysissy things that need doing.</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF"><strong>~/research/devolab_research/evolution_of_modularity/raw_data/082</strong></span></strong>$ ../../../scripts/project_specific/evomod_analyze.bash</pre>
+
+<ul>
+	<li>Also, updated &ldquo;barchart_from_csv.py&rdquo; so that it takes individual files. 282 lines. Not too bad, I guess. Lots of whitespace.</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/082/INTERTWINED</strong></span></strong>$ python ../../../../scripts/graph_generation/bar_chart_from_csv.py --title &quot;Mutational Profile - Intertwined&quot; --ylabel &quot;Avg Mutations/Generation&quot; --xlabel &quot;Treatment&quot; --groups 3 --legend &quot;Coding Mutations, Degenerate Mutations, Non-Coding Mutations&quot; average_mutations_per_generation.png control_intertwined__coding_mutations.mean.csv control_intertwined__degenerate_mutations.mean.csv control_intertwined__noncoding_mutations.mean.csv noreward_intertwined__coding_mutations.mean.csv noreward_intertwined__degenerate_mutations.mean.csv noreward_intertwined__noncoding_mutations.mean.csv punish_intertwined__coding_mutations.mean.csv punish_intertwined__degenerate_mutations.mean.csv punish_intertwined__noncoding_mutations.mean.csv</pre>
+
+<h2>&nbsp;</h2>
+
+<h2>Thursday 4/12/12</h2>
+
+<h3>1:36 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Updated makegraph.py to make the fitness graphs (time series and bar chart).</li>
+	<li>TODO:
+	<ul>
+		<li>Analyze.py &ndash; extract physical modularity measures</li>
+		<li>Makegrap.py graph:
+		<ul>
+			<li>physical modularity measures</li>
+			<li>flamegraphs</li>
+			<li>stacked mutational profile.</li>
+		</ul>
+		</li>
+		<li>Think about how to show mutation trajectories.</li>
+		<li>Spend time thinking about the big picture.</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Sunday 4/15/12</h2>
+
+<h3>12:35 AM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Going to try applying my newly genericised analyze.py script to the changing environments runs.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h3>4:06 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Ran analyze.py and created a changeenv_makegraphs.bash script for this. Ran it on all the data (runs 001 &ndash; 006).</li>
+</ul>
+
+<pre>
+<strong><span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span></strong>:<strong><span style="color:#0000FF"><strong>~/research/devolab_research/changing_environments/raw_data/002</strong></span></strong>$ bash ../../../scripts/project_specific/changeenv_analyze.bash
+
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/changing_environments/raw_data/002</strong></span></strong>$ bash ../../../scripts/project_specific/changeenv_makegraphs.bash</pre>
+
+<ul>
+	<li>The fitness graphs were not particularly useful. :/</li>
+</ul>
+
+<p><img src="./12.100.__-_Notes_-_Week_of_April_9_2012/image001.png" style="height:164px; width:218px" /><img src="./12.100.__-_Notes_-_Week_of_April_9_2012/image003.png" style="height:164px; width:218px" /></p>
+
+<p><img src="./12.100.__-_Notes_-_Week_of_April_9_2012/image005.png" style="height:164px; width:218px" /><img src="./12.100.__-_Notes_-_Week_of_April_9_2012/image007.png" style="height:164px; width:218px" /></p>
+
+<p><img src="./12.100.__-_Notes_-_Week_of_April_9_2012/image009.png" style="height:164px; width:218px" /><img src="./12.100.__-_Notes_-_Week_of_April_9_2012/image011.png" style="height:164px; width:218px" /></p>
+
+<p style="margin-left:.5in">Timeseries fitness (doubling cycle time).</p>
+
+<ul>
+	<li>The green solid line is average fitness of no-reward. Which means that on average, it just sits at 5. Because my control_both treatment has so much higher fitness, well, it&rsquo;s simply not comparable. THIS IS AN EXPERIMENTAL ISSUE.
+	<ul>
+		<li>How can I possibly compare them?</li>
+	</ul>
+	</li>
+</ul>
+
+<p><img src="./12.100.__-_Notes_-_Week_of_April_9_2012/image013.png" style="height:164px; width:218px" /><img src="./12.100.__-_Notes_-_Week_of_April_9_2012/image015.png" style="height:164px; width:218px" /></p>
+
+<p><img src="./12.100.__-_Notes_-_Week_of_April_9_2012/image017.png" style="height:164px; width:218px" /><img src="./12.100.__-_Notes_-_Week_of_April_9_2012/image019.png" style="height:164px; width:218px" /><img src="./12.100.__-_Notes_-_Week_of_April_9_2012/image021.png" style="height:164px; width:218px" /><img src="./12.100.__-_Notes_-_Week_of_April_9_2012/image023.png" style="height:164px; width:218px" /></p>
+
+<p>Task execution of glactose task (doubling cycle time).</p>
+
+<p>&nbsp;</p>
+
+<ul>
+	<li>So, the important one to look at (the one that is comparable to</li>
+	<li>In light of the above, emailed Mark Kauth with some questions about his setup.
+	<ul>
+		<li>I&#39;m ironing out some of the kinks in my Avida setup and I have a few questions about your experimental setup.<br />
+		<br />
+		1. In your notes, you said you ran controls for both C sources for the duration of the experiment. How many controls were there? Does &quot;both C sources&quot; mean one control with both nutrients at the same time or one control per C source, or ...?<br />
+		<br />
+		2. How did you measure fitness? Was it final fitness or some kind of time series mean? Under what nutrient conditions did you measure it?<br />
+		<br />
+		3. Can you send me your raw data?</li>
+	</ul>
+	</li>
+	<li>I&rsquo;m going to try to plot out the data without the first 20 datapoints (prior to the start of the treatments), and without control_both. I edited plot_from_csv.py to support &ldquo;&mdash;start_at &lt;datapoint n&gt;&rdquo; to set a datapoint to start at.</li>
+</ul>
+
+<pre>
+<span style="color:#008000"><strong>rosiec@malp</strong></span>:<strong><span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/changing_environments/raw_data/006</strong></span></strong>$ python /Volumes/rosiec/research/devolab_research/scripts/graph_generation/plot_from_csv.py -o --start_at 21 --data_sources 1 --legend --calculate_error --title &quot;Fitness by Treatment&quot; -y &quot;Fitness&quot; -x &quot;Updates&quot; --x_tick_intervals 50 one_task_at_a_time.fitness.timeseries.plot.error.png control_glucose_fitness.timeseries.csv control_glactose_fitness.timeseries.csv noreward_fitness.timeseries.csv punish_fitness.timeseries.csv</pre>
+
+<p><img src="./12.100.__-_Notes_-_Week_of_April_9_2012/image025.png" style="height:164px; width:218px" /><img src="./12.100.__-_Notes_-_Week_of_April_9_2012/image027.png" style="height:164px; width:218px" /></p>
+
+<p><img src="./12.100.__-_Notes_-_Week_of_April_9_2012/image029.png" style="height:164px; width:218px" /><img src="./12.100.__-_Notes_-_Week_of_April_9_2012/image031.png" style="height:164px; width:218px" /></p>
+
+<p><img src="./12.100.__-_Notes_-_Week_of_April_9_2012/image033.png" style="height:164px; width:218px" /><img src="./12.100.__-_Notes_-_Week_of_April_9_2012/image035.png" style="height:164px; width:218px" /></p>
+
+<p>Fitnesses (no control_both) (ignoring first 21 datapoints &ndash; prior to treatment start)</p>
+
+<p>&nbsp;(doubling cycle time).</p>
+
+<ul>
+	<li>So, this is a little more clear. So, the fitness of the noreward drops a little at every switch off, but tracks pretty closely to the controls. Phew.</li>
+	<li>I also modified analyze.py to pass in arbitrary parameters to fitness collapse. For changeenv, I&rsquo;m passing in &ndash;start_at 21 so that the collapse doesn&rsquo;t count the first 20 datapoints in its max calculation. This should give me a nice bar chart with the right data in it.</li>
+	<li>Then, I generated the big barchart with the result. And lo:</li>
+</ul>
+
+<p><img src="./12.100.__-_Notes_-_Week_of_April_9_2012/image037.png" style="height:279px; width:371px" />&nbsp;</p>
+
+<p><img src="./12.100.__-_Notes_-_Week_of_April_9_2012/image039.png" style="height:279px; width:371px" /></p>
+
+<ul>
+	<li>So, yeah, that&rsquo;s pretty fucking familiar. :D The slow rise of the fitness of punishment implies a recovery of function, whereas the no-reward tracking solidly with the controls implies that there is no significant loss of function over those time periods.</li>
+</ul>
+
+<p style="margin-left:.5in">&nbsp;</p>

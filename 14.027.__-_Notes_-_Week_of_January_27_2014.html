@@ -1,0 +1,246 @@
+<h1>Week of January 27, 2014</h1>
+
+<h2>Monday, Jan 27, 2014</h2>
+
+<p>Log:</p>
+
+<p>7:46p - was supposed to have been working all day, but that didn&rsquo;t really happen. :P I did spend a fair bit of time exploring CKEdit, which, on first blush, seems like exactly what I need, but it only submits to a server, which is a bummer. I want my stuff locally. So, I&rsquo;d have to change some of the javascript to allow me to save files locally. A plugin would probably do that, actually.</p>
+
+<p>Now, working on understanding the HGT code in Avida. I&rsquo;ve got a working config for DK&rsquo;s code (HGT), but in the process discovered that Dave Bryson wrote a separate implementation (LGT) sometime in 2012, via the Blame function on github (<a href="https://github.com/devosoft/avida/commit/4b9283b92316c79c7911f9fef5499e5c2a89d5d4">https://github.com/devosoft/avida/commit/4b9283b92316c79c7911f9fef5499e5c2a89d5d4</a>). So, not sure what&rsquo;s up with that. It doesn&rsquo;t seem to be generating any configuration options (though the code is there in cAvidaConfig.h). So, maybe it&rsquo;s disabled? I don&rsquo;t really see where that is done, but I&rsquo;m going to try to get Dave to explain it to me during lab meeting.</p>
+
+<p>Beside that, the config files you need to set up for HGT are as follows:</p>
+
+<p>Add a line to environment.cfg</p>
+
+<pre>
+<code>RESOURCE  GenomeFragments:hgt=1
+</code></pre>
+
+<p>Change the following lines in avida.cfg. Specifically, you have to enable both HGT_COMPETENCE_P and HGT_INSERTION_MUT_P to ensure that insertions (rather than purely replacements) happen. If HGT_COMPETENCE_P is zero, then NOTHING HAPPENS. It is the governing probability.</p>
+
+<pre>
+<code>682 ### HGT_GROUP ### 
+683 # Horizontal gene transfer settings 
+684 ENABLE_HGT 1                    # Whether HGT is enabled; 0=false (default), 
+685                                 # 1=true. 
+686 HGT_SOURCE 0                    # Source of HGT fragments; 0=dead organisms (default), 
+687                                 # 1=parent. 
+688 HGT_FRAGMENT_SELECTION 0        # Method used to select fragments for HGT mutation; 0=random (default), 
+689                                 # 1=trimmed selection 
+690                                 # 2=random placement. 
+691 HGT_FRAGMENT_SIZE_MEAN 10       # Mean size of fragments (default=10). 
+692 HGT_FRAGMENT_SIZE_VARIANCE 2    # Variance of fragments (default=2). 
+693 HGT_MAX_FRAGMENTS_PER_CELL 100  # Max. allowed number of fragments per cell (default=100). 
+694 HGT_DIFFUSION_METHOD 0          # Method to use for diffusion of genome fragments; 0=none (default). 
+695 HGT_COMPETENCE_P 0.0075         # Probability that an HGT &#39;natural competence&#39; mutation will occur on divide (default=0.0). 
+696 HGT_INSERTION_MUT_P 0.1         # Probability that an HGT mutation will result in an insertion (default=0.0). 
+697 HGT_CONJUGATION_METHOD 0        # Method used to select the receiver and/or donor of an HGT conjugation; 
+698                                 # 0=random from neighborhood (default); 
+699                                 # 1=faced. 
+700 HGT_CONJUGATION_P 0.0           # Probability that an HGT conjugation mutation will occur on divide (default=0.0). 
+701 HGT_FRAGMENT_XFORM 0            # Transformation to apply to each fragment prior to incorporation into offspring&#39;s genome; 0=none (default), 
+702                                 # 1=random shuffle, 
+703                                 # 2=replace with random instructions.
+</code></pre>
+
+<p>And finally, add the appropriate print action to the events.cfg</p>
+
+<pre>
+<code>u 0:100:end PrintHGTData
+</code></pre>
+
+<p>So, I&rsquo;m still currently testing the print action. I&rsquo;m not sure it does what I want, so that code may need to get updated.</p>
+
+<h2>&nbsp;</h2>
+
+<h2>Tuesday Jan 28, 2014</h2>
+
+<p>Log:</p>
+
+<p>11a - Back at it. Updated my log from yesterday (which I should have done at the time, oops). Now I&rsquo;m looking at the code to make sure I know where everything is. Something that&rsquo;s missing from this whole thing is adequate design documents that describe where code for each function is, along with some arrows that show where things are calling what, etc. :/ None of the interesting functions are in any way self-contained, so features end up dipping into larger processes, which is why all this code is interwoven into core Avida code. It&rsquo;s kinda sick-making to look at it.</p>
+
+<h3>Code Analysis</h3>
+
+<p>The code of interest, from what I can tell, is:</p>
+
+<ul>
+	<li>
+	<p>\(cStats.h\) - where the stats coming out of the HGT code are stashed (starting near line 1251)</p>
+	</li>
+	<li>
+	<p>\(cStats.cc\) - where the actual PrintHGTData method is, along with the stats storing methods (starting line 4292)</p>
+	</li>
+	<li>
+	<p>\(PopulationActions.cc\) - where the genome fraction diffusion code is located (near line 5036). These are ACTIONS that may be called from events.cfg.</p>
+	</li>
+	<li>
+	<p>\(cResource.h\) (and .cc) - where some boolean values are stored. (near line 141). <code>SetHGTMetabolize()</code> - where you set the value of <code>hgt_metabolize</code> to point to the resource entry. BUG BUG BUG, <code>hgt_metabolize</code> is a bool, but it&rsquo;s set to the value of an int. (line 320)</p>
+	</li>
+	<li>
+	<p>\(cPopulationInterface.h\) - interface declarations (starting lines 185)</p>
+	</li>
+	<li>
+	<p>\(cPopulationInterface.cc\) - <strong>Bulk of HGT code</strong> (starting line 971). <code>DoHGTMutation()</code> starts at line 1072).</p>
+	</li>
+	<li>
+	<p>\(cPopulationCell.cc\) - There&rsquo;s some grid cell fragment diffusion code in here (starting line 470-557), and all of the resource genome fragment adding/removing happens here (<code>AddGenomeFragments()</code>, <code>CountGenomeFragments()</code>, <code>PopGenomeFragment()</code>, <code>GetFragment()</code>, <code>ClearFragments()</code>)</p>
+	</li>
+	<li>
+	<p>\(cPopulationCell.h\) - <code>HGTSupport</code> struct declared here, along with implementations of <code>InitHGTSupport()</code> (line 203).</p>
+	</li>
+	<li>
+	<p>\(cPopulation.cc\) (and .h) - Some code here for initializing the HGT resource stuff. Essentially, enabling support for it.</p>
+	</li>
+	<li>
+	<p>\(cOrganism.h\) and \(cOrgInterface.h\) - Some code for allowing for <code>DoHGTDonation</code> (not really interested).</p>
+	</li>
+	<li>
+	<p>\(cHardwareBase.cc\) - Here&rsquo;s the money shot. This is where <code>DoHGTMutation()</code> is called. It&rsquo;s called from the <code>Divide_DoMutations()</code> method (starting line 361). It is called every single update.</p>
+	</li>
+	<li>
+	<p>\(cEnvironment.cc\) - code for setting up the fragment resource. (starting line 552). Also, there&rsquo;s code for HGT metabolism (starting line 1565), in method <code>DoProcesses()</code>. I&rsquo;m interested in the second part, because I want to be able to add a tradeoff between metabolism and oops-hgt.</p>
+	</li>
+</ul>
+
+<p>So, the HGT process that I am interested in:</p>
+
+<ul>
+	<li>
+	<p>On divide (<code>Divide_Main()</code> in \(cHardwareCPU\) or whatever the divide implementation is in the various cHardware variants), <code>Divide_DoMutations()</code> (implemented in \(cHardwareBase\)) is called. It does a bunch of other mutations first, but then gets to HGT Mutations.</p>
+	</li>
+	<li>
+	<p>If <code>ENABLE_HGT</code>, it calls <code>DoHGTMutation()</code> on the organism. Oddly, it&rsquo;s implemented in \(PopulationInterface\). The comments say that it does it this way because it&rsquo;s location dependent, but that sounds kinda crappy to me.</p>
+	</li>
+	<li>
+	<p><code>DoHGTMutation()</code>:</p>
+
+	<ul>
+		<li>
+		<p>Do the HGTConjugation thing. Not sure what this is about.</p>
+		</li>
+		<li>
+		<p>Gather then pending list of fragments from the HGTConjugation thing (or whatever the hell else is hanging around)</p>
+		</li>
+		<li>
+		<p>If we&rsquo;re doing the &ldquo;Natural Competence&rdquo; (eating the dead) stuff, populate the fragments list further:</p>
+
+		<ul>
+			<li>
+			<p>Get the cell ID</p>
+			</li>
+			<li>
+			<p>If we&rsquo;re fetching parental fragments, populate those instead). Otherwise, leave what&rsquo;s there.</p>
+			</li>
+			<li>
+			<p>If we have fragments available, grab a random one and adjust the resource</p>
+			</li>
+		</ul>
+		</li>
+		<li>
+		<p>Now that we&rsquo;ve grabbed up all our fragments, loop through them.</p>
+
+		<ul>
+			<li>
+			<p>Figure out where each one goes. (<strong>THERE IS A BUG HERE</strong> (line 1142 - 1159 contradicts what the configuration options say that it does).) This is <code>HGT_FRAGMENT_SELECTION</code> option.</p>
+
+			<ul>
+				<li>
+				<p>Option 0 - match the placement, so the fragment lines up? (<code>HGTMatchPlacement()</code> <strong>LOOK AT THIS CODE</strong>)</p>
+				</li>
+				<li>
+				<p>Option 1 - match the placement, but trim redundant instructions? (<code>HGTTrimmedPlacement()</code> <strong>LOOK AT THIS CODE</strong>)</p>
+				</li>
+				<li>
+				<p>Option 2 - place randomly (<code>HGTRandomPlacement()</code> <strong>LOOK AT THIS CODE</strong>)</p>
+				</li>
+			</ul>
+			</li>
+			<li>
+			<p>Then, once we have figured out where they go, figure out any transforms. (<code>HGT_FRAGMENT_XFORM</code> option)</p>
+
+			<ul>
+				<li>
+				<p>Option 0 - no transform</p>
+				</li>
+				<li>
+				<p>Option 1 - random shuffle (<strong>DOES NOT WORK; CAUSES CRASH, line 1170</strong>)</p>
+				</li>
+				<li>
+				<p>Option 2 - replace with random instructions.</p>
+				</li>
+			</ul>
+			</li>
+			<li>
+			<p>Finally, do the mutation.</p>
+
+			<ul>
+				<li>
+				<p>If we we trigger the probability for an insertion mutation (<code>HGT_INSERTION_MUT_P</code> option), do that.</p>
+				</li>
+				<li>
+				<p>Otherwise, just do a replacement.</p>
+				</li>
+			</ul>
+			</li>
+			<li>
+			<p>And track the stats. <strong>THERE IS A BUG HERE.</strong> It treats ever single mutation as an insertion. Or rather this is a confusing bit of the documentation.</p>
+			</li>
+		</ul>
+		</li>
+		<li>
+		<p>Clear the fragments list. Return.</p>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p>So, ultimately, some of this stuff is weird (implementation in cHardwareBase), and slightly buggy (options are wrong, stats seem buggy and certainly incomplete), but not catastrophically broken.</p>
+
+<h4 class="item_body_heading_2">&nbsp;</h4>
+
+<h3 class="item_body_heading_3">Experimental Thoughts</h3>
+
+<p>For my implementation, I want it to:</p>
+
+<ul>
+	<li>
+	<p>allow for a tradeoff between metabolism and HGT.</p>
+
+	<ul>
+		<li>
+		<p>I&rsquo;m not really seeing any code to do that, even though the stats seem to talk about metabolism. It&rsquo;s possible that the code in cEnvironment.cc (line 1565) sets this up, but I&rsquo;m not sure that this happens. I&rsquo;ll have to go through this code line by line.</p>
+		</li>
+	</ul>
+	</li>
+	<li>
+	<p>fragments are inserted (not replaced, wtf) or lined up (also, wtf).</p>
+	</li>
+</ul>
+
+<p>I suppose I can add instructions for lining up HGT code while consuming resources (something that takes extra time to do it). Some exciting experimental comparisons:</p>
+
+<ul>
+	<li>
+	<p>Instruction for consumption, which gives a boost. increase HGT chance if you consume.</p>
+	</li>
+	<li>
+	<p>Instruction for consumption that costs more, but also lines things up, in case HGT happens.</p>
+
+	<ul>
+		<li>
+		<p>this potentially seems unrealistic.</p>
+		</li>
+	</ul>
+	</li>
+	<li>
+	<p>Alternatively, separate instruction for HGT lineup.</p>
+	</li>
+</ul>
+
+<h3>&nbsp;</h3>
+
+<h3>Lab Meeting - 3pm</h3>
+
+<p>Not much. Talked about what I was working on, and the LGT/HGT thing. Tentatively decided to combine the resource fragments from HGT into Dave&rsquo;s LGT code.</p>
+
+<p>&nbsp;</p>

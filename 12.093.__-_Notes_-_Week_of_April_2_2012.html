@@ -1,0 +1,114 @@
+<h1>Week of April 2, 2012</h1>
+
+<p>&nbsp;</p>
+
+<h2>Monday 4/2/12</h2>
+
+<h3>12:38 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Working on presentation for devolab meeting at 3.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<p>MEETING NOTES:</p>
+
+<ul>
+	<li>Charles: Look at fraction of coding/non-coding to normalize the measuring of coding from non-coding mutations.</li>
+	<li>Accepted Mutations</li>
+	<li>Carlos: For evolvability, do landscaping and measure the fraction of mutants that change function.</li>
+	<li>Luis: Also, do mutation runs (vast replicates) and see how function changes.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Tuesday 4/3/12</h2>
+
+<h3>4:24 PM</h3>
+
+<p>Ofria Lab Mtg Notes:</p>
+
+<ul>
+	<li>Plot depth of last common ancestor against the coalescence.</li>
+	<li>Luis: Flamegraph, plot line of depth of last common ancestor on top of flame graph.</li>
+	<li>Plot population entropy (variation measure of population)</li>
+	<li>Plot information of genome of environment.</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Wednesday 4/4/12</h2>
+
+<h3>2:30 PM</h3>
+
+<p>STATUS:</p>
+
+<p>Met Mark Kauth (kauthmar@msu.edu), a master&rsquo;s student in Rich&rsquo;s lab who did some experiments as an undergraduate with fluctuating environments that I may be able to replicate in Avida.</p>
+
+<p>His notes on his experiment:</p>
+
+<p style="margin-left:.5in">1 day = 6.67 (7) generations</p>
+
+<p style="margin-left:.5in">2 day = ~14</p>
+
+<p style="margin-left:.5in">4&nbsp; = 28</p>
+
+<p style="margin-left:.5in">8 = 56</p>
+
+<p style="margin-left:.5in">16 = 112</p>
+
+<p style="margin-left:.5in">32 = 224</p>
+
+<p style="margin-left:.5in">&nbsp;</p>
+
+<p style="margin-left:.5in">128 days total</p>
+
+<p style="margin-left:.5in">Controls in both C sources for duration of experiment</p>
+
+<p>&nbsp;</p>
+
+<p>My notes: above refers to phases, not whole cycles. C == carbon source (glucose and glactose)</p>
+
+<p>&nbsp;</p>
+
+<p>So, for me this would translate into (30 updates/generation):</p>
+
+<p>&nbsp;</p>
+
+<ol>
+	<li>cycle: 14g -&gt; 420u</li>
+	<li>cycle: 28g -&gt; 840u</li>
+	<li>cycle: 56g -&gt; 1680u</li>
+	<li>cycle: 112g -&gt; 3360u</li>
+	<li>cycle: 224g -&gt; 6720u</li>
+	<li>cycle: 448g -&gt; 13440u</li>
+</ol>
+
+<p>&nbsp;</p>
+
+<p>MEETING WITH ART:</p>
+
+<ul>
+	<li>To get fixed-length mutation: enforce exact copy, and then mutation on divide.
+	<ul>
+		<li>Parent Offspring Ratio == 1 has unpleasant side effects, and while sterilize unstable fixes this, it is slow.</li>
+		<li>Can also get rid of merit proportional to length.</li>
+	</ul>
+	</li>
+</ul>
+
+<p>&nbsp;</p>
+
+<h2>Friday 4/6/12</h2>
+
+<h3>1:58 AM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Resubmitted job 081 with the correct settings as described by Art (see prev notes). Job 082 now has mutation on divide and enforce exact copy. Yay.</li>
+	<li>Fixed up changing env 001-006 jobs to run correct control, and cleared out broken control runs. They seem to be running pretty quickly.</li>
+</ul>

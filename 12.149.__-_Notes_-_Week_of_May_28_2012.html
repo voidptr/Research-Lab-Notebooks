@@ -1,0 +1,91 @@
+<h1>Week of May 28, 2012</h1>
+
+<h2>Tuesday 5/29/12</h2>
+
+<h3>9:15 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Pulled down the data from job 088, which rather than directly competing the organisms, instead just races them in separate populations. This is probably a more robust thing anyway, because then I don&#39;t have to do multiple pairwise competitions, just aggregate the results of each treatment&#39;s races.</li>
+	<li>First, extract the content.</li>
+</ul>
+
+<pre>
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span><strong>:<span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/088</span></strong>$ for i in and nand andn nor not or orn; do ls -1 *_$i&quot;_&quot;*control*/data/tasks.dat | xargs python ../../../scripts/common/extract_single_column_to_csv.py -s &quot; &quot; 2 &gt; $i&quot;_&quot;control_tasks.csv; done</pre>
+
+<ul>
+	<li>Then plot.</li>
+</ul>
+
+<pre>
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span>:<span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/088</strong></span>$ python ../../../scripts/graph_generation/plot_from_csv.py -o --calculate_error --xlim_max 20 --end_at 20 --x_tick_intervals 100 --title &quot;Task Achievement - Race Control vs Punishment&quot; --ylabel &quot;Task Count&quot; --xlabel &quot;Update&quot; --data_sources 2 --legend &quot;not,nand,and,orn,or,andn,nor&quot; tasks.png not_*.csv nand_*.csv and_*.csv orn_*.csv or_*.csv andn_*.csv nor_*.csv
+
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span>:<span style="color:#0000FF"><strong>/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/088</strong></span>$ python ../../../scripts/graph_generation/plot_from_csv.py -o --calculate_error --xlim_max 20 --end_at 20 --x_tick_intervals 100 --title &quot;Task Achievement - Race Control vs Punishment&quot; --ylabel &quot;Task Count&quot; --xlabel &quot;Update&quot; --data_sources 2 --legend &quot;or,nor&quot; or_nor_only_tasks.png or_*.csv nor_*.csv</pre>
+
+<p><img src="./12.149.__-_Notes_-_Week_of_May_28_2012/1.png" style="height:326px; width:434px" /></p>
+
+<p><img src="./12.149.__-_Notes_-_Week_of_May_28_2012/1.png" style="height:326px; width:434px" /></p>
+
+<ul>
+	<li>Of particular interest are OR and NOR (isolated below)</li>
+</ul>
+
+<p><img src="./12.149.__-_Notes_-_Week_of_May_28_2012/2.png" style="height:326px; width:434px" /></p>
+
+<ul>
+	<li>Punishment (---) seems to jump the gun faster, then get overtaken by control (&mdash;), implying that the trait sweeps faster for the control organisms (maybe because of the higher fitness?). This holds with the pattern seen previously where the more complex tasks (OR in particular), had a SLIGHTLY higher direct tournament win percentage.</li>
+	<li>So, this is a pretty easy (for the organisms) evolvability test. How about if we give them something a bit harder&hellip; Like, performing a set of tasks in a certain order?</li>
+	<li>Ok, put together and submitted job 089 to hpcc.
+	<ul>
+		<li>Races, as above. Race to ordered tasks (with requisites)
+		<ul>
+			<li>AND-&gt;OR-&gt;ORN</li>
+			<li>NAND-&gt;ORN-&gt;NOR</li>
+			<li>NOR-&gt;ANDN-&gt;OR</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<h2>&nbsp;</h2>
+
+<h2>Wednesday 5/30/12</h2>
+
+<h3>2:15 PM</h3>
+
+<p>STATUS:</p>
+
+<ul>
+	<li>Job 089 is finished. Downloading to atlantis.</li>
+	<li>Spent some time re-writing and cleaning up plot_from_csv.py. Now, --all and&nbsp; --mean are selectable independently or in conjunction, so as to get a better picture of the data.</li>
+</ul>
+
+<pre>
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span><strong>:<span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/088</span></strong>$ python ../../../scripts/graph_generation/plot_from_csv.py -o -a --error --end_at 50 --xlim_max 50 --xtick_multiplier 100 --title &quot;Task Achievement - Race Control vs Punishment&quot; --ylabel &quot;Task Count&quot; --xlabel &quot;Update&quot; --data_members 2 --legend &quot;or control,or punish,nor control,nor punish&quot; testing___or_nor_only_tasks.png or_control_tasks.csv or_punish_tasks.csv nor_control_tasks.csv nor_punish_tasks.csv</pre>
+
+<p><img src="./12.149.__-_Notes_-_Week_of_May_28_2012/3.png" style="height:326px; width:434px" /></p>
+
+<pre>
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span><strong>:<span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/088</span></strong>$ python ../../../scripts/graph_generation/plot_from_csv.py -o -a --error --end_at 50 --xlim_max 50 --xtick_multiplier 100 --title &quot;Task Achievement - Race Control vs Punishment&quot; --ylabel &quot;Task Count&quot; --xlabel &quot;Update&quot; --data_members 2 --legend &quot;not control,not punish,nand control,nand punish,and control,and punish,orn control,orn punish,or control,or punish,andn control,andn punish,nor control,nor punish &quot; testing___tasks.png not_*.csv nand_*.csv and_*.csv orn_*.csv or_*.csv andn_*.csv nor_*.csv</pre>
+
+<p><img src="./12.149.__-_Notes_-_Week_of_May_28_2012/4.png" style="height:326px; width:434px" /></p>
+
+<ul>
+	<li>Ok, now that we&#39;ve got that fixed up, let&#39;s tackle extracting and graphing the compound jobs of 089</li>
+</ul>
+
+<pre>
+<span style="color:#40E0D0"><strong>rosiec@atlantis</strong></span><strong>:<span style="color:#0000FF">~/research/devolab_research/evolution_of_modularity/raw_data/088</span></strong>$ for i in and_or_orn nand_orn_nor nor_andn_or; do ls -1 *_$i&quot;_&quot;*control*/data/tasks.dat | xargs python ../../../scripts/common/extract_single_column_to_csv.py -s &quot; &quot; 4 &gt; $i&quot;_&quot;control_tasks.csv; done</pre>
+
+<ul>
+	<li>And Graph</li>
+</ul>
+
+<pre>
+<span style="color:#FFD700"><strong>rosiec@Loki</strong></span><strong>:<span style="color:#0000FF">/Volumes/rosiec/research/devolab_research/evolution_of_modularity/raw_data/089</span></strong>$ python ../../../scripts/graph_generation/plot_from_csv.py -o --error --xtick_multiplier 100 --title &quot;Task Achievement - Race Control vs Punishment&quot; --ylabel &quot;Task Count&quot; --xlabel &quot;Update&quot; --data_members 2 --legend &quot;and_or_orn control,and_or_orn punish,nand_orn_nor control,nand_orn_nor punish,nor_andn_or control,nor_andn_or punish&quot; tasks.png and_*.csv nand_*.csv nor_*.csv</pre>
+
+<p><img src="./12.149.__-_Notes_-_Week_of_May_28_2012/5.png" style="height:326px; width:434px" /></p>
+
+<p>* Aaaand, no result. :/ But it sure is a pretty graph. :p 5:16 PM</p>
