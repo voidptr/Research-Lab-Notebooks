@@ -1,0 +1,119 @@
+
+<h1>Week of February 01, 2016</h1>
+
+<h2>Wednesday, Feb 03, 2016</h2>
+
+<h3>Log 07:41PM</h3>
+
+<p>Soooo, I didn&#39;t do a whole lot because I was supposed to be writing, and I couldn&#39;t focus on writing, so I did no work whatsoever. (headdesk).</p>
+
+<p>So I&#39;m going to actually try to do a mild analysis to see if I can figure out what&#39;s wrong with the control such that the control population ends up doing the task more than the P_0 hgt+bonus population (which is, essentially, all bonus with no risk).</p>
+
+<p><strong>Reviewing result of Full Population Injection</strong></p>
+
+<p>So, it looks more or less the same. The controls are doing it way more, except riiiight at the beginning, though eventually they converge at some level of overlap. The error bars are all over the place.&nbsp;</p>
+
+<p><img src="./16.032.__-_Notes_-_Week_of_February_01_2016/2016_02_04_01_13_521.png" style="height:450px; width:600px" /></p>
+
+<p><strong><span style="background-color:#FFFF00">OH FUCK - It&#39;s fragment-limited.</span></strong></p>
+
+<p>Yes, indeed, the reservoirs are running out. 100k/100u&nbsp;is as fast as it refills. HAHAH!</p>
+
+<p>So, going to do two things.&nbsp;</p>
+
+<ol>
+	<li>Increase the size of the damned reservoir.</li>
+	<li>Track attempts, regardless of whether they succeed or not.</li>
+</ol>
+
+<p>Run 211 is going to test a reservoir of 500, and also logs the new attempts, which should yield the thing we want to know about, which is if they&#39;re doing lots of attempts. Also, I should get in touch with Charles and let him know.</p>
+
+<p><u><em>Running 212 (prob sweep) and 213 (bonus sweep) both VarLength.</em></u></p>
+
+<h3>Log 10:28p</h3>
+
+<p>Had to institute limits to the execution of the task. :| Because fucking segfault.</p>
+
+<h2>Thursday, Feb 4, 2016</h2>
+
+<h3>Log 3:51p</h3>
+
+<p>Ok, woohoo! It&#39;s showing the right thing!</p>
+
+<p>More attempts in bonus-available situations than non-available</p>
+
+<p><img src="./16.032.__-_Notes_-_Week_of_February_01_2016/2016_02_04_20_53_213.png" style="height:288px; width:432px" /></p>
+
+<p><img src="./16.032.__-_Notes_-_Week_of_February_01_2016/2016_02_04_20_51_452.png" style="height:876px; margin-bottom:-150px; width:1000px" /></p>
+
+<p>So, this means that the Bonus sweep should be valid, along with all the other sweeps I have to do.</p>
+
+<h3>Log 5:04p</h3>
+
+<p>Aaaand BAM. No obvious response to bonus variation. Hooray!</p>
+
+<p><img src="./16.032.__-_Notes_-_Week_of_February_01_2016/2016_02_04_22_04_154.png" style="height:876px; margin-bottom:-150px; width:1000px" /></p>
+
+<h3>Log 10:37p</h3>
+
+<p>Now that I&#39;ve got a successful result, I set the 214 Homologous Sites Sweep going, for 1-5 sites. This should tell me if HGT becoems less destructive when more sites are homologous. What I&#39;m expecting is that the HGT-only runs for 0.1 should show a higher uptake percentage, and even the HGTBonus runs should be higher with better homology.</p>
+
+<h2>Friday, Feb 5, 2016</h2>
+
+<h3>Log 6:28p</h3>
+
+<p>Homologous Site Sweep is completed. Looks about right.</p>
+
+<p><img src="./16.032.__-_Notes_-_Week_of_February_01_2016/2016_02_05_23_28_541.png" style="height:476px; margin-bottom:-120px; width:600px" /></p>
+
+<p>The relevant lines</p>
+
+<p><img src="./16.032.__-_Notes_-_Week_of_February_01_2016/2016_02_05_23_37_212.png" style="height:300px; width:400px" /><img src="./16.032.__-_Notes_-_Week_of_February_01_2016/2016_02_06_03_58_041.png" style="height:300px; width:400px" /></p>
+
+<p>The takeaway:</p>
+
+<p>1 - Homologous 1&nbsp; is markedly lower than the other higher matches in terms of attempts to use HGT. 2-5 all track together. So, it&#39;s probably <strong>safe to say that H_3 is good</strong>.</p>
+
+<p>2a - The control definitely has lower attempts. This means that the previous results were the result of the <strong>HGT activity being resource-limited by number of available fragments</strong>.</p>
+
+<p>2b - Bonus-only uptake attempts was tracking higher than HGT+Bonus. This means that it&#39;s definitely moderating by chance of recombination.</p>
+
+<p>2c - HGT-only uptake attempts remain quite low, regardless of homology. This is mildly suspicious, since it should be less nasty when it matches more. In order to confirm this, I&#39;ll have to add the code to perform a full homologous match and see if it goes back to control levels. Only then will I be satisfied that my code doesn&#39;t have a bug.</p>
+
+<p>TODO:</p>
+
+<p>1 - add full-match capability, (probably just a check that the matching count doesn&#39;t exceed the size of the fragment, and thus doesn&#39;t crash, but just matches fully)</p>
+
+<p>2 - re-submit these runs with a full-match in addition, above H_5. Call it H_All.</p>
+
+<h2>Saturday, Feb 6, 2016</h2>
+
+<h3>Log 12:24p</h3>
+
+<p>Downloading the 214 re-do that includes H_All</p>
+
+<h3>Log 6:23p</h3>
+
+<p><strong>Major Code Simplification</strong></p>
+
+<p>So, I&#39;ve reworked the code, and simplified everything and got rid of the extra instructions, and just had it do Recomb or Bonus based on the (renamed) HGT_UPTAKE_RECOMBINATION_P, and the task&#39;s bonus level (which can be 0, thus no bonus). So, all the runs should still hit the random number generator even if P == 0, which means there are no longer any artificial differences in the random number generator between the control (P0,B0) and the non-control treatments. This is more legit. So, I&#39;m re-running both PSweep and BSweep.</p>
+
+<p>Also, git and dropbox had a fight, and it tried to lose my shit. They did lose my shit, in fact, but I was able to dig it back out. There&#39;s now a shiny new branch (HGT_final) which contains the final HGT code (with above stuff). For my new P&amp;B sweeps, I&#39;ve incremented the run major version counter to 3xx.</p>
+
+<p><strong>Homology Weirdness</strong></p>
+
+<h3><img src="./16.032.__-_Notes_-_Week_of_February_01_2016/2016_02_06_23_14_501.png" style="height:300px; width:400px" /></h3>
+
+<p>See, this doen&#39;t make sense to me. I would have expected H_All in the no-bonus treatment to track with the control, since, effectively, it either matches perfectly (and thus does nothing), or it fizzles, and thus does nothing. But still, it&#39;s getting pushed down into the dirt along with all the others. So, something stinks about the way homology is working.</p>
+
+<h3><img src="./16.032.__-_Notes_-_Week_of_February_01_2016/2016_02_06_23_22_563.png" style="height:300px; width:400px" /><img src="./16.032.__-_Notes_-_Week_of_February_01_2016/2016_02_06_23_22_102.png" style="height:300px; width:400px" /></h3>
+
+<p>Next is to investigate the weird-ass homology behavior. After I figure out if there&#39;s a fucking bug, I&#39;ll run the homology match # sweep. If there&#39;s a bug, I can probably figure out pretty easily if it&#39;s just shoving it in a random place (thus H_0). If so, I can do stuff at H3, and we should be good. Thing is, it&#39;s possible that fixed homology would make the P 0.1 no longer be the best, since it wouldn&#39;t neccessarily shove the no-bonus treatment straight into the dirt. It might be a little more lenient. We&#39;ll see.</p>
+
+<h3>Log 7:09p</h3>
+
+<p>Ok, I fixed the homology problem (it was only doing a partial match, and that on the first half). It was crappily put together, too. Dunno what I was thinking. Simplified it quite a bit, and pushed the change. All 300-series runs have been restarted with the new executable. Should FINALLY give the correct results. I think this may be the last of the buggy crap, and this set of runs should be the final gold standards. 303 will be the HOMOLOGOUS MATCH sweep, but I have to wait for 300-302 to finish.</p>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>

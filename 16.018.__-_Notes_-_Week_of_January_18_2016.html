@@ -13,4 +13,80 @@
 
 <p><img src="./16.018.__-_Notes_-_Week_of_January_18_2016/2016_01_18_18_02_251.png" style="height:269px; width:415px" /></p>
 
-<p><img src="./16.018.__-_Notes_-_Week_of_January_18_2016/2016_01_18_18_02_532.png" style="height:293px; width:828px" /></p>
+<p><img src="./16.018.__-_Notes_-_Week_of_January_18_2016/2016_01_19_20_53_541.png" style="height:293px; width:828px" /></p>
+
+<p>And KAPOW! I can see that the Copied length tracks perfectly with the instruction raw counts, while Executed length tracks with the proportion. Now, what that means...? See if anyone has any ideas at lab meeting tomorrow.</p>
+
+<h2>Tuesday, Jan 19, 2016</h2>
+
+<h3>Log 12:55p</h3>
+
+<p><strong>Changing Environments&nbsp;Alife Paper</strong></p>
+
+<p>Spent some time yesterday and today getting my LaTeX template in place for the Alife paper. I copied in the relevant pieces from the comprehensive. Next step is to write the intro, and massage the rest so that it flows smoothly. Uh, and review the conversation with Charles and distill it down to bullets for what I need to think about with the intro.</p>
+
+<p><strong>Viewing Data as Histograms</strong></p>
+
+<p>Since everything more or less stabilizes, I can pull in the final values of the data-files and generate histograms as per above for most of the data. This allows a more direct comparison. Going to quick do that.</p>
+
+<p><strong>Uptake Rates by Probability - Variable Length vs Fixed Length</strong></p>
+
+<p><img src="./16.018.__-_Notes_-_Week_of_January_18_2016/2016_01_19_18_52_401.png" style="height:288px; width:432px" /><img src="./16.018.__-_Notes_-_Week_of_January_18_2016/2016_01_19_18_52_452.png" style="height:288px; width:432px" /></p>
+
+<p><img src="./16.018.__-_Notes_-_Week_of_January_18_2016/2016_01_19_18_53_063.png" style="height:288px; width:432px" /><img src="./16.018.__-_Notes_-_Week_of_January_18_2016/2016_01_19_18_53_164.png" style="height:288px; width:432px" /></p>
+
+<p><strong>Recombination Rates by Probability - Variable Length and Fixed Length</strong></p>
+
+<div><img src="./16.018.__-_Notes_-_Week_of_January_18_2016/2016_01_19_18_53_565.png" style="height:288px; width:432px" /><img src="./16.018.__-_Notes_-_Week_of_January_18_2016/2016_01_19_18_54_096.png" style="height:288px; width:432px" /></div>
+
+<div><img src="./16.018.__-_Notes_-_Week_of_January_18_2016/2016_01_19_18_54_157.png" style="height:288px; width:432px" /><img src="./16.018.__-_Notes_-_Week_of_January_18_2016/2016_01_19_18_54_258.png" style="height:288px; width:432px" /></div>
+
+<div>
+<h3>Lab Meeting Notes&nbsp;3:23p</h3>
+
+<p><strong>Yeast Sensecense</strong></p>
+
+<p>In lab meeting, STOP RESETTING THE AGE OF THE PARENT, because cells age... maybe. The result is disputed in bacteria.</p>
+
+<p>Create consequences in aging - decreased efficiency, more mutations? Speed penalty. Merit decay.</p>
+
+<p>Older age of father - related to autism and schizophrenia</p>
+
+<p><strong>Making the architectural environment more accurate. Might clean up the signal for the changing environments experiments.</strong></p>
+
+<p>Also turn on mutation for the parent, not just the child. Think about not resetting the age of the parent.</p>
+
+<p><strong>What to put in the methods</strong></p>
+
+<p>Instruction Sets in avida - talk bout in methods</p>
+
+<p>Experimental design</p>
+
+<p>Things required for understanding, put in&nbsp;introductions, things needed for replication put in&nbsp;methods</p>
+
+<p><strong>Travel Funding</strong></p>
+
+<p>Apply for BEACON funding, and CSE funding. -- figure this out.</p>
+
+<h2>Wednesday, Jan 20, 2016</h2>
+
+<h3>Log 4:47p</h3>
+
+<p><strong>Additional Bonus Bug</strong></p>
+
+<p>Took a look at why my runs were crashing, and it was indeed a local bug, not an HPCC issue. Essentially, I was overflowing my bonus because I was saving a double into a float. :/ So, I set it to a double. I also put some voodoo code in there to try to catch any overflow before it happens, but I&#39;m not sanguine that it&#39;ll every do it, because of the C++ inf stuff. :/ So, we&#39;ll see.</p>
+
+<p>I re-submitted the 200 and 201 runs with the new code, and have lined up a fresh copy of 206 (Fixed Length prob sweep) to go when spaces opens up. Each run set (now that I&#39;ve disabled the redundant runs) takes up about half my queue. Now, I just wait.</p>
+
+<p><strong>Refreshed plot_from_csv.py</strong></p>
+
+<p>Rather than having it use self-defined colors, I am now munging the built-in colormaps by adding transparencies, and using those colors to do my plotting. They look a lot better.</p>
+
+<h3>Log 11:16p</h3>
+
+<p>Everything (incl 206) are nearly done. I pulled down the data for 200 and 201. Processing now. :/</p>
+
+<p>&nbsp;</p>
+</div>
+
+<p>&nbsp;</p>

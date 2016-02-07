@@ -1,0 +1,102 @@
+
+<h1>Week of January 25, 2016</h1>
+
+<h2>Monday, Jan 25, 2016</h2>
+
+<h3>Meeting Notes - w/ Charles &amp; Alex 11:10AM</h3>
+
+<p><strong>Papers for ALife</strong></p>
+
+<p>I&#39;ll integrate the bottle-necking stuff (entropy of population figure, etc., flame-graphs) into the narrative about the impact of changing environments on mutational landscapes.</p>
+
+<ul>
+	<li>Changing environments create unique pressures on evolutionary trajectories of populations.</li>
+	<li>They do it by:
+	<ul>
+		<li>Bottlenecking
+		<ul>
+			<li>Drastically reduced diversity</li>
+			<li>alters the placement of the average genotype in mutational landscape.</li>
+			<li>As a result -&nbsp;hitchhiking - but this is less important.</li>
+		</ul>
+		</li>
+		<li>Strong Directional selection,
+		<ul>
+			<li>encouraging adoption of more non-neutral mutations,</li>
+			<li>thus raising effective mutation rate.</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+	<li>Resulting in:
+	<ul>
+		<li>Rapid traversal of mutational landscape to distant regions&nbsp;
+		<ul>
+			<li>mutational distance from origin (flame graph)</li>
+			<li>TODO: Calculate the effective mutation rate. ?? is this going to be higher than the control? How can I say that this means anything?</li>
+		</ul>
+		</li>
+		<li>Shapes the distribution of genotypes in a population.
+		<ul>
+			<li>Tighter clusters and less diversity (entropy graph)</li>
+		</ul>
+		</li>
+		<li>Collecting potential mutants that enable/disable a feature in their genotype as vestigial sites.
+		<ul>
+			<li>Architecture is altered by the collection of vestigial sites in the ancestral lineage (vestigial site figures)</li>
+		</ul>
+		</li>
+		<li>Overall placement of genotypes in mutational landscape space in a place with more phenotypes within 1-2 steps.
+		<ul>
+			<li>1-2 Step mutational landscape</li>
+		</ul>
+		</li>
+	</ul>
+	</li>
+</ul>
+
+<p><strong>Journal Paper</strong></p>
+
+<p>Integrate the mutational plasticity&nbsp;work with Alex&#39;s in-lifetime&nbsp;phenotypic plasticity work. More later</p>
+
+<p><strong>Future Paper</strong></p>
+
+<p>Examine the rates at which populations migrate across the mutational landscape when there is repeated bottle-necking, without neccessarily strong directional selection.</p>
+
+<p><strong>Own Meeting w/ Charles</strong>&nbsp;-&nbsp;<strong>HGT Work</strong></p>
+
+<p>Charles suggested using the log fitness and then average that. This should smooth out the ridiculous fluctuations that I&#39;m seeing, and help me better evaluate if my code is working correctly.</p>
+
+<h3>Log 1:27p</h3>
+
+<p><strong>Previously -- HGT Bonus Application</strong></p>
+
+<p>Ripped out the old way of manually adding the bonus. Rather, I have it track through a task which receives a reward, and that I can cap or whatever. It&#39;s more complex than doing it directly, but ultimately, I think it gives me more control, with less potential for weird bugs. Also, I can replicate the existing effect by enabling immediate merit increases for doing a task (assuming I can find the option, and that it&#39;s not buggy).</p>
+
+<h3>Grading Bonus Text 5:18p</h3>
+
+<p>Q2 - In order to print the last character in a string, use [] as if it were a list, but using a negative number to count starting at the end.</p>
+
+<p>Q3 - Arrays are indexed starting with 0.</p>
+
+<p>list[0] = &#39;Suntheimer&#39;</p>
+
+<p>list[1] = 2016</p>
+
+<p>Note: Soon we will begin grading assignments for correctness and completeness.</p>
+
+<h2>Tuesday, Jan 26, 2016</h2>
+
+<h3>Log 00:46a</h3>
+
+<p><strong>New Runs with Task Bonus branch - 208 Prob Sweep&nbsp;and 209 Bonus Sweep</strong></p>
+
+<p>Added the log fitness file and started some runs (208 Prob Sweep and 209 Bonus Sweep, both Var Length) on the HPCC using the new task code. I also attempted to do the DIVIDE_METHOD 0 thing (which doesn&#39;t reset the parent), but the populations all died out. :( So, not sure what that&#39;s really about. They should have been able to replicate at least once, and certainly more than that at P_0, but those all died too. I just don&#39;t understand it. It shouldn&#39;t happen, and sounds like a bug. :( So, I&#39;m going on without it. Bed now.</p>
+
+<h2>Wednesday, Jan 27, 2016</h2>
+
+<h3>Log 12:09p</h3>
+
+<p>Today I&#39;m going to work on writing the slant. But I need a good environment to do it in, and this notebook is not it. :/</p>
+
+<p>&nbsp;</p>
